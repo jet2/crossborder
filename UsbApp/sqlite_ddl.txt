@@ -1,0 +1,19 @@
+-- persons definition
+
+CREATE TABLE persons (
+	personID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	tabnom NUMERIC NOT NULL,
+	fio TEXT NOT NULL,
+	card TEXT NOT NULL,
+	jobposition TEXT(200) NOT NULL
+);
+
+
+-- BorderCrossing definition
+
+CREATE TABLE "BorderCrossing" (
+	bordercrossingID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	timestampUTC REAL NOT NULL,	
+	card TEXT NOT NULL,
+	IsOut INTEGER DEFAULT 0 NOT NULL,
+	KPPID TEXT NOT NULL);
