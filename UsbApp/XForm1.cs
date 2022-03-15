@@ -90,7 +90,7 @@ namespace UsbApp
 
         private void button1_Click(object sender, EventArgs e)
         {
-            mySnifferForm.Show();
+            chromiumWebBrowser1.Load("google.com");
         }
     }
 }

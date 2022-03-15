@@ -33,6 +33,9 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.chromiumWebBrowser1 = new CefSharp.WinForms.ChromiumWebBrowser();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -62,26 +65,36 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(158, 33);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(158, 32);
             this.toolStripStatusLabel1.Text = "Считыватель";
             // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(20, 33);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(20, 32);
             this.toolStripStatusLabel2.Text = ":";
             // 
             // toolStripStatusLabel3
             // 
             this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(145, 33);
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(145, 32);
             this.toolStripStatusLabel3.Text = "Подключен";
+            // 
+            // chromiumWebBrowser1
+            // 
+            this.chromiumWebBrowser1.ActivateBrowserOnCreation = false;
+// TODO: Код для "" не создан из-за исключения "Недопустимый тип примитива: System.IntPtr. Рекомендуется применить класс CodeObjectCreateExpression.".
+            this.chromiumWebBrowser1.Location = new System.Drawing.Point(47, 105);
+            this.chromiumWebBrowser1.Name = "chromiumWebBrowser1";
+            this.chromiumWebBrowser1.Size = new System.Drawing.Size(869, 875);
+            this.chromiumWebBrowser1.TabIndex = 2;
             // 
             // XForm1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2249, 1177);
+            this.Controls.Add(this.chromiumWebBrowser1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.button1);
             this.Name = "XForm1";
@@ -103,5 +116,8 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker2;
+        private CefSharp.WinForms.ChromiumWebBrowser chromiumWebBrowser1;
     }
 }

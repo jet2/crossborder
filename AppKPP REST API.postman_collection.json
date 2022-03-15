@@ -1,0 +1,149 @@
+{
+	"info": {
+		"_postman_id": "24c9bf1b-b80f-463b-b717-d32d06251173",
+		"name": "AppKPP REST API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "passages Получить проходы табельного номера",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basepath}}/passages/?tstampbeg=0&tstampend=1&page=1&limit=20&tabnom=0",
+					"host": [
+						"{{basepath}}"
+					],
+					"path": [
+						"passages",
+						""
+					],
+					"query": [
+						{
+							"key": "tstampbeg",
+							"value": "0"
+						},
+						{
+							"key": "tstampend",
+							"value": "1"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "20"
+						},
+						{
+							"key": "tabnom",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "workers Люди с картами табельными и должностями",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basepath}}/workers",
+					"host": [
+						"{{basepath}}"
+					],
+					"path": [
+						"workers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "passages Добавление прохода карта+табельный",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"timestampUTC\":100,\r\n    \"card\":\"12 345\",\r\n    \"tabnom\":45066,\r\n    \"isOut\":0,\r\n    \"kppId\":\"kpp26-pc\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basepath}}/passages/",
+					"host": [
+						"{{basepath}}"
+					],
+					"path": [
+						"passages",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "check_for_update Работники обновились?",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basepath}}/workers/updated",
+					"host": [
+						"{{basepath}}"
+					],
+					"path": [
+						"workers",
+						"updated"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "basepath",
+			"value": "http://localhost:3002/kpp/v1"
+		}
+	]
+}
