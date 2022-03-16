@@ -16,14 +16,17 @@ namespace UsbApp
     {
         Dictionary<string, string> Persons;
         CrossRecord lastCrossing = new CrossRecord();
-        public Sniffer()
+        XForm1 mainInstance;
+        public Sniffer(XForm1 mainInstance)
         {
+            this.mainInstance = mainInstance;
             InitializeComponent();
         }
 
         private void usb_OnDeviceArrived(object sender, EventArgs e)
         {
             this.lb_message.Items.Add("Found a Device");
+            mainInstance.setRFIDFound();
 
         }
 
@@ -36,21 +39,22 @@ namespace UsbApp
             else
             {
                 this.lb_message.Items.Add("Device was removed");
+                mainInstance.setRFIDLost();
             }
         }
 
         private void usb_OnSpecifiedDeviceArrived(object sender, EventArgs e)
         {
-
+            mainInstance.setRFIDFound();
             this.lb_message.Items.Add("My device was found");
 
-            //setting string form for sending data
-            string text = "";
-            for (int i = 0; i < this.usb.SpecifiedDevice.OutputReportLength - 1; i++)
-            {
-                text += "000 ";
-            }
-            this.tb_send.Text = text;
+            ////setting string form for sending data
+            //string text = "";
+            //for (int i = 0; i < this.usb.SpecifiedDevice.OutputReportLength - 1; i++)
+            //{
+            //    text += "000 ";
+            //}
+            //this.tb_send.Text = text;
         }
 
         protected override void OnHandleCreated(EventArgs e)
@@ -112,6 +116,7 @@ namespace UsbApp
             else
             {
                 this.lb_message.Items.Add("My device was removed");
+                mainInstance.setRFIDLost();
             }
         }
 
@@ -181,22 +186,23 @@ namespace UsbApp
             this.lb_message.Items.Add("Some data was send");
         }
 
-        private void dbsend(int IsOut)
+        private void dbsend(int IsOut, int isManual)
         {
             // записываем информацию в базу данных
             using (SQLiteConnection Connect = new SQLiteConnection("Data Source=c:\\appkpp\\bufferdb.db;Version=3;New=False;"))
             {
-                string commandText = "INSERT INTO BorderCrossing ([timestampUTC], [card], [IsOUT], [KPPID]) VALUES(@timestampUTC, @card, @IsOUT, @KPPID)";
+                string commandText = "INSERT INTO passages ([timestampUTC], [card], [IsOUT], [KPPID]) VALUES(@timestampUTC, @card, @IsOUT, @KPPID)";
                 SQLiteCommand Command = new SQLiteCommand(commandText, Connect);
 
                 Command.Parameters.AddWithValue("@timestampUTC", lastCrossing.timestampUTC);
                 Command.Parameters.AddWithValue("@card", lastCrossing.card);
                 Command.Parameters.AddWithValue("@IsOut", IsOut);
                 Command.Parameters.AddWithValue("@KPPID", Environment.MachineName);
+                Command.Parameters.AddWithValue("@isManual", isManual);
                 Connect.Open();
                 Command.ExecuteNonQuery();
                 Connect.Close();
-                MessageBox.Show("Проход записан в базу данных");
+               // MessageBox.Show("Проход записан в базу данных");
             }
         }
 
@@ -204,7 +210,7 @@ namespace UsbApp
         {
             buttonInside.Enabled = false;
             buttonOutside.Enabled = false;
-            dbsend(0);
+            dbsend(0,0);
             this.Hide();
         }
 
@@ -212,7 +218,7 @@ namespace UsbApp
         {
             buttonInside.Enabled = false;
             buttonOutside.Enabled = false;
-            dbsend(1);
+            dbsend(1,0);
             this.Hide();
         }
 

@@ -10,7 +10,8 @@ namespace UsbApp
     {
         public double timestampUTC;
         public string card;
-        public int IsOut;
-        public string KPPID;
+        public int isOut;
+        public int isManual;
+        public string kppID;
     }
 }

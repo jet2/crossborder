@@ -78,19 +78,50 @@ namespace UsbApp
 
 
             //Persons.Add("47 3354", $"Пикаленко\r\nЖайло\r\nКутепович\r\n51426\r\nГлавный конструктор");
-           // Persons.Add("74 4669", $"Ласкус\r\nВилен\r\nТранторович\r\n15111\r\nИнженер");
+            // Persons.Add("74 4669", $"Ласкус\r\nВилен\r\nТранторович\r\n15111\r\nИнженер");
 
-            mySnifferForm = new Sniffer();
+            mySnifferForm = new Sniffer(this);
             mySnifferForm.Left = this.Width - mySnifferForm.Width;
             mySnifferForm.Top = this.Height - mySnifferForm.Height;
             mySnifferForm.UpdatePersons(Persons);
             mySnifferForm.Show();
-            
+            mySnifferForm.Hide();
+
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            chromiumWebBrowser1.Load("google.com");
+
         }
+
+        private void listView1_ItemActivate(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection breakfast =this.listView1.SelectedItems;
+
+
+            foreach (ListViewItem item in breakfast)
+            {
+                int idx = item.Index;
+                tabControl1.SelectTab(idx);
+                break;
+            }
+        }
+
+        public void setRFIDLost()
+        {
+            this.toolStripStatusLabel3.Text = "Отключен";
+            this.toolStripStatusLabel3.BackColor= Color.Salmon;
+        }
+        public void setRFIDFound()
+        {
+            this.toolStripStatusLabel3.Text = "Подключен";
+            this.toolStripStatusLabel3.BackColor = Color.PaleGreen;
+        }
+
     }
 }
