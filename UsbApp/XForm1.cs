@@ -19,13 +19,16 @@ namespace UsbApp
 
         public static Dictionary<string, string> Persons;
 
+        WcfServer srv;
         public XForm1()
         {
+
             InitializeComponent();
         }
 
         private void XForm1_Load(object sender, EventArgs e)
         {
+
             Persons = new Dictionary<string, string>();
             Persons.Clear();
 

@@ -79,12 +79,15 @@
     </Reference>
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CrossRecord.cs" />
+    <Compile Include="DataReceivedEventArgs.cs" />
+    <Compile Include="ipcsrv.cs" />
     <Compile Include="Sniffer.cs">
       <SubType>Form</SubType>
     </Compile>

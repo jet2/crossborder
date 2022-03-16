@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsbLibrary", "UsbLibrary\Us
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kppApp", "UsbApp\kppApp.csproj", "{8A576B45-04F3-4811-9BEE-09860C05F2EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cardSender", "cardSender\cardSender.csproj", "{169A4AD1-FCCF-4829-9AA7-37E39F75661E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8A576B45-04F3-4811-9BEE-09860C05F2EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A576B45-04F3-4811-9BEE-09860C05F2EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A576B45-04F3-4811-9BEE-09860C05F2EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{169A4AD1-FCCF-4829-9AA7-37E39F75661E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{169A4AD1-FCCF-4829-9AA7-37E39F75661E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{169A4AD1-FCCF-4829-9AA7-37E39F75661E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{169A4AD1-FCCF-4829-9AA7-37E39F75661E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

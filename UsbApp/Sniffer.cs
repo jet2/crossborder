@@ -17,6 +17,9 @@ namespace UsbApp
         Dictionary<string, string> Persons;
         CrossRecord lastCrossing = new CrossRecord();
         XForm1 mainInstance;
+
+        WcfServer srv;
+
         public Sniffer(XForm1 mainInstance)
         {
             this.mainInstance = mainInstance;
@@ -191,7 +194,7 @@ namespace UsbApp
             // записываем информацию в базу данных
             using (SQLiteConnection Connect = new SQLiteConnection("Data Source=c:\\appkpp\\bufferdb.db;Version=3;New=False;"))
             {
-                string commandText = "INSERT INTO passages ([timestampUTC], [card], [IsOUT], [KPPID]) VALUES(@timestampUTC, @card, @IsOUT, @KPPID)";
+                string commandText = "INSERT INTO buffer_passage ([timestampUTC], [card], [IsOUT], [KPPID]) VALUES(@timestampUTC, @card, @IsOUT, @KPPID)";
                 SQLiteCommand Command = new SQLiteCommand(commandText, Connect);
 
                 Command.Parameters.AddWithValue("@timestampUTC", lastCrossing.timestampUTC);
@@ -247,8 +250,19 @@ namespace UsbApp
             {
                 MessageBox.Show(ex.ToString());
             }
+            
+            srv = new WcfServer();
+            srv.Start();
+            srv.Received += OnWCFReceived;
+            
         }
 
+        private void OnWCFReceived(object sender, DataReceivedEventArgs args)
+        {
+            byte[] decBytes1 = Encoding.ASCII.GetBytes(args.Data);
+            UsbLibrary.DataRecievedEventArgs argz = new UsbLibrary.DataRecievedEventArgs(decBytes1);
+            usb_OnDataRecieved(sender, argz);
+        }
         //public static void Main()
         //{
         //    byte[] bytes = Encoding.ASCII.GetBytes("ABC123");

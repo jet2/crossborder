@@ -69,7 +69,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"timestampUTC\":100,\r\n    \"card\":\"12 345\",\r\n    \"tabnom\":45066,\r\n    \"isOut\":0,\r\n    \"kppId\":\"kpp26-pc\"\r\n}\r\n",
+					"raw": "{\r\n    \"timestampUTC\":100,\r\n    \"card\":\"12 345\",\r\n    \"tabnom\":45066,\r\n    \"isOut\":0,\r\n    \"isManual\":\"0\",\r\n    \"kppId\":\"kpp26-pc\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -90,7 +90,7 @@
 			"response": []
 		},
 		{
-			"name": "check_for_update Работники обновились?",
+			"name": "update_ts Когда работники обновились timestamp?",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -107,13 +107,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{basepath}}/workers/updated",
+					"raw": "{{basepath}}/workers/update_ts",
 					"host": [
 						"{{basepath}}"
 					],
 					"path": [
 						"workers",
-						"updated"
+						"update_ts"
 					]
 				}
 			},
