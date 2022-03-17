@@ -15,7 +15,7 @@ namespace kppApp
     public partial class Sniffer : Form
     {
         Dictionary<string, string> Persons;
-        CrossRecord lastCrossing = new CrossRecord();
+        Passage lastCrossing = new Passage();
         XForm1 mainInstance;
 
         WcfServer srv;
@@ -170,7 +170,7 @@ namespace kppApp
             this.lb_message.Items.Add("Some data was send");
         }
 
-        private void dbsend(int IsOut, int isManual)
+        private void write2sqlite(int IsOut, int isManual)
         {
             // записываем информацию в базу данных
             using (SQLiteConnection Connect = new SQLiteConnection("Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;"))
@@ -194,7 +194,7 @@ namespace kppApp
         {
             buttonInside.Enabled = false;
             buttonOutside.Enabled = false;
-            dbsend(0,0);
+            write2sqlite(0,0);
             this.Hide();
         }
 
@@ -202,7 +202,7 @@ namespace kppApp
         {
             buttonInside.Enabled = false;
             buttonOutside.Enabled = false;
-            dbsend(1,0);
+            write2sqlite(1,0);
             this.Hide();
         }
 
