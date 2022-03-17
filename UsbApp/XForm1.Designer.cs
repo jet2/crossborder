@@ -1,4 +1,4 @@
-﻿namespace UsbApp
+﻿namespace kppApp
 {
     partial class XForm1
     {
@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("История считываний", 1);
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("История считываний", 1);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(XForm1));
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "2",
             "3",
@@ -41,36 +41,35 @@
             "6",
             "Да",
             ""}, 3);
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("2", 0);
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("2", 0);
             System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("3", 1);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel5 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel7 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel6 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel8 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel9 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel10 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel11 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.threadWorkersUpdater = new System.ComponentModel.BackgroundWorker();
+            this.threadPassageSender = new System.ComponentModel.BackgroundWorker();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.listView1 = new System.Windows.Forms.ListView();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.label11 = new System.Windows.Forms.Label();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.listView2 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -80,28 +79,41 @@
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel5 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel6 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel7 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.label10 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.label12 = new System.Windows.Forms.Label();
+            this.timerWorkersUpdate = new System.Windows.Forms.Timer(this.components);
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
+            this.timerPassageSender = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -114,31 +126,90 @@
             this.toolStripStatusLabel4,
             this.toolStripStatusLabel5,
             this.toolStripStatusLabel7,
-            this.toolStripStatusLabel6});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 891);
+            this.toolStripStatusLabel6,
+            this.toolStripStatusLabel8,
+            this.toolStripStatusLabel9,
+            this.toolStripStatusLabel10,
+            this.toolStripStatusLabel11,
+            this.toolStripStatusLabel12});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 888);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1894, 38);
+            this.statusStrip1.Size = new System.Drawing.Size(1894, 41);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(158, 33);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(158, 36);
             this.toolStripStatusLabel1.Text = "Считыватель";
             // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(20, 32);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(20, 36);
             this.toolStripStatusLabel2.Text = ":";
             // 
             // toolStripStatusLabel3
             // 
             this.toolStripStatusLabel3.BackColor = System.Drawing.Color.Salmon;
             this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(129, 33);
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(129, 36);
             this.toolStripStatusLabel3.Text = "Отключен";
+            // 
+            // toolStripStatusLabel4
+            // 
+            this.toolStripStatusLabel4.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(26, 36);
+            this.toolStripStatusLabel4.Text = " ";
+            // 
+            // toolStripStatusLabel5
+            // 
+            this.toolStripStatusLabel5.Name = "toolStripStatusLabel5";
+            this.toolStripStatusLabel5.Size = new System.Drawing.Size(85, 36);
+            this.toolStripStatusLabel5.Text = "Кадры";
+            // 
+            // toolStripStatusLabel7
+            // 
+            this.toolStripStatusLabel7.Name = "toolStripStatusLabel7";
+            this.toolStripStatusLabel7.Size = new System.Drawing.Size(20, 36);
+            this.toolStripStatusLabel7.Text = ":";
+            // 
+            // toolStripStatusLabel6
+            // 
+            this.toolStripStatusLabel6.Name = "toolStripStatusLabel6";
+            this.toolStripStatusLabel6.Size = new System.Drawing.Size(234, 36);
+            this.toolStripStatusLabel6.Text = "1970-01-01 00:00:01";
+            // 
+            // toolStripStatusLabel8
+            // 
+            this.toolStripStatusLabel8.Name = "toolStripStatusLabel8";
+            this.toolStripStatusLabel8.Size = new System.Drawing.Size(0, 36);
+            // 
+            // toolStripStatusLabel9
+            // 
+            this.toolStripStatusLabel9.Name = "toolStripStatusLabel9";
+            this.toolStripStatusLabel9.Size = new System.Drawing.Size(22, 36);
+            this.toolStripStatusLabel9.Text = " ";
+            // 
+            // toolStripStatusLabel10
+            // 
+            this.toolStripStatusLabel10.Name = "toolStripStatusLabel10";
+            this.toolStripStatusLabel10.Size = new System.Drawing.Size(97, 36);
+            this.toolStripStatusLabel10.Text = "Сервер";
+            // 
+            // toolStripStatusLabel11
+            // 
+            this.toolStripStatusLabel11.Name = "toolStripStatusLabel11";
+            this.toolStripStatusLabel11.Size = new System.Drawing.Size(267, 36);
+            this.toolStripStatusLabel11.Text = "http://restapi.polus.com";
+            // 
+            // toolStripStatusLabel12
+            // 
+            this.toolStripStatusLabel12.Name = "toolStripStatusLabel12";
+            this.toolStripStatusLabel12.Size = new System.Drawing.Size(146, 36);
+            this.toolStripStatusLabel12.Text = "Недоступен";
             // 
             // splitContainer1
             // 
@@ -150,16 +221,27 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.BackColor = System.Drawing.SystemColors.WindowText;
+            this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
             this.splitContainer1.Panel1.Controls.Add(this.listView1);
             this.splitContainer1.Panel1.Controls.Add(this.comboBox1);
-            this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1894, 891);
+            this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
+            this.splitContainer1.Size = new System.Drawing.Size(1894, 888);
             this.splitContainer1.SplitterDistance = 306;
             this.splitContainer1.TabIndex = 2;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pictureBox1.Image = global::kppApp.Properties.Resources.polus;
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(306, 100);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 4;
+            this.pictureBox1.TabStop = false;
             // 
             // listView1
             // 
@@ -173,8 +255,8 @@
             this.listView1.HotTracking = true;
             this.listView1.HoverSelection = true;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
+            listViewItem3,
+            listViewItem4});
             this.listView1.LabelWrap = false;
             this.listView1.Location = new System.Drawing.Point(12, 216);
             this.listView1.MultiSelect = false;
@@ -207,231 +289,97 @@
             this.comboBox1.TabIndex = 1;
             this.comboBox1.Text = "Сергей Михайлов";
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pictureBox1.ErrorImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.ErrorImage")));
-            this.pictureBox1.Image = global::UsbApp.Properties.Resources.polus;
-            this.pictureBox1.InitialImage = global::UsbApp.Properties.Resources.polus;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(306, 95);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            // 
-            // splitContainer2
-            // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.panel1);
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
-            this.splitContainer2.Size = new System.Drawing.Size(1584, 891);
-            this.splitContainer2.SplitterDistance = 77;
-            this.splitContainer2.TabIndex = 2;
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.SystemColors.Info;
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.MaximumSize = new System.Drawing.Size(0, 77);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1584, 77);
-            this.panel1.TabIndex = 2;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(16, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(532, 55);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Контроль регистрации";
-            // 
             // tabControl1
             // 
             this.tabControl1.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.ItemSize = new System.Drawing.Size(10, 10);
+            this.tabControl1.ItemSize = new System.Drawing.Size(100, 50);
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1584, 810);
+            this.tabControl1.Size = new System.Drawing.Size(1584, 888);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl1.TabIndex = 1;
             // 
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.tabPage1.Controls.Add(this.panel3);
             this.tabPage1.Controls.Add(this.button3);
             this.tabPage1.Controls.Add(this.button2);
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.listView2);
             this.tabPage1.Controls.Add(this.label10);
             this.tabPage1.Controls.Add(this.panel2);
-            this.tabPage1.Location = new System.Drawing.Point(4, 14);
+            this.tabPage1.Location = new System.Drawing.Point(4, 54);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1576, 792);
+            this.tabPage1.Size = new System.Drawing.Size(1576, 830);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.Text = "Главное";
             // 
-            // tabPage2
+            // panel3
             // 
-            this.tabPage2.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            this.tabPage2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.tabPage2.CausesValidation = false;
-            this.tabPage2.Location = new System.Drawing.Point(4, 14);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1576, 793);
-            this.tabPage2.TabIndex = 1;
+            this.panel3.BackColor = System.Drawing.SystemColors.Info;
+            this.panel3.Controls.Add(this.label11);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(3, 3);
+            this.panel3.MaximumSize = new System.Drawing.Size(0, 77);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1570, 77);
+            this.panel3.TabIndex = 6;
             // 
-            // panel2
+            // label11
             // 
-            this.panel2.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel2.Controls.Add(this.tableLayoutPanel1);
-            this.panel2.Location = new System.Drawing.Point(1083, 47);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(452, 224);
-            this.panel2.TabIndex = 0;
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label11.Location = new System.Drawing.Point(16, 9);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(532, 55);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "Контроль регистрации";
             // 
-            // tableLayoutPanel1
+            // button3
             // 
-            this.tableLayoutPanel1.BackColor = System.Drawing.Color.White;
-            this.tableLayoutPanel1.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.label7, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label9, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label8, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label6, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label5, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label3, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(452, 224);
-            this.tableLayoutPanel1.TabIndex = 0;
+            this.button3.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button3.Font = new System.Drawing.Font("Arial", 13.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button3.ForeColor = System.Drawing.Color.Green;
+            this.button3.Location = new System.Drawing.Point(72, 103);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(366, 80);
+            this.button3.TabIndex = 5;
+            this.button3.Text = "🡹 Создать выезд";
+            this.button3.UseVisualStyleBackColor = false;
             // 
-            // label2
+            // button2
             // 
-            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Location = new System.Drawing.Point(4, 1);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(218, 54);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Время регистрации";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.button2.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.Font = new System.Drawing.Font("Arial", 13.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button2.ForeColor = System.Drawing.Color.Green;
+            this.button2.Location = new System.Drawing.Point(72, 246);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(366, 80);
+            this.button2.TabIndex = 4;
+            this.button2.Text = "🡻 Создать въезд";
+            this.button2.UseVisualStyleBackColor = false;
             // 
-            // label3
+            // button1
             // 
-            this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label3.Location = new System.Drawing.Point(229, 1);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(219, 54);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "00:00:01";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label4
-            // 
-            this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label4.Location = new System.Drawing.Point(4, 56);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(218, 54);
-            this.label4.TabIndex = 2;
-            this.label4.Text = "ФИО";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // label5
-            // 
-            this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label5.ForeColor = System.Drawing.Color.Red;
-            this.label5.Location = new System.Drawing.Point(229, 56);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(219, 54);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "⚠";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label6
-            // 
-            this.label6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label6.Location = new System.Drawing.Point(4, 111);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(218, 54);
-            this.label6.TabIndex = 4;
-            this.label6.Text = "Табельный номер";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // label8
-            // 
-            this.label8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label8.Location = new System.Drawing.Point(4, 166);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(218, 57);
-            this.label8.TabIndex = 6;
-            this.label8.Text = "Номер карты";
-            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // label9
-            // 
-            this.label9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label9.Location = new System.Drawing.Point(229, 166);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(219, 57);
-            this.label9.TabIndex = 7;
-            this.label9.Text = "55 7896";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label7
-            // 
-            this.label7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label7.ForeColor = System.Drawing.Color.Red;
-            this.label7.Location = new System.Drawing.Point(229, 111);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(219, 54);
-            this.label7.TabIndex = 8;
-            this.label7.Text = "⚠";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label10
-            // 
-            this.label10.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label10.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label10.Location = new System.Drawing.Point(521, 47);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(497, 80);
-            this.label10.TabIndex = 1;
-            this.label10.Text = "Счетчик событий: 10";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.button1.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Tahoma", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.Color.Green;
+            this.button1.Location = new System.Drawing.Point(621, 246);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(273, 80);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "↺ Сброс🡻";
+            this.button1.UseVisualStyleBackColor = false;
             // 
             // listView2
             // 
@@ -449,12 +397,12 @@
             this.listView2.HideSelection = false;
             this.listView2.HotTracking = true;
             this.listView2.HoverSelection = true;
-            listViewItem4.UseItemStyleForSubItems = false;
+            listViewItem6.UseItemStyleForSubItems = false;
             this.listView2.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4,
+            listViewItem5,
+            listViewItem6,
             listViewItem7});
-            this.listView2.Location = new System.Drawing.Point(22, 323);
+            this.listView2.Location = new System.Drawing.Point(29, 366);
             this.listView2.MultiSelect = false;
             this.listView2.Name = "listView2";
             this.listView2.ShowGroups = false;
@@ -467,7 +415,7 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "№";
-            this.columnHeader1.Width = 135;
+            this.columnHeader1.Width = 69;
             // 
             // columnHeader2
             // 
@@ -514,68 +462,211 @@
             this.imageList2.Images.SetKeyName(2, "pencil.jpg");
             this.imageList2.Images.SetKeyName(3, "sandwatch.jpg");
             // 
-            // button1
+            // label10
             // 
-            this.button1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Tahoma", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.ForeColor = System.Drawing.Color.Green;
-            this.button1.Location = new System.Drawing.Point(633, 191);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(273, 80);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "↺ Сброс";
-            this.button1.UseVisualStyleBackColor = false;
+            this.label10.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.label10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label10.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label10.Location = new System.Drawing.Point(523, 103);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(497, 80);
+            this.label10.TabIndex = 1;
+            this.label10.Text = "Счетчик событий: 10";
+            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // button2
+            // panel2
             // 
-            this.button2.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Font = new System.Drawing.Font("Tahoma", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.ForeColor = System.Drawing.Color.Green;
-            this.button2.Location = new System.Drawing.Point(85, 191);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(366, 80);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "🡻 Создать въезд";
-            this.button2.UseVisualStyleBackColor = false;
+            this.panel2.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel2.Controls.Add(this.tableLayoutPanel1);
+            this.panel2.Location = new System.Drawing.Point(1083, 102);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(452, 224);
+            this.panel2.TabIndex = 0;
             // 
-            // button3
+            // tableLayoutPanel1
             // 
-            this.button3.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button3.Font = new System.Drawing.Font("Tahoma", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.ForeColor = System.Drawing.Color.Green;
-            this.button3.Location = new System.Drawing.Point(85, 47);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(366, 80);
-            this.button3.TabIndex = 5;
-            this.button3.Text = "🡹 Создать выезд";
-            this.button3.UseVisualStyleBackColor = false;
+            this.tableLayoutPanel1.BackColor = System.Drawing.Color.White;
+            this.tableLayoutPanel1.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.label7, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.label9, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label8, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label6, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.label5, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label3, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(452, 224);
+            this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // toolStripStatusLabel4
+            // label7
             // 
-            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
-            this.toolStripStatusLabel4.Size = new System.Drawing.Size(22, 33);
-            this.toolStripStatusLabel4.Text = " ";
+            this.label7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label7.ForeColor = System.Drawing.Color.Red;
+            this.label7.Location = new System.Drawing.Point(229, 111);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(219, 54);
+            this.label7.TabIndex = 8;
+            this.label7.Text = "⚠";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // toolStripStatusLabel5
+            // label9
             // 
-            this.toolStripStatusLabel5.Name = "toolStripStatusLabel5";
-            this.toolStripStatusLabel5.Size = new System.Drawing.Size(85, 33);
-            this.toolStripStatusLabel5.Text = "Кадры";
+            this.label9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label9.Location = new System.Drawing.Point(229, 166);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(219, 57);
+            this.label9.TabIndex = 7;
+            this.label9.Text = "55 7896";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // toolStripStatusLabel6
+            // label8
             // 
-            this.toolStripStatusLabel6.Name = "toolStripStatusLabel6";
-            this.toolStripStatusLabel6.Size = new System.Drawing.Size(234, 33);
-            this.toolStripStatusLabel6.Text = "1970-01-01 00:00:01";
+            this.label8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label8.Location = new System.Drawing.Point(4, 166);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(218, 57);
+            this.label8.TabIndex = 6;
+            this.label8.Text = "Номер карты";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // toolStripStatusLabel7
+            // label6
             // 
-            this.toolStripStatusLabel7.Name = "toolStripStatusLabel7";
-            this.toolStripStatusLabel7.Size = new System.Drawing.Size(20, 33);
-            this.toolStripStatusLabel7.Text = ":";
+            this.label6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label6.Location = new System.Drawing.Point(4, 111);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(218, 54);
+            this.label6.TabIndex = 4;
+            this.label6.Text = "Табельный номер";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label5
+            // 
+            this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label5.ForeColor = System.Drawing.Color.Red;
+            this.label5.Location = new System.Drawing.Point(229, 56);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(219, 54);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "⚠";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label4
+            // 
+            this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label4.Location = new System.Drawing.Point(4, 56);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(218, 54);
+            this.label4.TabIndex = 2;
+            this.label4.Text = "ФИО";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label3
+            // 
+            this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label3.Location = new System.Drawing.Point(229, 1);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(219, 54);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "00:00:01";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label2
+            // 
+            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label2.Location = new System.Drawing.Point(4, 1);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(218, 54);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Время регистрации";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.tabPage2.CausesValidation = false;
+            this.tabPage2.Controls.Add(this.panel1);
+            this.tabPage2.Location = new System.Drawing.Point(4, 54);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(1576, 830);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "История";
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.SystemColors.Info;
+            this.panel1.Controls.Add(this.label1);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(3, 3);
+            this.panel1.MaximumSize = new System.Drawing.Size(0, 77);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1570, 77);
+            this.panel1.TabIndex = 7;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label1.Location = new System.Drawing.Point(16, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(441, 55);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Просмотр истории";
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.panel4);
+            this.tabPage3.Location = new System.Drawing.Point(4, 54);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(1576, 830);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Ручное";
+            // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.SystemColors.Info;
+            this.panel4.Controls.Add(this.label12);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel4.Location = new System.Drawing.Point(3, 3);
+            this.panel4.MaximumSize = new System.Drawing.Size(0, 77);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1570, 77);
+            this.panel4.TabIndex = 8;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label12.Location = new System.Drawing.Point(16, 9);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(447, 55);
+            this.label12.TabIndex = 0;
+            this.label12.Text = "Создание события";
+            // 
+            // timerWorkersUpdate
+            // 
+            this.timerWorkersUpdate.Interval = 30000;
+            this.timerWorkersUpdate.Tick += new System.EventHandler(this.timerWorkersUpdate_Tick);
+            // 
+            // timerPassageSender
+            // 
+            this.timerPassageSender.Interval = 500;
+            this.timerPassageSender.Tick += new System.EventHandler(this.timerPassageSender_Tick);
             // 
             // XForm1
             // 
@@ -596,16 +687,18 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -616,19 +709,39 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private System.ComponentModel.BackgroundWorker backgroundWorker2;
+        private System.ComponentModel.BackgroundWorker threadWorkersUpdater;
+        private System.ComponentModel.BackgroundWorker threadPassageSender;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ImageList imageList1;
-        private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ImageList imageList2;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel5;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel6;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel7;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel8;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel9;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel10;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel11;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel12;
+        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ListView listView2;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
+        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label7;
@@ -639,22 +752,14 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ListView listView2;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.ColumnHeader columnHeader4;
-        private System.Windows.Forms.ColumnHeader columnHeader5;
-        private System.Windows.Forms.ColumnHeader columnHeader6;
-        private System.Windows.Forms.ColumnHeader columnHeader7;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.ImageList imageList2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel5;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel6;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel7;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Timer timerWorkersUpdate;
+        private System.Windows.Forms.Timer timer2;
+        private System.Windows.Forms.Timer timerPassageSender;
     }
 }

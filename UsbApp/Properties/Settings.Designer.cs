@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace UsbApp.Properties {
+namespace kppApp.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

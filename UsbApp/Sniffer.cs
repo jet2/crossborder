@@ -9,7 +9,7 @@ using UsbLibrary;
 using System.IO;
 using System.Data.SQLite;
 
-namespace UsbApp
+namespace kppApp
 {
 
     public partial class Sniffer : Form
@@ -139,25 +139,6 @@ namespace UsbApp
             }
             else
             {
-
-                //string rec_data = "Data: ";
-                //foreach (byte myData in args.data)
-                //{
-                //    if (myData.ToString().Length == 1)
-                //    {
-                //        rec_data += "00";
-                //    }
-
-                //    if (myData.ToString().Length == 2)
-                //    {
-                //        rec_data += "0";
-                //    }
-
-                //    rec_data += myData.ToString() + " ";
-                //}
-
-                //this.lb_read.Items.Insert(0, rec_data);
-                
                 byte[] bdata= new byte[100];
                 //args.data.CopyTo(bdata, 2);
                 Array.Copy(args.data, 1, bdata, 0, 100);
@@ -192,7 +173,7 @@ namespace UsbApp
         private void dbsend(int IsOut, int isManual)
         {
             // записываем информацию в базу данных
-            using (SQLiteConnection Connect = new SQLiteConnection("Data Source=c:\\appkpp\\bufferdb.db;Version=3;New=False;"))
+            using (SQLiteConnection Connect = new SQLiteConnection("Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;"))
             {
                 string commandText = "INSERT INTO buffer_passage ([timestampUTC], [card], [IsOUT], [KPPID]) VALUES(@timestampUTC, @card, @IsOUT, @KPPID)";
                 SQLiteCommand Command = new SQLiteCommand(commandText, Connect);
@@ -263,14 +244,7 @@ namespace UsbApp
             UsbLibrary.DataRecievedEventArgs argz = new UsbLibrary.DataRecievedEventArgs(decBytes1);
             usb_OnDataRecieved(sender, argz);
         }
-        //public static void Main()
-        //{
-        //    byte[] bytes = Encoding.ASCII.GetBytes("ABC123");
-        //    Console.WriteLine("Byte Array is: " + String.Join(" ", bytes));
 
-        //    string str = BytesToString(bytes);
-        //    Console.WriteLine("The String is: " + str);
-        //}
         public void UpdatePersons(Dictionary<string, string> persons){
             this.Persons = persons;
         }

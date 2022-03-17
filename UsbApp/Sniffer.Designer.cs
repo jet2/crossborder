@@ -1,4 +1,4 @@
-namespace UsbApp
+namespace kppApp
 {
     partial class Sniffer
     {
@@ -252,8 +252,7 @@ namespace UsbApp
             // 
             // Sniffer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.SystemColors.Desktop;
             this.ClientSize = new System.Drawing.Size(906, 841);
             this.Controls.Add(this.gb_filter);

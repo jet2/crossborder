@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace UsbApp
+namespace kppApp
 {
 
     public partial class XForm1 : Form
@@ -32,13 +32,13 @@ namespace UsbApp
             Persons = new Dictionary<string, string>();
             Persons.Clear();
 
-            using (var connection = new SQLiteConnection("Data Source=c:\\appkpp\\bufferdb.db;Version=3;New=False;"))
+            using (var connection = new SQLiteConnection("Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;"))
             {
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
-                    SELECT card, tabnom, fio, jobposition FROM persons
+                    SELECT card, tabnom, fio, job, isGuardian FROM buffer_workers
                 ";
 //                command.Parameters.AddWithValue("$card", "74 4669");
 
@@ -50,39 +50,12 @@ namespace UsbApp
                         var tab = reader.GetInt16(1);
                         var fio = reader.GetString(2);
                         var job = reader.GetString(3);
-                        Persons.Add($"{card}", $"Табельный №: {tab}\r\nФИО: {fio}\r\n Должность: {job}");
+                        var isGuardian = reader.GetInt16(1);
+                        Persons.Add($"{card}", $"Табельный №: {tab}\r\nФИО: {fio}\r\nДолжность: {job}\r\nСотрудникСБ: {isGuardian}");
                         //Console.WriteLine($"Hello, {name}!");
                     }
                 }
             }
-            //        using (var connection = new SqliteConnection("Data Source=c:\\appkpp\\buddb.db,"))
-            //        {
-            //            connection.Open();
-
-            //            var command = connection.CreateCommand();
-            //            command.CommandText =
-            //            @"
-            //    SELECT name
-            //    FROM user
-            //    WHERE id = $id
-            //";
-            //            command.Parameters.AddWithValue("$id", id);
-
-            //            using (var reader = command.ExecuteReader())
-            //            {
-            //                while (reader.Read())
-            //                {
-            //                    var name = reader.GetString(0);
-
-            //                    Console.WriteLine($"Hello, {name}!");
-            //                }
-            //            }
-            //        }
-
-
-            //Persons.Add("47 3354", $"Пикаленко\r\nЖайло\r\nКутепович\r\n51426\r\nГлавный конструктор");
-            // Persons.Add("74 4669", $"Ласкус\r\nВилен\r\nТранторович\r\n15111\r\nИнженер");
-
             mySnifferForm = new Sniffer(this);
             mySnifferForm.Left = this.Width - mySnifferForm.Width;
             mySnifferForm.Top = this.Height - mySnifferForm.Height;
@@ -126,5 +99,49 @@ namespace UsbApp
             this.toolStripStatusLabel3.BackColor = Color.PaleGreen;
         }
 
+        private void timerWorkersUpdate_Tick(object sender, EventArgs e)
+        {
+            timerWorkersUpdate.Enabled = false;
+            threadWorkersUpdater.DoWork += updateWorkers;
+            threadWorkersUpdater.RunWorkerCompleted += updateWorkers_ResultHandler;
+            threadWorkersUpdater.RunWorkerAsync(1000);
+        }
+
+        private void updateWorkers()
+        {
+
+            // restsharp
+            // DB Загрузка timestampUTC из sqlite updated
+            // REST Загрузка timestampUTC из updated
+            // сравнение -> разное -> вызываем REST Workers и загружаем json в sqlite
+            // сравнение -> одинаковое -> выход 
+            // результат всегда успех
+        }
+
+        private void updateWorkers_ResultHandler()
+        {
+            timerWorkersUpdate.Enabled = true;
+        }
+
+        private void sendPassage()
+        {
+            // restsharp
+            // выбираем первый неотправленный passage и если массив непустой - отправялем через rest
+            // если успешно отправлось - помечаем passageID отправленным и обновляем главную таблицу
+        }
+
+        private void sendPassage_ResultHandler()
+        {
+            timerPassageSender.Enabled = true;
+
+        }
+
+        private void timerPassageSender_Tick(object sender, EventArgs e)
+        {
+            timerPassageSender.Enabled = false;
+            threadPassageSender.DoWork += sendPassage;
+            threadPassageSender.RunWorkerCompleted += sendPassage_ResultHandler;
+            threadPassageSender.RunWorkerAsync(1000);
+        }
     }
 }
