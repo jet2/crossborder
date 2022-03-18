@@ -392,6 +392,9 @@
             // listView2
             // 
             this.listView2.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.listView2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listView2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
@@ -401,6 +404,7 @@
             this.columnHeader5,
             this.columnHeader6,
             this.columnHeader7});
+            this.listView2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.listView2.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listView2.HideSelection = false;
             this.listView2.HotTracking = true;
@@ -693,6 +697,9 @@
             // listView3
             // 
             this.listView3.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.listView3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listView3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.listView3.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader8,
@@ -703,6 +710,7 @@
             this.columnHeader12,
             this.columnHeader13,
             this.columnHeader14});
+            this.listView3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.listView3.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listView3.HideSelection = false;
             this.listView3.HotTracking = true;
@@ -711,7 +719,7 @@
             this.listView3.MultiSelect = false;
             this.listView3.Name = "listView3";
             this.listView3.ShowGroups = false;
-            this.listView3.Size = new System.Drawing.Size(1530, 622);
+            this.listView3.Size = new System.Drawing.Size(1530, 655);
             this.listView3.SmallImageList = this.imageList2;
             this.listView3.TabIndex = 9;
             this.listView3.UseCompatibleStateImageBehavior = false;

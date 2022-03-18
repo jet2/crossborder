@@ -150,6 +150,7 @@ namespace kppApp
             // buttonOutside
             // 
             this.buttonOutside.Enabled = false;
+            this.buttonOutside.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.buttonOutside.ForeColor = System.Drawing.Color.Black;
             this.buttonOutside.Location = new System.Drawing.Point(444, 33);
             this.buttonOutside.Name = "buttonOutside";
@@ -162,6 +163,7 @@ namespace kppApp
             // buttonInside
             // 
             this.buttonInside.Enabled = false;
+            this.buttonInside.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.buttonInside.ForeColor = System.Drawing.Color.Black;
             this.buttonInside.Location = new System.Drawing.Point(23, 33);
             this.buttonInside.Name = "buttonInside";
@@ -192,6 +194,7 @@ namespace kppApp
             // buttonGuardo
             // 
             this.buttonGuardo.Enabled = false;
+            this.buttonGuardo.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.buttonGuardo.ForeColor = System.Drawing.Color.Black;
             this.buttonGuardo.Location = new System.Drawing.Point(444, 132);
             this.buttonGuardo.Name = "buttonGuardo";
@@ -203,6 +206,7 @@ namespace kppApp
             // 
             // buttonFail
             // 
+            this.buttonFail.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.buttonFail.ForeColor = System.Drawing.Color.Black;
             this.buttonFail.Location = new System.Drawing.Point(23, 132);
             this.buttonFail.Name = "buttonFail";
@@ -214,7 +218,7 @@ namespace kppApp
             // 
             // textBox1
             // 
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.textBox1.Location = new System.Drawing.Point(23, 231);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";

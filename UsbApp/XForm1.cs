@@ -534,6 +534,10 @@ namespace kppApp
                         cnt++;
                     }
                 }
+                else
+                {
+                    MessageBox.Show($"Событий для КПП {Environment.MachineName} - не найдено!");
+                }
             }
             finally
             {
