@@ -447,7 +447,7 @@ namespace kppApp
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string qry_clean_delivered = @"delete from
+            string qry_clean_delivered = @"delete 
                 FROM buffer_passage
                 where isDelivered=1";
 
