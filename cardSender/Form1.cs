@@ -22,10 +22,15 @@ namespace cardSender
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (comboBox1.Text == "")
+            {
+                label1.Text = $"Пустое не послать";
+                return;
+            }
             label1.Text = $"Пытаемся послать";
             try
             {
-                string buf = Convert.ToChar(3)  + textBox1.Text.PadRight(200, '\0');
+                string buf = Convert.ToChar(3)  + comboBox1.Text.PadRight(200, '\0');
                 xcli.Send(buf); 
             }
             catch(System.ServiceModel.EndpointNotFoundException ex){
