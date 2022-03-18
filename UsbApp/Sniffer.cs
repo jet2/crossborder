@@ -14,7 +14,8 @@ namespace kppApp
 
     public partial class Sniffer : Form
     {
-        Dictionary<string, string> Persons;
+        //Dictionary<string, string> Persons;
+        Dictionary<string, WorkerPerson> PersonsStructs;
         Passage lastCrossing = new Passage();
         XForm1 mainInstance;
 
@@ -151,12 +152,17 @@ namespace kppApp
                     lastCrossing.card = xxx;
                     this.lb_read.Items.Insert(0, xxx+" ("+ xxx.Length.ToString()+")");
                     string PersDesc = "Карта не найдена!";
-                    if (Persons.ContainsKey(xxx))
+                    WorkerPerson myWP; 
+                    if (PersonsStructs.ContainsKey(xxx))
                     {
-                        PersDesc = Persons[xxx];
+                        myWP = PersonsStructs[xxx];
+                        var guardo = myWP.isGuardian == 1 ? "Да" : "Нет";
+                        PersDesc = $"Табельный №: {myWP.tabnom}\r\nФИО: {myWP.fio}\r\nДолжность: {myWP.job}\r\nБезопасник: {guardo}";
+
+                        lastCrossing.tabnom = myWP.tabnom;
                     }
 
-                    textBox1.Text = xxx + "\r\n" + PersDesc;
+                    textBox1.Text = "Карта №"+ xxx + "\r\n" + PersDesc;
                     this.Show();
                     buttonInside.Enabled = true;
                     buttonOutside.Enabled = true;
@@ -175,11 +181,12 @@ namespace kppApp
             // записываем информацию в базу данных
             using (SQLiteConnection Connect = new SQLiteConnection("Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;"))
             {
-                string commandText = "INSERT INTO buffer_passage ([timestampUTC], [card], [IsOUT], [KPPID]) VALUES(@timestampUTC, @card, @IsOUT, @KPPID)";
+                string commandText = @"INSERT INTO buffer_passage ([timestampUTC], [card], [IsOUT], [KPPID],[tabnom]) 
+                                       VALUES(@timestampUTC, @card, @IsOUT, @KPPID,@tabnom)";
                 SQLiteCommand Command = new SQLiteCommand(commandText, Connect);
-
                 Command.Parameters.AddWithValue("@timestampUTC", lastCrossing.timestampUTC);
                 Command.Parameters.AddWithValue("@card", lastCrossing.card);
+                Command.Parameters.AddWithValue("@tabnom", lastCrossing.tabnom);
                 Command.Parameters.AddWithValue("@IsOut", IsOut);
                 Command.Parameters.AddWithValue("@KPPID", Environment.MachineName);
                 Command.Parameters.AddWithValue("@isManual", isManual);
@@ -245,8 +252,10 @@ namespace kppApp
             usb_OnDataRecieved(sender, argz);
         }
 
-        public void UpdatePersons(Dictionary<string, string> persons){
-            this.Persons = persons;
+        public void UpdatePersons( Dictionary<string, WorkerPerson> personsstructs)
+        {
+            //this.Persons = persons;
+            this.PersonsStructs = personsstructs;
         }
 
     }

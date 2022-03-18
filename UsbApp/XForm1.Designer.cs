@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("История считываний", 1);
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("История считываний", 1);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(XForm1));
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "2",
             "3",
@@ -41,8 +41,8 @@
             "6",
             "Да",
             ""}, 3);
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("2", 0);
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("3", 1);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("2", 0);
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("3", 1);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -54,7 +54,7 @@
             this.toolStripStatusLabel8 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel9 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel10 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel11 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.restapi_path_label = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
             this.threadWorkersUpdater = new System.ComponentModel.BackgroundWorker();
             this.threadPassageSender = new System.ComponentModel.BackgroundWorker();
@@ -130,7 +130,7 @@
             this.toolStripStatusLabel8,
             this.toolStripStatusLabel9,
             this.toolStripStatusLabel10,
-            this.toolStripStatusLabel11,
+            this.restapi_path_label,
             this.toolStripStatusLabel12});
             this.statusStrip1.Location = new System.Drawing.Point(0, 888);
             this.statusStrip1.Name = "statusStrip1";
@@ -199,11 +199,11 @@
             this.toolStripStatusLabel10.Size = new System.Drawing.Size(97, 36);
             this.toolStripStatusLabel10.Text = "Сервер";
             // 
-            // toolStripStatusLabel11
+            // restapi_path_label
             // 
-            this.toolStripStatusLabel11.Name = "toolStripStatusLabel11";
-            this.toolStripStatusLabel11.Size = new System.Drawing.Size(267, 36);
-            this.toolStripStatusLabel11.Text = "http://restapi.polus.com";
+            this.restapi_path_label.Name = "restapi_path_label";
+            this.restapi_path_label.Size = new System.Drawing.Size(177, 36);
+            this.restapi_path_label.Text = "http://localhost";
             // 
             // toolStripStatusLabel12
             // 
@@ -255,8 +255,8 @@
             this.listView1.HotTracking = true;
             this.listView1.HoverSelection = true;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
+            listViewItem6,
+            listViewItem7});
             this.listView1.LabelWrap = false;
             this.listView1.Location = new System.Drawing.Point(12, 216);
             this.listView1.MultiSelect = false;
@@ -380,6 +380,7 @@
             this.button1.TabIndex = 3;
             this.button1.Text = "↺ Сброс🡻";
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // listView2
             // 
@@ -397,16 +398,16 @@
             this.listView2.HideSelection = false;
             this.listView2.HotTracking = true;
             this.listView2.HoverSelection = true;
-            listViewItem4.UseItemStyleForSubItems = false;
+            listViewItem2.UseItemStyleForSubItems = false;
             this.listView2.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4,
-            listViewItem5});
-            this.listView2.Location = new System.Drawing.Point(29, 366);
+            listViewItem1,
+            listViewItem2,
+            listViewItem8});
+            this.listView2.Location = new System.Drawing.Point(29, 344);
             this.listView2.MultiSelect = false;
             this.listView2.Name = "listView2";
             this.listView2.ShowGroups = false;
-            this.listView2.Size = new System.Drawing.Size(1530, 451);
+            this.listView2.Size = new System.Drawing.Size(1530, 465);
             this.listView2.SmallImageList = this.imageList2;
             this.listView2.TabIndex = 2;
             this.listView2.UseCompatibleStateImageBehavior = false;
@@ -433,13 +434,13 @@
             // 
             this.columnHeader4.Text = "ФИО";
             this.columnHeader4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader4.Width = 424;
+            this.columnHeader4.Width = 331;
             // 
             // columnHeader5
             // 
             this.columnHeader5.Text = "Дата события";
             this.columnHeader5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader5.Width = 193;
+            this.columnHeader5.Width = 282;
             // 
             // columnHeader6
             // 
@@ -457,10 +458,10 @@
             // 
             this.imageList2.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList2.ImageStream")));
             this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList2.Images.SetKeyName(0, "ok.jpg");
-            this.imageList2.Images.SetKeyName(1, "redwarn.jpg");
-            this.imageList2.Images.SetKeyName(2, "pencil.jpg");
-            this.imageList2.Images.SetKeyName(3, "sandwatch.jpg");
+            this.imageList2.Images.SetKeyName(0, "sandwatch.jpg");
+            this.imageList2.Images.SetKeyName(1, "ok.jpg");
+            this.imageList2.Images.SetKeyName(2, "redwarn.jpg");
+            this.imageList2.Images.SetKeyName(3, "pencil.jpg");
             // 
             // label10
             // 
@@ -474,6 +475,7 @@
             this.label10.TabIndex = 1;
             this.label10.Text = "Счетчик событий: 10";
             this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label10.Click += new System.EventHandler(this.label10_Click);
             this.label10.DoubleClick += new System.EventHandler(this.label10_DoubleClick);
             // 
             // panel2
@@ -666,7 +668,7 @@
             // 
             // timerPassageSender
             // 
-            this.timerPassageSender.Interval = 500;
+            this.timerPassageSender.Interval = 2500;
             this.timerPassageSender.Tick += new System.EventHandler(this.timerPassageSender_Tick);
             // 
             // XForm1
@@ -724,7 +726,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel8;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel9;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel10;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel11;
+        private System.Windows.Forms.ToolStripStatusLabel restapi_path_label;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel12;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.TabControl tabControl1;
