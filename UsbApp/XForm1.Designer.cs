@@ -29,20 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("История считываний", 1);
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("История считываний", 1);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(XForm1));
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "Да",
-            ""}, 3);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("2", 0);
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("3", 1);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -62,7 +51,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.listView1 = new System.Windows.Forms.ListView();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.dutyBox = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -91,6 +80,24 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.tabnomTextSelect = new System.Windows.Forms.TextBox();
+            this.cardTextSelect = new System.Windows.Forms.TextBox();
+            this.endPickerSelect = new System.Windows.Forms.DateTimePicker();
+            this.startBtnSelect = new System.Windows.Forms.Button();
+            this.listView3 = new System.Windows.Forms.ListView();
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.begPickerSelect = new System.Windows.Forms.DateTimePicker();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -223,7 +230,7 @@
             this.splitContainer1.Panel1.BackColor = System.Drawing.SystemColors.WindowText;
             this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
             this.splitContainer1.Panel1.Controls.Add(this.listView1);
-            this.splitContainer1.Panel1.Controls.Add(this.comboBox1);
+            this.splitContainer1.Panel1.Controls.Add(this.dutyBox);
             // 
             // splitContainer1.Panel2
             // 
@@ -255,8 +262,8 @@
             this.listView1.HotTracking = true;
             this.listView1.HoverSelection = true;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem6,
-            listViewItem7});
+            listViewItem3,
+            listViewItem4});
             this.listView1.LabelWrap = false;
             this.listView1.Location = new System.Drawing.Point(12, 216);
             this.listView1.MultiSelect = false;
@@ -278,16 +285,16 @@
             this.imageList1.Images.SetKeyName(0, "qr.jpg");
             this.imageList1.Images.SetKeyName(1, "story.jpg");
             // 
-            // comboBox1
+            // dutyBox
             // 
-            this.comboBox1.BackColor = System.Drawing.SystemColors.MenuText;
-            this.comboBox1.ForeColor = System.Drawing.SystemColors.Window;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(23, 158);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(260, 33);
-            this.comboBox1.TabIndex = 1;
-            this.comboBox1.Text = "Сергей Михайлов";
+            this.dutyBox.BackColor = System.Drawing.SystemColors.MenuText;
+            this.dutyBox.ForeColor = System.Drawing.SystemColors.Window;
+            this.dutyBox.FormattingEnabled = true;
+            this.dutyBox.Location = new System.Drawing.Point(23, 158);
+            this.dutyBox.Name = "dutyBox";
+            this.dutyBox.Size = new System.Drawing.Size(260, 33);
+            this.dutyBox.TabIndex = 1;
+            this.dutyBox.Text = "Сергей Михайлов";
             // 
             // tabControl1
             // 
@@ -398,11 +405,6 @@
             this.listView2.HideSelection = false;
             this.listView2.HotTracking = true;
             this.listView2.HoverSelection = true;
-            listViewItem2.UseItemStyleForSubItems = false;
-            this.listView2.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem8});
             this.listView2.Location = new System.Drawing.Point(29, 344);
             this.listView2.MultiSelect = false;
             this.listView2.Name = "listView2";
@@ -601,6 +603,16 @@
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.tabPage2.CausesValidation = false;
+            this.tabPage2.Controls.Add(this.label16);
+            this.tabPage2.Controls.Add(this.label15);
+            this.tabPage2.Controls.Add(this.label14);
+            this.tabPage2.Controls.Add(this.label13);
+            this.tabPage2.Controls.Add(this.tabnomTextSelect);
+            this.tabPage2.Controls.Add(this.cardTextSelect);
+            this.tabPage2.Controls.Add(this.endPickerSelect);
+            this.tabPage2.Controls.Add(this.startBtnSelect);
+            this.tabPage2.Controls.Add(this.listView3);
+            this.tabPage2.Controls.Add(this.begPickerSelect);
             this.tabPage2.Controls.Add(this.panel1);
             this.tabPage2.Location = new System.Drawing.Point(4, 54);
             this.tabPage2.Name = "tabPage2";
@@ -608,6 +620,157 @@
             this.tabPage2.Size = new System.Drawing.Size(1576, 830);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "История";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(1050, 108);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(76, 25);
+            this.label16.TabIndex = 13;
+            this.label16.Text = "Таб №";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(736, 108);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(72, 25);
+            this.label15.TabIndex = 13;
+            this.label15.Text = "Карта";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(346, 106);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(122, 25);
+            this.label14.TabIndex = 13;
+            this.label14.Text = "Окончание";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(14, 107);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(86, 25);
+            this.label13.TabIndex = 13;
+            this.label13.Text = "Начало";
+            // 
+            // tabnomTextSelect
+            // 
+            this.tabnomTextSelect.Location = new System.Drawing.Point(1139, 104);
+            this.tabnomTextSelect.Name = "tabnomTextSelect";
+            this.tabnomTextSelect.Size = new System.Drawing.Size(173, 31);
+            this.tabnomTextSelect.TabIndex = 12;
+            // 
+            // cardTextSelect
+            // 
+            this.cardTextSelect.Location = new System.Drawing.Point(814, 104);
+            this.cardTextSelect.Name = "cardTextSelect";
+            this.cardTextSelect.Size = new System.Drawing.Size(173, 31);
+            this.cardTextSelect.TabIndex = 12;
+            // 
+            // endPickerSelect
+            // 
+            this.endPickerSelect.CustomFormat = "dd.MM.yy HH:mm";
+            this.endPickerSelect.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.endPickerSelect.Location = new System.Drawing.Point(474, 102);
+            this.endPickerSelect.Name = "endPickerSelect";
+            this.endPickerSelect.Size = new System.Drawing.Size(220, 31);
+            this.endPickerSelect.TabIndex = 11;
+            // 
+            // startBtnSelect
+            // 
+            this.startBtnSelect.Location = new System.Drawing.Point(1328, 98);
+            this.startBtnSelect.Name = "startBtnSelect";
+            this.startBtnSelect.Size = new System.Drawing.Size(219, 42);
+            this.startBtnSelect.TabIndex = 10;
+            this.startBtnSelect.Text = "Загрузить";
+            this.startBtnSelect.UseVisualStyleBackColor = true;
+            this.startBtnSelect.Click += new System.EventHandler(this.startBtnSelect_Click);
+            // 
+            // listView3
+            // 
+            this.listView3.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.listView3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.listView3.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader8,
+            this.columnHeader9,
+            this.columnHeader10,
+            this.columnHeader11,
+            this.columnHeader15,
+            this.columnHeader12,
+            this.columnHeader13,
+            this.columnHeader14});
+            this.listView3.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listView3.HideSelection = false;
+            this.listView3.HotTracking = true;
+            this.listView3.HoverSelection = true;
+            this.listView3.Location = new System.Drawing.Point(17, 151);
+            this.listView3.MultiSelect = false;
+            this.listView3.Name = "listView3";
+            this.listView3.ShowGroups = false;
+            this.listView3.Size = new System.Drawing.Size(1530, 622);
+            this.listView3.SmallImageList = this.imageList2;
+            this.listView3.TabIndex = 9;
+            this.listView3.UseCompatibleStateImageBehavior = false;
+            this.listView3.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "№";
+            this.columnHeader8.Width = 69;
+            // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "№ карты";
+            this.columnHeader9.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnHeader9.Width = 130;
+            // 
+            // columnHeader10
+            // 
+            this.columnHeader10.Text = "Табельный №";
+            this.columnHeader10.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnHeader10.Width = 158;
+            // 
+            // columnHeader11
+            // 
+            this.columnHeader11.Text = "ФИО";
+            this.columnHeader11.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnHeader11.Width = 331;
+            // 
+            // columnHeader15
+            // 
+            this.columnHeader15.Text = "Должность";
+            this.columnHeader15.Width = 149;
+            // 
+            // columnHeader12
+            // 
+            this.columnHeader12.Text = "Дата события";
+            this.columnHeader12.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnHeader12.Width = 282;
+            // 
+            // columnHeader13
+            // 
+            this.columnHeader13.Text = "Тип события";
+            this.columnHeader13.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnHeader13.Width = 187;
+            // 
+            // columnHeader14
+            // 
+            this.columnHeader14.Text = "Ручной ввод";
+            this.columnHeader14.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnHeader14.Width = 191;
+            // 
+            // begPickerSelect
+            // 
+            this.begPickerSelect.CustomFormat = "dd.MM.yy HH:mm";
+            this.begPickerSelect.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.begPickerSelect.Location = new System.Drawing.Point(102, 102);
+            this.begPickerSelect.Name = "begPickerSelect";
+            this.begPickerSelect.Size = new System.Drawing.Size(222, 31);
+            this.begPickerSelect.TabIndex = 8;
             // 
             // panel1
             // 
@@ -697,6 +860,7 @@
             this.panel2.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.tabPage3.ResumeLayout(false);
@@ -715,7 +879,7 @@
         private System.ComponentModel.BackgroundWorker threadWorkersUpdater;
         private System.ComponentModel.BackgroundWorker threadPassageSender;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox dutyBox;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.ImageList imageList2;
@@ -764,5 +928,23 @@
         private System.Windows.Forms.Timer timerWorkersUpdate;
         private System.Windows.Forms.Timer timer2;
         private System.Windows.Forms.Timer timerPassageSender;
+        private System.Windows.Forms.ListView listView3;
+        private System.Windows.Forms.ColumnHeader columnHeader8;
+        private System.Windows.Forms.ColumnHeader columnHeader9;
+        private System.Windows.Forms.ColumnHeader columnHeader10;
+        private System.Windows.Forms.ColumnHeader columnHeader11;
+        private System.Windows.Forms.ColumnHeader columnHeader12;
+        private System.Windows.Forms.ColumnHeader columnHeader13;
+        private System.Windows.Forms.ColumnHeader columnHeader14;
+        private System.Windows.Forms.DateTimePicker begPickerSelect;
+        private System.Windows.Forms.ColumnHeader columnHeader15;
+        private System.Windows.Forms.DateTimePicker endPickerSelect;
+        private System.Windows.Forms.Button startBtnSelect;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox tabnomTextSelect;
+        private System.Windows.Forms.TextBox cardTextSelect;
     }
 }

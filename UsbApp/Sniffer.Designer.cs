@@ -29,41 +29,29 @@ namespace kppApp
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.lb_recieved = new System.Windows.Forms.Label();
             this.btn_send = new System.Windows.Forms.Button();
             this.tb_send = new System.Windows.Forms.TextBox();
             this.lb_vendor = new System.Windows.Forms.Label();
             this.btn_ok = new System.Windows.Forms.Button();
             this.lb_product = new System.Windows.Forms.Label();
             this.lb_senddata = new System.Windows.Forms.Label();
-            this.lb_messages = new System.Windows.Forms.Label();
             this.tb_vendor = new System.Windows.Forms.TextBox();
             this.tb_product = new System.Windows.Forms.TextBox();
             this.gb_filter = new System.Windows.Forms.GroupBox();
             this.buttonOutside = new System.Windows.Forms.Button();
             this.buttonInside = new System.Windows.Forms.Button();
-            this.lb_message = new System.Windows.Forms.ListBox();
             this.gb_details = new System.Windows.Forms.GroupBox();
+            this.buttonGuardo = new System.Windows.Forms.Button();
+            this.buttonFail = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.lb_read = new System.Windows.Forms.ListBox();
             this.usb = new UsbLibrary.UsbHidPort(this.components);
             this.gb_filter.SuspendLayout();
             this.gb_details.SuspendLayout();
             this.SuspendLayout();
             // 
-            // lb_recieved
-            // 
-            this.lb_recieved.AutoSize = true;
-            this.lb_recieved.Location = new System.Drawing.Point(458, 31);
-            this.lb_recieved.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.lb_recieved.Name = "lb_recieved";
-            this.lb_recieved.Size = new System.Drawing.Size(159, 25);
-            this.lb_recieved.TabIndex = 4;
-            this.lb_recieved.Text = "Recieved Data:";
-            // 
             // btn_send
             // 
-            this.btn_send.Location = new System.Drawing.Point(521, 121);
+            this.btn_send.Location = new System.Drawing.Point(614, 30);
             this.btn_send.Margin = new System.Windows.Forms.Padding(6);
             this.btn_send.Name = "btn_send";
             this.btn_send.Size = new System.Drawing.Size(96, 44);
@@ -74,7 +62,7 @@ namespace kppApp
             // 
             // tb_send
             // 
-            this.tb_send.Location = new System.Drawing.Point(265, 157);
+            this.tb_send.Location = new System.Drawing.Point(614, 86);
             this.tb_send.Margin = new System.Windows.Forms.Padding(6);
             this.tb_send.Name = "tb_send";
             this.tb_send.Size = new System.Drawing.Size(260, 31);
@@ -92,10 +80,10 @@ namespace kppApp
             // 
             // btn_ok
             // 
-            this.btn_ok.Location = new System.Drawing.Point(644, 83);
+            this.btn_ok.Location = new System.Drawing.Point(722, 30);
             this.btn_ok.Margin = new System.Windows.Forms.Padding(6);
             this.btn_ok.Name = "btn_ok";
-            this.btn_ok.Size = new System.Drawing.Size(150, 44);
+            this.btn_ok.Size = new System.Drawing.Size(106, 44);
             this.btn_ok.TabIndex = 7;
             this.btn_ok.Text = "OK";
             this.btn_ok.UseVisualStyleBackColor = true;
@@ -121,16 +109,6 @@ namespace kppApp
             this.lb_senddata.TabIndex = 5;
             this.lb_senddata.Text = "Send Data:";
             // 
-            // lb_messages
-            // 
-            this.lb_messages.AutoSize = true;
-            this.lb_messages.Location = new System.Drawing.Point(16, 31);
-            this.lb_messages.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.lb_messages.Name = "lb_messages";
-            this.lb_messages.Size = new System.Drawing.Size(161, 25);
-            this.lb_messages.TabIndex = 7;
-            this.lb_messages.Text = "Usb Messages:";
-            // 
             // tb_vendor
             // 
             this.tb_vendor.Location = new System.Drawing.Point(228, 37);
@@ -154,11 +132,12 @@ namespace kppApp
             this.gb_filter.Controls.Add(this.btn_ok);
             this.gb_filter.Controls.Add(this.lb_product);
             this.gb_filter.Controls.Add(this.lb_vendor);
+            this.gb_filter.Controls.Add(this.tb_send);
             this.gb_filter.Controls.Add(this.btn_send);
             this.gb_filter.Controls.Add(this.tb_vendor);
             this.gb_filter.Controls.Add(this.tb_product);
             this.gb_filter.ForeColor = System.Drawing.Color.White;
-            this.gb_filter.Location = new System.Drawing.Point(24, 23);
+            this.gb_filter.Location = new System.Drawing.Point(23, 474);
             this.gb_filter.Margin = new System.Windows.Forms.Padding(6);
             this.gb_filter.Name = "gb_filter";
             this.gb_filter.Padding = new System.Windows.Forms.Padding(6);
@@ -166,14 +145,15 @@ namespace kppApp
             this.gb_filter.TabIndex = 5;
             this.gb_filter.TabStop = false;
             this.gb_filter.Text = "Filter for Device:";
+            this.gb_filter.Visible = false;
             // 
             // buttonOutside
             // 
             this.buttonOutside.Enabled = false;
             this.buttonOutside.ForeColor = System.Drawing.Color.Black;
-            this.buttonOutside.Location = new System.Drawing.Point(444, 59);
+            this.buttonOutside.Location = new System.Drawing.Point(444, 33);
             this.buttonOutside.Name = "buttonOutside";
-            this.buttonOutside.Size = new System.Drawing.Size(373, 85);
+            this.buttonOutside.Size = new System.Drawing.Size(373, 75);
             this.buttonOutside.TabIndex = 9;
             this.buttonOutside.Text = "Наружу";
             this.buttonOutside.UseVisualStyleBackColor = true;
@@ -183,66 +163,68 @@ namespace kppApp
             // 
             this.buttonInside.Enabled = false;
             this.buttonInside.ForeColor = System.Drawing.Color.Black;
-            this.buttonInside.Location = new System.Drawing.Point(23, 59);
+            this.buttonInside.Location = new System.Drawing.Point(23, 33);
             this.buttonInside.Name = "buttonInside";
-            this.buttonInside.Size = new System.Drawing.Size(407, 85);
+            this.buttonInside.Size = new System.Drawing.Size(407, 75);
             this.buttonInside.TabIndex = 8;
             this.buttonInside.Text = "Внутрь";
             this.buttonInside.UseVisualStyleBackColor = true;
             this.buttonInside.Click += new System.EventHandler(this.button1_Click);
             // 
-            // lb_message
-            // 
-            this.lb_message.FormattingEnabled = true;
-            this.lb_message.ItemHeight = 25;
-            this.lb_message.Location = new System.Drawing.Point(189, 27);
-            this.lb_message.Margin = new System.Windows.Forms.Padding(6);
-            this.lb_message.Name = "lb_message";
-            this.lb_message.Size = new System.Drawing.Size(155, 29);
-            this.lb_message.TabIndex = 6;
-            // 
             // gb_details
             // 
+            this.gb_details.Controls.Add(this.gb_filter);
+            this.gb_details.Controls.Add(this.buttonGuardo);
+            this.gb_details.Controls.Add(this.buttonFail);
             this.gb_details.Controls.Add(this.buttonOutside);
             this.gb_details.Controls.Add(this.textBox1);
             this.gb_details.Controls.Add(this.buttonInside);
-            this.gb_details.Controls.Add(this.lb_read);
-            this.gb_details.Controls.Add(this.lb_messages);
-            this.gb_details.Controls.Add(this.lb_message);
-            this.gb_details.Controls.Add(this.lb_recieved);
             this.gb_details.ForeColor = System.Drawing.Color.White;
-            this.gb_details.Location = new System.Drawing.Point(24, 188);
+            this.gb_details.Location = new System.Drawing.Point(15, 15);
             this.gb_details.Margin = new System.Windows.Forms.Padding(6);
             this.gb_details.Name = "gb_details";
             this.gb_details.Padding = new System.Windows.Forms.Padding(6);
-            this.gb_details.Size = new System.Drawing.Size(856, 628);
+            this.gb_details.Size = new System.Drawing.Size(844, 628);
             this.gb_details.TabIndex = 6;
             this.gb_details.TabStop = false;
-            this.gb_details.Text = "Device Details:";
+            this.gb_details.Text = "Выбор действия:";
+            // 
+            // buttonGuardo
+            // 
+            this.buttonGuardo.Enabled = false;
+            this.buttonGuardo.ForeColor = System.Drawing.Color.Black;
+            this.buttonGuardo.Location = new System.Drawing.Point(444, 132);
+            this.buttonGuardo.Name = "buttonGuardo";
+            this.buttonGuardo.Size = new System.Drawing.Size(373, 75);
+            this.buttonGuardo.TabIndex = 10;
+            this.buttonGuardo.Text = "СБ";
+            this.buttonGuardo.UseVisualStyleBackColor = true;
+            this.buttonGuardo.Click += new System.EventHandler(this.button2_Click_1);
+            // 
+            // buttonFail
+            // 
+            this.buttonFail.ForeColor = System.Drawing.Color.Black;
+            this.buttonFail.Location = new System.Drawing.Point(23, 132);
+            this.buttonFail.Name = "buttonFail";
+            this.buttonFail.Size = new System.Drawing.Size(407, 75);
+            this.buttonFail.TabIndex = 10;
+            this.buttonFail.Text = "Ошибка";
+            this.buttonFail.UseVisualStyleBackColor = true;
+            this.buttonFail.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBox1.Location = new System.Drawing.Point(23, 150);
+            this.textBox1.Location = new System.Drawing.Point(23, 231);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(794, 451);
+            this.textBox1.Size = new System.Drawing.Size(794, 370);
             this.textBox1.TabIndex = 9;
-            // 
-            // lb_read
-            // 
-            this.lb_read.FormattingEnabled = true;
-            this.lb_read.ItemHeight = 25;
-            this.lb_read.Location = new System.Drawing.Point(629, 27);
-            this.lb_read.Margin = new System.Windows.Forms.Padding(6);
-            this.lb_read.Name = "lb_read";
-            this.lb_read.Size = new System.Drawing.Size(107, 29);
-            this.lb_read.TabIndex = 8;
             // 
             // usb
             // 
-            this.usb.ProductId = 81;
-            this.usb.VendorId = 1105;
+            this.usb.ProductId = 21187;
+            this.usb.VendorId = 1134;
             this.usb.OnSpecifiedDeviceArrived += new System.EventHandler(this.usb_OnSpecifiedDeviceArrived);
             this.usb.OnSpecifiedDeviceRemoved += new System.EventHandler(this.usb_OnSpecifiedDeviceRemoved);
             this.usb.OnDeviceArrived += new System.EventHandler(this.usb_OnDeviceArrived);
@@ -253,12 +235,10 @@ namespace kppApp
             // Sniffer
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.BackColor = System.Drawing.SystemColors.Desktop;
-            this.ClientSize = new System.Drawing.Size(906, 841);
-            this.Controls.Add(this.gb_filter);
+            this.BackColor = System.Drawing.Color.DimGray;
+            this.ClientSize = new System.Drawing.Size(886, 668);
             this.Controls.Add(this.gb_details);
             this.Controls.Add(this.lb_senddata);
-            this.Controls.Add(this.tb_send);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Location = new System.Drawing.Point(3740, 1900);
             this.Margin = new System.Windows.Forms.Padding(6);
@@ -278,25 +258,22 @@ namespace kppApp
         }
 
         #endregion
-
-        private System.Windows.Forms.Label lb_recieved;
         private System.Windows.Forms.Button btn_send;
         private System.Windows.Forms.TextBox tb_send;
         private System.Windows.Forms.Label lb_vendor;
         private System.Windows.Forms.Button btn_ok;
         private System.Windows.Forms.Label lb_product;
         private System.Windows.Forms.Label lb_senddata;
-        private System.Windows.Forms.Label lb_messages;
         private System.Windows.Forms.TextBox tb_vendor;
         private System.Windows.Forms.TextBox tb_product;
         private System.Windows.Forms.GroupBox gb_filter;
-        private System.Windows.Forms.ListBox lb_message;
         private System.Windows.Forms.GroupBox gb_details;
         private UsbLibrary.UsbHidPort usb;
-        private System.Windows.Forms.ListBox lb_read;
         private System.Windows.Forms.Button buttonOutside;
         private System.Windows.Forms.Button buttonInside;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button buttonGuardo;
+        private System.Windows.Forms.Button buttonFail;
     }
 }
 

@@ -20,8 +20,8 @@ namespace kppApp
         public static Dictionary<string, WorkerPerson> PersonsDictStruct;
 
         IniFile INI;
-        private string restServerAddr = "http://localhost:3002/";
-        private string sqlite_connectionstring = "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;";
+        private string restServerAddr = "http://localhost:3002";
+        internal string sqlite_connectionstring = "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;";
         private string statusCodeOK = "201";
         //WcfServer srv;
 
@@ -148,7 +148,7 @@ namespace kppApp
             mySnifferForm.Show();
             mySnifferForm.Hide();
             dictionaryWorkersUpdater();
-
+            label10_DoubleClick(this, e);
             threadWorkersUpdater.DoWork += updateWorkers;
             threadWorkersUpdater.RunWorkerCompleted += updateWorkers_ResultHandler;
             threadPassageSender.DoWork += sendPassage;
@@ -376,7 +376,7 @@ namespace kppApp
 
         }
 
-        private void label10_DoubleClick(object sender, EventArgs e)
+        public void label10_DoubleClick(object sender, EventArgs e)
         {
             while (listView2.Items.Count > 0) { listView2.Items.RemoveAt(0); };
             string qry_select_first_undelivered = @"SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual, isDelivered
@@ -430,8 +430,13 @@ namespace kppApp
                         dtDateTime = dtDateTime.AddSeconds(first_pass.timestampUTC).ToLocalTime();
                         string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
                         lvi.SubItems.Add(timeText);
-                        string myMan = first_pass.isOut == 0 ? "Вход" : "Выход";
-                        if (first_pass.isOut == 2) myMan = "Login";
+                        string myMan = "Вход";
+                        switch (first_pass.isOut)
+                        {
+                            case 1:{ myMan = "Выход";  break; };
+                            case 3: { myMan = "Ошибка"; break; };
+                            case 2: { myMan = "Авторизация"; break; };
+                        }
                         lvi.SubItems.Add($"{myMan}");
                         myMan = first_pass.isManual == 1 ? "Да" : "Нет";
                         lvi.SubItems.Add($"{myMan}");
@@ -459,6 +464,73 @@ namespace kppApp
                 command.ExecuteNonQuery();
             }
             label10_DoubleClick(sender, e);
+        }
+
+        public void setDuty(string fio)
+        {
+            dutyBox.Text = fio;
+        }
+
+        private void startBtnSelect_Click(object sender, EventArgs e)
+        {
+            DateTime dtbeg = begPickerSelect.Value;
+            long dtbegLong = (int)dtbeg.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            DateTime dtend = endPickerSelect.Value;
+            long dtendLong = (int)dtend.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            var client = new RestClient($"{restServerAddr}/passages/?tsbeg={dtbegLong}&tsend={dtendLong}&page=1&limit=20&kppid={Environment.MachineName}");
+            client.Timeout = 5000;
+            var request = new RestRequest(Method.GET);
+            IRestResponse response = client.Execute(request);
+            //textBoxJSON.Text = $"{dtbegLong}\r\n{dtendLong}\r\n" +  response.Content;
+
+
+            while (listView3.Items.Count > 0) { listView3.Items.RemoveAt(0); };
+
+
+            // заполняем список записей
+            List<Passage> remote_passages = JsonConvert.DeserializeObject<List<Passage>>(response.Content);
+
+            int cnt = 1;
+            if (remote_passages.Count > 0)
+            {
+                // каждую персону из списка вливаем в приемную таблицу
+                foreach (Passage first_pass in remote_passages)
+                {
+
+                    ListViewItem lvi = new ListViewItem();
+                    lvi.Text = $"{cnt}";
+                    lvi.SubItems.Add(first_pass.card);
+                    if (PersonsDictStruct.ContainsKey(first_pass.card))
+                    {
+                        lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].tabnom}");
+                        lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].fio}");
+                        lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].job}");
+                    }
+                    else
+                    {
+                        lvi.SubItems.Add("-");
+                        lvi.SubItems.Add("-");
+                        lvi.SubItems.Add("-");
+
+                    }
+                    System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+                    dtDateTime = dtDateTime.AddSeconds(first_pass.timestampUTC).ToLocalTime();
+                    string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
+                    lvi.SubItems.Add(timeText);
+                    string myMan = "Вход";
+                    switch (first_pass.isOut)
+                    {
+                        case 1: { myMan = "Выход"; break; };
+                        case 3: { myMan = "Ошибка"; break; };
+                        case 2: { myMan = "Авторизация"; break; };
+                    }
+                    lvi.SubItems.Add($"{myMan}");
+                    myMan = first_pass.isManual == 1 ? "Да" : "Нет";
+                    lvi.SubItems.Add($"{myMan}");
+                    listView3.Items.Add(lvi);
+                    cnt++;
+                }
+            }
         }
     }
 }

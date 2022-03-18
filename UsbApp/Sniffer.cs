@@ -18,7 +18,7 @@ namespace kppApp
         Dictionary<string, WorkerPerson> PersonsStructs;
         Passage lastCrossing = new Passage();
         XForm1 mainInstance;
-
+        
         WcfServer srv;
 
         public Sniffer(XForm1 mainInstance)
@@ -29,7 +29,7 @@ namespace kppApp
 
         private void usb_OnDeviceArrived(object sender, EventArgs e)
         {
-            this.lb_message.Items.Add("Found a Device");
+            //this.lb_message.Items.Add("Found a Device");
             mainInstance.setRFIDFound();
 
         }
@@ -42,7 +42,7 @@ namespace kppApp
             }
             else
             {
-                this.lb_message.Items.Add("Device was removed");
+               // this.lb_message.Items.Add("Device was removed");
                 mainInstance.setRFIDLost();
             }
         }
@@ -50,7 +50,7 @@ namespace kppApp
         private void usb_OnSpecifiedDeviceArrived(object sender, EventArgs e)
         {
             mainInstance.setRFIDFound();
-            this.lb_message.Items.Add("My device was found");
+            //this.lb_message.Items.Add("My device was found");
 
             ////setting string form for sending data
             //string text = "";
@@ -119,13 +119,14 @@ namespace kppApp
             }
             else
             {
-                this.lb_message.Items.Add("My device was removed");
+                //this.lb_message.Items.Add("My device was removed");
                 mainInstance.setRFIDLost();
             }
         }
 
         private void usb_OnDataRecieved(object sender, DataRecievedEventArgs args)
         {
+
             lastCrossing.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             if (InvokeRequired)
             {
@@ -140,17 +141,19 @@ namespace kppApp
             }
             else
             {
+                
                 byte[] bdata= new byte[100];
                 //args.data.CopyTo(bdata, 2);
                 Array.Copy(args.data, 1, bdata, 0, 100);
 
                 string xxx = BytesToString(bdata);
                 xxx = xxx.TrimEnd('\0');
-
+                this.BackColor = Color.DimGray;
                 if (xxx.Length > 0)
                 {
+                    buttonGuardo.Enabled = false;
                     lastCrossing.card = xxx;
-                    this.lb_read.Items.Insert(0, xxx+" ("+ xxx.Length.ToString()+")");
+                   // this.lb_read.Items.Insert(0, xxx+" ("+ xxx.Length.ToString()+")");
                     string PersDesc = "Карта не найдена!";
                     WorkerPerson myWP; 
                     if (PersonsStructs.ContainsKey(xxx))
@@ -160,6 +163,11 @@ namespace kppApp
                         PersDesc = $"Табельный №: {myWP.tabnom}\r\nФИО: {myWP.fio}\r\nДолжность: {myWP.job}\r\nБезопасник: {guardo}";
 
                         lastCrossing.tabnom = myWP.tabnom;
+                        if (myWP.isGuardian == 1) buttonGuardo.Enabled = true;
+                    }
+                    else
+                    {
+                        this.BackColor = Color.Coral;
                     }
 
                     textBox1.Text = "Карта №"+ xxx + "\r\n" + PersDesc;
@@ -173,13 +181,13 @@ namespace kppApp
 
         private void usb_OnDataSend(object sender, EventArgs e)
         {
-            this.lb_message.Items.Add("Some data was send");
+            //this.lb_message.Items.Add("Some data was send");
         }
 
-        private void write2sqlite(int IsOut, int isManual)
+        private void write2sqlite(Constants.CardScanResult IsOut, int isManual)
         {
             // записываем информацию в базу данных
-            using (SQLiteConnection Connect = new SQLiteConnection("Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;"))
+            using (SQLiteConnection Connect = new SQLiteConnection(mainInstance.sqlite_connectionstring))
             {
                 string commandText = @"INSERT INTO buffer_passage ([timestampUTC], [card], [IsOUT], [KPPID],[tabnom]) 
                                        VALUES(@timestampUTC, @card, @IsOUT, @KPPID,@tabnom)";
@@ -195,13 +203,14 @@ namespace kppApp
                 Connect.Close();
                // MessageBox.Show("Проход записан в базу данных");
             }
+            mainInstance.label10_DoubleClick(this, new EventArgs());
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             buttonInside.Enabled = false;
             buttonOutside.Enabled = false;
-            write2sqlite(0,0);
+            write2sqlite(Constants.CardScanResult.In, 0);
             this.Hide();
         }
 
@@ -209,7 +218,7 @@ namespace kppApp
         {
             buttonInside.Enabled = false;
             buttonOutside.Enabled = false;
-            write2sqlite(1,0);
+            write2sqlite(Constants.CardScanResult.Out, 0);
             this.Hide();
         }
 
@@ -258,5 +267,27 @@ namespace kppApp
             this.PersonsStructs = personsstructs;
         }
 
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            buttonInside.Enabled = false;
+            buttonOutside.Enabled = false;
+            write2sqlite(Constants.CardScanResult.Fail, 0);
+            this.Hide();
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            
+            DialogResult r8 = MessageBox.Show(this, "Передать смену\r\n"+$"{PersonsStructs[lastCrossing.card].fio}",
+                                   "Подтверждение!", MessageBoxButtons.YesNo);            
+            if (r8 == DialogResult.Yes)
+            {
+                buttonInside.Enabled = false;
+                buttonOutside.Enabled = false;
+                write2sqlite(Constants.CardScanResult.Guard, 0);
+                this.Hide();
+                mainInstance.setDuty(PersonsStructs[lastCrossing.card].fio); 
+            }
+        }
     }
 }
