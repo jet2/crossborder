@@ -11,22 +11,23 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{basepath}}/passages/?tstampbeg=0&tstampend=1&page=1&limit=20&tabnom=0",
+					"raw": "{{basepath}}/passages/bytabnom/?tsbeg=0&tsend=10000&page=1&limit=20&tabnom=45067&kppid=kpp26-pc",
 					"host": [
 						"{{basepath}}"
 					],
 					"path": [
 						"passages",
+						"bytabnom",
 						""
 					],
 					"query": [
 						{
-							"key": "tstampbeg",
+							"key": "tsbeg",
 							"value": "0"
 						},
 						{
-							"key": "tstampend",
-							"value": "1"
+							"key": "tsend",
+							"value": "10000"
 						},
 						{
 							"key": "page",
@@ -38,7 +39,56 @@
 						},
 						{
 							"key": "tabnom",
+							"value": "45067"
+						},
+						{
+							"key": "kppid",
+							"value": "kpp26-pc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "passages Получить проходы карты",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basepath}}/passages/bycard/?tsbeg=0&tsend=1000&page=1&limit=20&card=12+2345&kppid=kpp26-pc",
+					"host": [
+						"{{basepath}}"
+					],
+					"path": [
+						"passages",
+						"bycard",
+						""
+					],
+					"query": [
+						{
+							"key": "tsbeg",
 							"value": "0"
+						},
+						{
+							"key": "tsend",
+							"value": "1000"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "20"
+						},
+						{
+							"key": "card",
+							"value": "12+2345"
+						},
+						{
+							"key": "kppid",
+							"value": "kpp26-pc"
 						}
 					]
 				}
@@ -69,7 +119,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"timestampUTC\":100,\r\n    \"card\":\"12 345\",\r\n    \"tabnom\":45066,\r\n    \"isOut\":0,\r\n    \"isManual\":\"0\",\r\n    \"kppId\":\"kpp26-pc\"\r\n}\r\n",
+					"raw": "{\r\n    \"timestampUTC\":100,\r\n    \"card\":\"12 345\",\r\n    \"tabnom\":45066,\r\n    \"isOut\":2,\r\n    \"isManual\":\"0\",\r\n    \"kppId\":\"kpp26-pc\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -118,6 +168,46 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "passages Получить проходы всех за период",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basepath}}/passages/?tsbeg=0&tsend=1000&page=1&limit=20&kppid=kpp26-pc",
+					"host": [
+						"{{basepath}}"
+					],
+					"path": [
+						"passages",
+						""
+					],
+					"query": [
+						{
+							"key": "tsbeg",
+							"value": "0"
+						},
+						{
+							"key": "tsend",
+							"value": "1000"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "20"
+						},
+						{
+							"key": "kppid",
+							"value": "kpp26-pc"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -143,7 +233,7 @@
 	"variable": [
 		{
 			"key": "basepath",
-			"value": "http://localhost:3002/kpp/v1"
+			"value": "http://testapi.sytes.net:3002/kpp/v1"
 		}
 	]
 }
