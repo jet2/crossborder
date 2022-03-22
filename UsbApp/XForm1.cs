@@ -23,6 +23,9 @@ namespace kppApp
         private string restServerAddr = "http://localhost:3002";
         internal string sqlite_connectionstring = "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;";
         private string statusCodeOK = "201";
+        private int prev_passageID = -2;
+        private bool was_sended = false;
+        long send_cnt = 0;
         //WcfServer srv;
 
         public XForm1()
@@ -171,7 +174,6 @@ namespace kppApp
         {
             ListView.SelectedListViewItemCollection breakfast = this.listView1.SelectedItems;
 
-
             foreach (ListViewItem item in breakfast)
             {
                 int idx = item.Index;
@@ -199,17 +201,25 @@ namespace kppApp
 
         private void updateWorkers(object sender, DoWorkEventArgs e)
         {
-
+            labelHostAccess.Text = "Недоступен";
             // получаем стамп последнего обновления работников с сервера
             var client = new RestClient($"{restServerAddr}/workers/update_ts");
             client.Timeout = 5000;
             var request = new RestRequest(Method.GET);
             var body = @"";
             request.AddParameter("text/plain", body, ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            tsUpdated remote_updated = JsonConvert.DeserializeObject<tsUpdated>(response.Content);
-            // получаем стамп последнего обновления работников локальный
-            tsUpdated local_updated = new tsUpdated();
+            tsUpdated local_updated = new tsUpdated(); 
+            local_updated.timestampUTC = -1;
+            tsUpdated remote_updated = new tsUpdated(); 
+            remote_updated.timestampUTC = -2;
+            try
+            {
+                IRestResponse response = client.Execute(request);
+                remote_updated = JsonConvert.DeserializeObject<tsUpdated>(response.Content);
+                // получаем стамп последнего обновления работников локальный
+                labelHostAccess.Text = "Доступен";
+            }
+            catch { }
             using (var connection = new SQLiteConnection(sqlite_connectionstring))
             {
                 connection.Open();
@@ -282,7 +292,7 @@ namespace kppApp
         private void sendPassage(object sender, DoWorkEventArgs e)
         {
             // restsharp
-            // выбираем первый неотправленный passage и если массив непустой - отправялем через rest
+            // выбираем первый неотправленный passage и если массив непустой - отправляем через rest
             // если успешно отправлось - помечаем passageID отправленным и обновляем главную таблицу
             // получить наименьший локальный проход
             // отправить 
@@ -290,10 +300,11 @@ namespace kppApp
             // обновить состояние или не обновлять
             // удаление доставленных - другим методом
             long exID = -2;
+            
             Passage firstUndelivered = getFirstUndelivered();
             if (firstUndelivered.passageID > -1)
             {
-                var client = new RestClient("http://testapi.sytes.net:3002/kpp/v1/passages/");
+                var client = new RestClient($"{restServerAddr}/passages/");
                 client.Timeout = 5000;
                 var request = new RestRequest(Method.POST);
                 request.AddHeader("Content-Type", "application/json");
@@ -312,22 +323,31 @@ namespace kppApp
                             var command = connection.CreateCommand();
                             command.CommandText = qry_update_mark_id_asdelivered;
                             command.ExecuteNonQuery();
+                            
+                            send_cnt++;
                         }
                     }
                     exID = firstUndelivered.passageID;
                     firstUndelivered = getFirstUndelivered();
                     if (exID == firstUndelivered.passageID)
                     {
+                        
                         break;
                     }
                 } while (firstUndelivered.passageID != -1);
             }
+            
         }
 
         private void sendPassage_ResultHandler(object sender, RunWorkerCompletedEventArgs e)
         {
             timerPassageSender.Enabled = true;
-
+            //label17.Text = send_cnt.ToString();
+            if (send_cnt>0)
+            {
+                label10_DoubleClick(this, new EventArgs());
+            };
+            send_cnt = 0;
         }
 
         private void timerPassageSender_Tick(object sender, EventArgs e)
@@ -335,7 +355,6 @@ namespace kppApp
             timerPassageSender.Enabled = false;
             threadPassageSender.RunWorkerAsync();
         }
-
 
         private Passage getFirstUndelivered()
         {
@@ -367,7 +386,6 @@ namespace kppApp
                     }
                 }
             }
-
             return first_pass;
         }
 
@@ -378,74 +396,81 @@ namespace kppApp
 
         public void label10_DoubleClick(object sender, EventArgs e)
         {
-            while (listView2.Items.Count > 0) { listView2.Items.RemoveAt(0); };
-            string qry_select_first_undelivered = @"SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual, isDelivered
+            listView2.Visible = false;
+            int cnt = 1;
+
+            try
+            {
+                while (listView2.Items.Count > 0) { listView2.Items.RemoveAt(0); };
+                string qry_select_first_undelivered = @"SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual, isDelivered
                 FROM buffer_passage
                 order by timestampUTC";
 
-            int cnt = 1;
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = qry_select_first_undelivered;
-
-                using (var reader = command.ExecuteReader())
+                using (var connection = new SQLiteConnection(sqlite_connectionstring))
                 {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = qry_select_first_undelivered;
 
-                    while (reader.Read())
+                    using (var reader = command.ExecuteReader())
                     {
-                        Passage first_pass = new Passage();
-                        first_pass.passageID = reader.GetInt64(0);
-                        first_pass.timestampUTC = reader.GetDouble(1);
-                        first_pass.card = reader.GetString(2);
-                        first_pass.isOut = reader.GetInt16(3);
-                        first_pass.kppId = reader.GetString(4);
-                        first_pass.tabnom = reader.GetInt64(5);
-                        first_pass.isManual = reader.GetInt16(6);
-                        int isDelivered = reader.GetInt16(7);
-                        ListViewItem lvi = new ListViewItem();
-                        int zIdx = 0;
-                        if (isDelivered == 1)
-                        {
-                            zIdx = 1;
-                        }
 
-                        lvi.Text = $"{cnt}";
-                        lvi.SubItems.Add(first_pass.card);
-                        if (PersonsDictStruct.ContainsKey(first_pass.card))
+                        while (reader.Read())
                         {
-                            lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].tabnom}");
-                            lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].fio}");
-                        }
-                        else
-                        {
-                            lvi.SubItems.Add("-");
-                            lvi.SubItems.Add("-");
-                            zIdx = 2;
-                        }
-                        lvi.ImageIndex = zIdx;
+                            Passage first_pass = new Passage();
+                            first_pass.passageID = reader.GetInt64(0);
+                            first_pass.timestampUTC = reader.GetDouble(1);
+                            first_pass.card = reader.GetString(2);
+                            first_pass.isOut = reader.GetInt16(3);
+                            first_pass.kppId = reader.GetString(4);
+                            first_pass.tabnom = reader.GetInt64(5);
+                            first_pass.isManual = reader.GetInt16(6);
+                            int isDelivered = reader.GetInt16(7);
+                            ListViewItem lvi = new ListViewItem();
+                            int zIdx = 0;
+                            if (isDelivered == 1)
+                            {
+                                zIdx = 1;
+                            }
 
-                        System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-                        dtDateTime = dtDateTime.AddSeconds(first_pass.timestampUTC).ToLocalTime();
-                        string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
-                        lvi.SubItems.Add(timeText);
-                        string myMan = "Вход";
-                        switch (first_pass.isOut)
-                        {
-                            case 1:{ myMan = "Выход";  break; };
-                            case 3: { myMan = "Ошибка"; break; };
-                            case 2: { myMan = "Авторизация"; break; };
+                            lvi.Text = $"{cnt}";
+                            lvi.SubItems.Add(first_pass.card);
+                            if (PersonsDictStruct.ContainsKey(first_pass.card))
+                            {
+                                lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].tabnom}");
+                                lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].fio}");
+                            }
+                            else
+                            {
+                                lvi.SubItems.Add("-");
+                                lvi.SubItems.Add("-");
+                                zIdx = 2;
+                            }
+                            lvi.ImageIndex = zIdx;
+
+                            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+                            dtDateTime = dtDateTime.AddSeconds(first_pass.timestampUTC).ToLocalTime();
+                            string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
+                            lvi.SubItems.Add(timeText);
+                            string myMan = "Вход";
+                            switch (first_pass.isOut)
+                            {
+                                case 1: { myMan = "Выход"; break; };
+                                case 3: { myMan = "Ошибка"; break; };
+                                case 2: { myMan = "Авторизация"; break; };
+                            }
+                            lvi.SubItems.Add($"{myMan}");
+                            myMan = first_pass.isManual == 1 ? "Да" : "Нет";
+                            lvi.SubItems.Add($"{myMan}");
+                            listView2.Items.Insert(0, lvi);
+                            cnt++;
+
                         }
-                        lvi.SubItems.Add($"{myMan}");
-                        myMan = first_pass.isManual == 1 ? "Да" : "Нет";
-                        lvi.SubItems.Add($"{myMan}");
-                        listView2.Items.Add(lvi);
-                        cnt++;
 
                     }
-
                 }
+            }finally{
+                listView2.Visible = true;
             }
             label10.Text = $"Счетчик событий: {cnt - 1}";
         }

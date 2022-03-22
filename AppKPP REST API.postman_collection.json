@@ -1,117 +1,11 @@
 {
 	"info": {
-		"_postman_id": "24c9bf1b-b80f-463b-b717-d32d06251173",
+		"_postman_id": "f0075d9c-f178-498b-a6f0-e955b504dda1",
 		"name": "AppKPP REST API",
+		"description": "\\-- api.passage definition\n\nCREATE TABLE `passage` (  \n`passageId` bigint(20) NOT NULL AUTO_INCREMENT,  \n`timestampUTC` double NOT NULL DEFAULT 0,  \n`card` varchar(100) NOT NULL,  \n`operationId` int(11) NOT NULL DEFAULT 0,  \n`kppHostname` varchar(255) NOT NULL,  \n`isManual` tinyint(4) NOT NULL DEFAULT 0,  \n`login` varchar(100) NOT NULL,  \n`comment` varchar(200) DEFAULT NULL,  \nPRIMARY KEY (`passageId`)  \n) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8mb3;\n\n\\-- api.workers definition\n\nCREATE TABLE `workers` (  \n`rowID` bigint(20) NOT NULL AUTO_INCREMENT,  \n`fio` varchar(100) NOT NULL,  \n`tabnom` bigint(20) NOT NULL,  \n`card` varchar(100) NOT NULL,  \n`userguid` varchar(100) NOT NULL,  \nPRIMARY KEY (`rowID`)  \n) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3;\n\n\\-- api.lastupdate definition\n\nCREATE TABLE `lastupdate` (  \n`rowId` bigint(20) NOT NULL AUTO_INCREMENT,  \n`timestampUTC` double NOT NULL DEFAULT 0,  \n`namekey` varchar(100) NOT NULL,  \nPRIMARY KEY (`rowId`)  \n) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8mb3;",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
-		{
-			"name": "passages Получить проходы табельного номера",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{basepath}}/passages/bytabnom/?tsbeg=0&tsend=10000&page=1&limit=20&tabnom=45067&kppid=kpp26-pc",
-					"host": [
-						"{{basepath}}"
-					],
-					"path": [
-						"passages",
-						"bytabnom",
-						""
-					],
-					"query": [
-						{
-							"key": "tsbeg",
-							"value": "0"
-						},
-						{
-							"key": "tsend",
-							"value": "10000"
-						},
-						{
-							"key": "page",
-							"value": "1"
-						},
-						{
-							"key": "limit",
-							"value": "20"
-						},
-						{
-							"key": "tabnom",
-							"value": "45067"
-						},
-						{
-							"key": "kppid",
-							"value": "kpp26-pc"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "passages Получить проходы карты",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{basepath}}/passages/bycard/?tsbeg=0&tsend=1000&page=1&limit=20&card=12+2345&kppid=kpp26-pc",
-					"host": [
-						"{{basepath}}"
-					],
-					"path": [
-						"passages",
-						"bycard",
-						""
-					],
-					"query": [
-						{
-							"key": "tsbeg",
-							"value": "0"
-						},
-						{
-							"key": "tsend",
-							"value": "1000"
-						},
-						{
-							"key": "page",
-							"value": "1"
-						},
-						{
-							"key": "limit",
-							"value": "20"
-						},
-						{
-							"key": "card",
-							"value": "12+2345"
-						},
-						{
-							"key": "kppid",
-							"value": "kpp26-pc"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "workers Люди с картами табельными и должностями",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{basepath}}/workers",
-					"host": [
-						"{{basepath}}"
-					],
-					"path": [
-						"workers"
-					]
-				}
-			},
-			"response": []
-		},
 		{
 			"name": "passages Добавление прохода карта+табельный",
 			"request": {
@@ -119,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"timestampUTC\":100,\r\n    \"card\":\"12 345\",\r\n    \"tabnom\":45066,\r\n    \"isOut\":2,\r\n    \"isManual\":\"0\",\r\n    \"kppId\":\"kpp26-pc\"\r\n}\r\n",
+					"raw": "{\r\n    \"timestampUTC\":160000000,\r\n    \"card\":\"12 345\",\r\n    \"operationId\":2,\r\n    \"kppHostname\":\"kpp26-pc\",\r\n    \"isManual\":\"0\",\r\n    \"login\":\"domain-user\",\r\n    \"comment\":\"\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -137,7 +31,386 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "passages Добавление прохода карта+табельный",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"timestampUTC\":160000000,\r\n    \"card\":\"12 345\",\r\n    \"operationId\":2,\r\n    \"kppHostname\":\"kpp26-pc\",\r\n    \"isManual\":\"0\",\r\n    \"login\":\"domain-user\",\r\n    \"comment\":\"\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basepath}}/passages/",
+							"host": [
+								"{{basepath}}"
+							],
+							"path": [
+								"passages",
+								""
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "7"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"7-15nzqDQSWg9rrffaAM/2nfDOXVQ\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 21 Mar 2022 23:53:38 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "OK: 999"
+				}
+			]
+		},
+		{
+			"name": "passages Получить проходы всех за период",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basepath}}/passages/?tsbeg=0&tsend=1647813376&kpphostname=kpp26-pc",
+					"host": [
+						"{{basepath}}"
+					],
+					"path": [
+						"passages",
+						""
+					],
+					"query": [
+						{
+							"key": "tsbeg",
+							"value": "0"
+						},
+						{
+							"key": "tsend",
+							"value": "1647813376"
+						},
+						{
+							"key": "kpphostname",
+							"value": "kpp26-pc"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "passages Получить проходы всех за период",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basepath}}/passages/?tsbeg=0&tsend=1647813376&kpphostname=kpp26-pc",
+							"host": [
+								"{{basepath}}"
+							],
+							"path": [
+								"passages",
+								""
+							],
+							"query": [
+								{
+									"key": "tsbeg",
+									"value": "0"
+								},
+								{
+									"key": "tsend",
+									"value": "1647813376"
+								},
+								{
+									"key": "kpphostname",
+									"value": "kpp26-pc"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "172"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"ac-+hmsbzM0lda1qIimgFo4Ouw28sQ\""
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 22 Mar 2022 00:20:49 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"timestampUTC\": 160000000,\n        \"card\": \"47 3354\",\n        \"operationid\": 2,\n        \"isManual\": 0,\n        \"comment\": \"\"\n    },\n    {\n        \"timestampUTC\": 160000000,\n        \"card\": \"12 345\",\n        \"operationid\": 2,\n        \"isManual\": 0,\n        \"comment\": \"\"\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "passages Получить проходы userguid за период",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basepath}}/passages/byuserguid/?tsbeg=0&tsend=1647813376&userguid=poi123&kpphostname=kpp26-pc",
+					"host": [
+						"{{basepath}}"
+					],
+					"path": [
+						"passages",
+						"byuserguid",
+						""
+					],
+					"query": [
+						{
+							"key": "tsbeg",
+							"value": "0"
+						},
+						{
+							"key": "tsend",
+							"value": "1647813376"
+						},
+						{
+							"key": "userguid",
+							"value": "poi123"
+						},
+						{
+							"key": "kpphostname",
+							"value": "kpp26-pc"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "passages Получить проходы userguid за период",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basepath}}/passages/byuserguid/?tsbeg=0&tsend=1647813376&userguid=poi123&kpphostname=kpp26-pc",
+							"host": [
+								"{{basepath}}"
+							],
+							"path": [
+								"passages",
+								"byuserguid",
+								""
+							],
+							"query": [
+								{
+									"key": "tsbeg",
+									"value": "0"
+								},
+								{
+									"key": "tsend",
+									"value": "1647813376"
+								},
+								{
+									"key": "userguid",
+									"value": "poi123"
+								},
+								{
+									"key": "kpphostname",
+									"value": "kpp26-pc"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "87"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"57-J9j+oZnk1kcAbk6/p+yQHbqpAO8\""
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 22 Mar 2022 00:14:04 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"timestampUTC\": 160000000,\n        \"card\": \"47 3354\",\n        \"operationid\": 2,\n        \"isManual\": 0,\n        \"comment\": \"\"\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "passages Получить проходы tabnom за период",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basepath}}/passages/bytabnom/?tsbeg=0&tsend=1647813376&tabnom=11111&kpphostname=kpp26-pc",
+					"host": [
+						"{{basepath}}"
+					],
+					"path": [
+						"passages",
+						"bytabnom",
+						""
+					],
+					"query": [
+						{
+							"key": "tsbeg",
+							"value": "0"
+						},
+						{
+							"key": "tsend",
+							"value": "1647813376"
+						},
+						{
+							"key": "tabnom",
+							"value": "11111"
+						},
+						{
+							"key": "kpphostname",
+							"value": "kpp26-pc"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "passages Получить проходы tabnom за период",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basepath}}/passages/bytabnom/?tsbeg=0&tsend=1647813376&tabnom=11111&kpphostname=kpp26-pc",
+							"host": [
+								"{{basepath}}"
+							],
+							"path": [
+								"passages",
+								"bytabnom",
+								""
+							],
+							"query": [
+								{
+									"key": "tsbeg",
+									"value": "0"
+								},
+								{
+									"key": "tsend",
+									"value": "1647813376"
+								},
+								{
+									"key": "tabnom",
+									"value": "11111"
+								},
+								{
+									"key": "kpphostname",
+									"value": "kpp26-pc"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "87"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"57-J9j+oZnk1kcAbk6/p+yQHbqpAO8\""
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 22 Mar 2022 00:16:24 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"timestampUTC\": 160000000,\n        \"card\": \"47 3354\",\n        \"operationid\": 2,\n        \"isManual\": 0,\n        \"comment\": \"\"\n    }\n]"
+				}
+			]
 		},
 		{
 			"name": "update_ts Когда работники обновились timestamp?",
@@ -167,47 +440,212 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "update_ts Когда работники обновились timestamp?",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basepath}}/workers/update_ts",
+							"host": [
+								"{{basepath}}"
+							],
+							"path": [
+								"workers",
+								"update_ts"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "27"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1b-w8/JQe85BV7QJ6ZCDeaEtjM6d1g\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 21 Mar 2022 23:58:52 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"timestampUTC\": 1647387158\n}"
+				}
+			]
 		},
 		{
-			"name": "passages Получить проходы всех за период",
+			"name": "update_ts Когда операции обновились timestamp?",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{basepath}}/passages/?tsbeg=0&tsend=1000&page=1&limit=20&kppid=kpp26-pc",
+					"raw": "{{basepath}}/workers/update_ts",
 					"host": [
 						"{{basepath}}"
 					],
 					"path": [
-						"passages",
-						""
-					],
-					"query": [
-						{
-							"key": "tsbeg",
-							"value": "0"
-						},
-						{
-							"key": "tsend",
-							"value": "1000"
-						},
-						{
-							"key": "page",
-							"value": "1"
-						},
-						{
-							"key": "limit",
-							"value": "20"
-						},
-						{
-							"key": "kppid",
-							"value": "kpp26-pc"
-						}
+						"workers",
+						"update_ts"
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "update_ts Когда операции обновились timestamp?",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basepath}}/operations/update_ts",
+							"host": [
+								"{{basepath}}"
+							],
+							"path": [
+								"operations",
+								"update_ts"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "27"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1b-w8/JQe85BV7QJ6ZCDeaEtjM6d1g\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 21 Mar 2022 23:58:54 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"timestampUTC\": 1647387158\n}"
+				}
+			]
+		},
+		{
+			"name": "workers Люди с картами табельными userguids",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basepath}}/workers",
+					"host": [
+						"{{basepath}}"
+					],
+					"path": [
+						"workers"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "workers Люди с картами табельными userguids",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basepath}}/workers",
+							"host": [
+								"{{basepath}}"
+							],
+							"path": [
+								"workers"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "253"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"fd-DEBfbD2tu6YPJGtroE/WUrJLaeU\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 21 Mar 2022 23:58:57 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"fio\": \"Петренко К.Т.\",\n        \"tabnom\": 11111,\n        \"card\": \"47 3354\",\n        \"userguid\": \"poi123\"\n    },\n    {\n        \"fio\": \"Ивняк И.Н.\",\n        \"tabnom\": 22222,\n        \"card\": \"12 3456\",\n        \"userguid\": \"mkoib08\"\n    },\n    {\n        \"fio\": \"Дубнин Х.Х.\",\n        \"tabnom\": 33333,\n        \"card\": \"74 4669\",\n        \"userguid\": \"bnmv57890\"\n    }\n]"
+				}
+			]
 		}
 	],
 	"event": [

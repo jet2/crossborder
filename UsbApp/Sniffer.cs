@@ -247,11 +247,13 @@ namespace kppApp
             {
                 MessageBox.Show(ex.ToString());
             }
-            
-            srv = new WcfServer();
-            srv.Start();
-            srv.Received += OnWCFReceived;
-            
+            string[] arguments = Environment.GetCommandLineArgs();
+            if (arguments.Length > 1) { if (arguments[1] == "-emucards") {
+                    srv = new WcfServer();
+                    srv.Start();
+                    srv.Received += OnWCFReceived;
+                }
+            }
         }
 
         private void OnWCFReceived(object sender, DataReceivedEventArgs args)
