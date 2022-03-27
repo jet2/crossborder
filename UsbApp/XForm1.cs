@@ -8,17 +8,22 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.IO;
 using System.Reflection;
+using UsbLibrary;
+using System.Text;
 
 namespace kppApp
 {
 
     public partial class XForm1 : Form
     {
-        public static Sniffer mySnifferForm;
-
+        //public static Sniffer mySnifferForm;
+        
+        Dictionary<string, WorkerPerson> PersonsStructs;
+        Passage lastCrossing = new Passage();
+        
         public static Dictionary<string, string> Persons;
         public static Dictionary<string, WorkerPerson> PersonsDictStruct;
-
+        private WcfServer srv;
         IniFile INI;
         private string restServerAddr = "http://localhost:3002";
         internal string sqlite_connectionstring = "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;";
@@ -37,6 +42,8 @@ namespace kppApp
                 MessageBox.Show("Не удалось прочитать настройки из config.ini");
             };
         }
+
+
 
         private bool settings_read()
         {
@@ -74,6 +81,119 @@ namespace kppApp
             }
             return result;
         }
+
+
+        private void usb_OnDeviceArrived(object sender, EventArgs e)
+        {
+            //this.lb_message.Items.Add("Found a Device");
+            this.setRFIDFound();
+
+        }
+
+        private void usb_OnDeviceRemoved(object sender, EventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new EventHandler(usb_OnDeviceRemoved), new object[] { sender, e });
+            }
+            else
+            {
+                // this.lb_message.Items.Add("Device was removed");
+                this.setRFIDLost();
+            }
+        }
+
+        private void usb_OnSpecifiedDeviceArrived(object sender, EventArgs e)
+        {
+            this.setRFIDFound();
+            //this.lb_message.Items.Add("My device was found");
+
+            ////setting string form for sending data
+            //string text = "";
+            //for (int i = 0; i < this.usb.SpecifiedDevice.OutputReportLength - 1; i++)
+            //{
+            //    text += "000 ";
+            //}
+            //this.tb_send.Text = text;
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            usb.RegisterHandle(Handle);
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            usb.ParseMessages(ref m);
+            base.WndProc(ref m);	// pass message on to base form
+        }
+
+
+        private void usb_OnSpecifiedDeviceRemoved(object sender, EventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new EventHandler(usb_OnSpecifiedDeviceRemoved), new object[] { sender, e });
+            }
+            else
+            {
+                //this.lb_message.Items.Add("My device was removed");
+                this.setRFIDLost();
+            }
+        }
+
+        private void usb_OnDataRecieved(object sender, DataRecievedEventArgs args)
+        {
+
+            lastCrossing.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            if (InvokeRequired)
+            {
+                try
+                {
+                    Invoke(new DataRecievedEventHandler(usb_OnDataRecieved), new object[] { sender, args });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+            else
+            {
+
+                byte[] bdata = new byte[100];
+                //args.data.CopyTo(bdata, 2);
+                Array.Copy(args.data, 1, bdata, 0, 100);
+
+                string xxx = BytesToString(bdata);
+                xxx = xxx.TrimEnd('\0');
+                this.BackColor = Color.DimGray;
+                if (xxx.Length > 0)
+                {
+                   // buttonGuardo.Enabled = false;
+                    lastCrossing.card = xxx;
+                    // this.lb_read.Items.Insert(0, xxx+" ("+ xxx.Length.ToString()+")");
+                    string PersDesc = "Карта не найдена!";
+                    WorkerPerson myWP;
+                    if (PersonsStructs.ContainsKey(xxx))
+                    {
+                        myWP = PersonsStructs[xxx];
+                        var guardo = myWP.isGuardian == 1 ? "Да" : "Нет";
+                        PersDesc = $"Табельный №: {myWP.tabnom}\r\nФИО: {myWP.fio}\r\nДолжность: {myWP.job}\r\nБезопасник: {guardo}";
+
+                        lastCrossing.tabnom = myWP.tabnom;
+                       // if (myWP.isGuardian == 1) buttonGuardo.Enabled = true;
+                    }
+                    else
+                    {
+                        this.BackColor = Color.Coral;
+                    }
+
+                    //textBox1.Text = "Карта №" + xxx + "\r\n" + PersDesc;
+                }
+            }
+        }
+
 
         private void dictionaryWorkersUpdater()
         {
@@ -116,7 +236,7 @@ namespace kppApp
             {
                 MessageBox.Show("Справочник персонала поврежден!\r\nСервис не позволяет идентифицировать персонал!");
             }
-            mySnifferForm.UpdatePersons(PersonsDictStruct);
+//            mySnifferForm.UpdatePersons(PersonsDictStruct);
             // Unix timestamp is seconds past epoch
 
             tsUpdated local_updated = new tsUpdated();
@@ -144,12 +264,32 @@ namespace kppApp
 
         private void XForm1_Load(object sender, EventArgs e)
         {
+            try
+            {
+                this.usb.ProductId = Int32.Parse(this.tb_product.Text, System.Globalization.NumberStyles.HexNumber);
+                this.usb.VendorId = Int32.Parse(this.tb_vendor.Text, System.Globalization.NumberStyles.HexNumber);
+                this.usb.CheckDevicePresent();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            string[] arguments = Environment.GetCommandLineArgs();
+            if (arguments.Length > 1)
+            {
+                if (arguments[1] == "-emucards")
+                {
+                    srv = new WcfServer();
+                    srv.Start();
+                    srv.Received += OnWCFReceived;
+                }
+            }
 
-            mySnifferForm = new Sniffer(this);
-            mySnifferForm.Left = this.Width - mySnifferForm.Width;
-            mySnifferForm.Top = this.Height - mySnifferForm.Height;
-            mySnifferForm.Show();
-            mySnifferForm.Hide();
+            //mySnifferForm = new Sniffer(this);
+            //mySnifferForm.Left = this.Width - mySnifferForm.Width;
+            //mySnifferForm.Top = this.Height - mySnifferForm.Height;
+            //mySnifferForm.Show();
+            //mySnifferForm.Hide();
             dictionaryWorkersUpdater();
             label10_DoubleClick(this, e);
             threadWorkersUpdater.DoWork += updateWorkers;
@@ -158,6 +298,7 @@ namespace kppApp
             threadPassageSender.RunWorkerCompleted += sendPassage_ResultHandler;
             timerWorkersUpdate_Tick(this, e);
             timerPassageSender_Tick(this, e);
+
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -236,47 +377,50 @@ namespace kppApp
                     }
                 }
                 // если даты отличаются - скачиваем и обновляем локальный персонал
-                if (remote_updated.timestampUTC != local_updated.timestampUTC)
+                if (remote_updated != null)
                 {
-                    // скачиваем персонал
-                    var client2 = new RestClient($"{restServerAddr}/workers/");
-                    client2.Timeout = 5000;
-                    var request2 = new RestRequest(Method.GET);
-                    var body2 = @"";
-                    request2.AddParameter("text/plain", body2, ParameterType.RequestBody);
-                    // получем json array
-                    IRestResponse response2 = client2.Execute(request);
-                    // заполняем список записей
-                    List<WorkerPerson> remote_workers = JsonConvert.DeserializeObject<List<WorkerPerson>>(response2.Content);
-
-                    // очищаем приемную таблицу
-                    var command3 = connection.CreateCommand();
-                    command3.CommandText = $"delete from buffer_workers_input";
-                    command3.ExecuteNonQuery();
-
-                    if (remote_workers.Count > 0)
+                    if (remote_updated.timestampUTC != local_updated.timestampUTC)
                     {
-                        // каждую персону из списка вливаем в приемную таблицу
-                        foreach (WorkerPerson wp in remote_workers)
+                        // скачиваем персонал
+                        var client2 = new RestClient($"{restServerAddr}/workers/");
+                        client2.Timeout = 5000;
+                        var request2 = new RestRequest(Method.GET);
+                        var body2 = @"";
+                        request2.AddParameter("text/plain", body2, ParameterType.RequestBody);
+                        // получем json array
+                        IRestResponse response2 = client2.Execute(request);
+                        // заполняем список записей
+                        List<WorkerPerson> remote_workers = JsonConvert.DeserializeObject<List<WorkerPerson>>(response2.Content);
+
+                        // очищаем приемную таблицу
+                        var command3 = connection.CreateCommand();
+                        command3.CommandText = $"delete from buffer_workers_input";
+                        command3.ExecuteNonQuery();
+
+                        if (remote_workers.Count > 0)
                         {
-                            if (wp.card != "" & wp.fio != "" & wp.tabnom != 0)
+                            // каждую персону из списка вливаем в приемную таблицу
+                            foreach (WorkerPerson wp in remote_workers)
                             {
-                                command3.CommandText = $"insert into buffer_workers_input(card,fio,tabnom,job,isGuardian) values('{wp.card}','{wp.fio}',{wp.tabnom},'{wp.job}',{wp.isGuardian})";
-                                command3.ExecuteNonQuery();
+                                if (wp.card != "" & wp.fio != "" & wp.tabnom != 0)
+                                {
+                                    command3.CommandText = $"insert into buffer_workers_input(card,fio,tabnom,job,isGuardian) values('{wp.card}','{wp.fio}',{wp.tabnom},'{wp.job}',{wp.isGuardian})";
+                                    command3.ExecuteNonQuery();
+                                }
                             }
+
+                            // очищаем локальную таблицу работников
+                            command3.CommandText = $"delete from buffer_workers";
+                            command3.ExecuteNonQuery();
+
+                            // мгновенно переливаем скачанный персонал в таблицу работников
+                            command3.CommandText = $"insert into buffer_workers select * from buffer_workers_input";
+                            command3.ExecuteNonQuery();
+
+                            // обновляем локальный стамп персон
+                            command3.CommandText = $"update workers_lastupdate set timestampUTC={remote_updated.timestampUTC}";
+                            command3.ExecuteNonQuery();
                         }
-
-                        // очищаем локальную таблицу работников
-                        command3.CommandText = $"delete from buffer_workers";
-                        command3.ExecuteNonQuery();
-
-                        // мгновенно переливаем скачанный персонал в таблицу работников
-                        command3.CommandText = $"insert into buffer_workers select * from buffer_workers_input";
-                        command3.ExecuteNonQuery();
-
-                        // обновляем локальный стамп персон
-                        command3.CommandText = $"update workers_lastupdate set timestampUTC={remote_updated.timestampUTC}";
-                        command3.ExecuteNonQuery();
                     }
                 }
             }
@@ -569,6 +713,23 @@ namespace kppApp
                 startBtnSelect.Enabled = true;
             }
 
+        }
+        private void OnWCFReceived(object sender, DataReceivedEventArgs args)
+        {
+            byte[] decBytes1 = Encoding.ASCII.GetBytes(args.Data);
+            UsbLibrary.DataRecievedEventArgs argz = new UsbLibrary.DataRecievedEventArgs(decBytes1);
+            usb_OnDataRecieved(sender, argz);
+        }
+
+        static string BytesToString(byte[] bytes)
+        {
+            using (MemoryStream stream = new MemoryStream(bytes))
+            {
+                using (StreamReader streamReader = new StreamReader(stream))
+                {
+                    return streamReader.ReadToEnd();
+                }
+            }
         }
     }
 }

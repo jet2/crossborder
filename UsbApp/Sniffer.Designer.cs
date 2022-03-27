@@ -141,7 +141,7 @@ namespace kppApp
             this.gb_filter.Margin = new System.Windows.Forms.Padding(6);
             this.gb_filter.Name = "gb_filter";
             this.gb_filter.Padding = new System.Windows.Forms.Padding(6);
-            this.gb_filter.Size = new System.Drawing.Size(856, 154);
+            this.gb_filter.Size = new System.Drawing.Size(881, 154);
             this.gb_filter.TabIndex = 5;
             this.gb_filter.TabStop = false;
             this.gb_filter.Text = "Filter for Device:";
@@ -186,7 +186,7 @@ namespace kppApp
             this.gb_details.Margin = new System.Windows.Forms.Padding(6);
             this.gb_details.Name = "gb_details";
             this.gb_details.Padding = new System.Windows.Forms.Padding(6);
-            this.gb_details.Size = new System.Drawing.Size(844, 628);
+            this.gb_details.Size = new System.Drawing.Size(916, 664);
             this.gb_details.TabIndex = 6;
             this.gb_details.TabStop = false;
             this.gb_details.Text = "Выбор действия:";
@@ -225,22 +225,16 @@ namespace kppApp
             this.textBox1.Size = new System.Drawing.Size(794, 370);
             this.textBox1.TabIndex = 9;
             // 
-            // usb
+            // usbHidPort1
             // 
-            this.usb.ProductId = 21187;
-            this.usb.VendorId = 1134;
-            this.usb.OnSpecifiedDeviceArrived += new System.EventHandler(this.usb_OnSpecifiedDeviceArrived);
-            this.usb.OnSpecifiedDeviceRemoved += new System.EventHandler(this.usb_OnSpecifiedDeviceRemoved);
-            this.usb.OnDeviceArrived += new System.EventHandler(this.usb_OnDeviceArrived);
-            this.usb.OnDeviceRemoved += new System.EventHandler(this.usb_OnDeviceRemoved);
-            this.usb.OnDataRecieved += new UsbLibrary.DataRecievedEventHandler(this.usb_OnDataRecieved);
-            this.usb.OnDataSend += new System.EventHandler(this.usb_OnDataSend);
+            this.usb.ProductId = 0;
+            this.usb.VendorId = 0;
             // 
             // Sniffer
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.DimGray;
-            this.ClientSize = new System.Drawing.Size(886, 668);
+            this.ClientSize = new System.Drawing.Size(976, 746);
             this.Controls.Add(this.gb_details);
             this.Controls.Add(this.lb_senddata);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;

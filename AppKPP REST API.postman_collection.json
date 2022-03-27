@@ -646,6 +646,75 @@
 					"body": "[\n    {\n        \"fio\": \"Петренко К.Т.\",\n        \"tabnom\": 11111,\n        \"card\": \"47 3354\",\n        \"userguid\": \"poi123\"\n    },\n    {\n        \"fio\": \"Ивняк И.Н.\",\n        \"tabnom\": 22222,\n        \"card\": \"12 3456\",\n        \"userguid\": \"mkoib08\"\n    },\n    {\n        \"fio\": \"Дубнин Х.Х.\",\n        \"tabnom\": 33333,\n        \"card\": \"74 4669\",\n        \"userguid\": \"bnmv57890\"\n    }\n]"
 				}
 			]
+		},
+		{
+			"name": "operations Операции на КПП",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basepath}}/operations",
+					"host": [
+						"{{basepath}}"
+					],
+					"path": [
+						"operations"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "operations Операции на КПП",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basepath}}/operations",
+							"host": [
+								"{{basepath}}"
+							],
+							"path": [
+								"operations"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "302"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"12e-LbxgtCfrwzSQL2IhISGgRm//qyc\""
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 22 Mar 2022 09:45:04 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"operationID\": 1141,\n        \"operation\": \"Выезд с ОГОК\"\n    },\n    {\n        \"operationID\": 1143,\n        \"operation\": \"Въезд на НГОК. Санпост №1\"\n    },\n    {\n        \"operationID\": 1144,\n        \"operation\": \"Въезд на НГОК. Санпост №2\"\n    },\n    {\n        \"operationID\": 1145,\n        \"operation\": \"Выезд на НГОК. Санпост №1\"\n    }\n]"
+				}
+			]
 		}
 	],
 	"event": [
