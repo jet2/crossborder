@@ -10,6 +10,7 @@ using System.IO;
 using System.Reflection;
 using UsbLibrary;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace kppApp
 {
@@ -31,6 +32,7 @@ namespace kppApp
         private int prev_passageID = -2;
         private bool was_sended = false;
         long send_cnt = 0;
+        string[] operSource;
         //WcfServer srv;
 
         public XForm1()
@@ -73,13 +75,61 @@ namespace kppApp
             {
                 // заполняем примерами значений важных ключей
                 if (!rest_in_settings) INI.Write("restapi_path", "http://www.google.com", "settings");
-                if (!sqlite_in_settings) INI.Write("sqlite_connectionstring", "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;", "settings");
+                if (!sqlite_in_settings) INI.Write("sqlite_connectionstring", $"Data Source={AppDomain.CurrentDomain.BaseDirectory}kppbuffer.db;Version=3;New=False;", "settings");
                 if (!ok_status_in_settings) INI.Write("status_code_ok", "201", "settings");
-                sqlite_connectionstring = "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;";
+                sqlite_connectionstring = $"Data Source={AppDomain.CurrentDomain.BaseDirectory}kppbuffer.db;Version=3;New=False;";
                 restapi_path_label.Text = "Неизвестно";
                 result = false;
             }
+            // read JSON directly from a file
+            //            string mypath = AppDomain.CurrentDomain.BaseDirectory  + @"operations.json";
+            
+            
+
+
+            using (StreamReader file = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + @"operations.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                List<perimeterOperation> perop = (List<perimeterOperation>)serializer.Deserialize(file, typeof(List<perimeterOperation>));
+                if (perop.Count > 0)
+                {
+                    List<string> xList= new List<string>(); 
+                    foreach (perimeterOperation oper in perop)
+                    {
+                        if (oper.operhide != 1) {
+                            xList.Add($"{oper.operid}-{oper.operdesc}");
+                            
+                        }
+                    }
+                    operSource = xList.ToArray();
+                    comboBox1.DataSource = operSource;
+                }
+            }
+            /*
+                        List<WorkerPerson> remote_workers = JsonConvert.DeserializeObject<List<WorkerPerson>>(response2.Content);
+
+                        // очищаем приемную таблицу
+                        var command3 = connection.CreateCommand();
+                        command3.CommandText = $"delete from buffer_workers_input";
+                        command3.ExecuteNonQuery();
+
+                        if (remote_workers.Count > 0)
+                        {
+                            // каждую персону из списка вливаем в приемную таблицу
+                            foreach (WorkerPerson wp in remote_workers)
+                            {
+                                if (wp.card != "" & wp.fio != "" & wp.tabnom != 0)
+                                {
+                                    command3.CommandText = $"insert into buffer_workers_input(card,fio,tabnom,userguid,isGuardian) values('{wp.card}','{wp.fio}',{wp.tabnom},'{wp.userguid}',0)";
+                                    command3.ExecuteNonQuery();
+                                }
+                            }
+                        }
+
+              */
             return result;
+
+
         }
 
 
@@ -87,7 +137,6 @@ namespace kppApp
         {
             //this.lb_message.Items.Add("Found a Device");
             this.setRFIDFound();
-
         }
 
         private void usb_OnDeviceRemoved(object sender, EventArgs e)
@@ -143,6 +192,34 @@ namespace kppApp
             }
         }
 
+        private WorkerPerson getWorkerByCard(string card)
+        {
+            WorkerPerson myWP = new WorkerPerson();
+            myWP.userguid = "";
+            myWP.fio = "";
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText =
+                $"SELECT userguid, fio, tabnom FROM buffer_workers where card='{card}' LIMIT 1";
+                //                command.Parameters.AddWithValue("$card", "74 4669");
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        myWP.card =card;
+                        myWP.userguid = reader.GetString(0);
+                        myWP.fio = reader.GetString(1);
+                        myWP.tabnom = reader.GetInt64(2);
+                        myWP.isGuardian = 0;
+                        break;
+                    }
+                }
+            }
+            return myWP;
+        }
+
         private void usb_OnDataRecieved(object sender, DataRecievedEventArgs args)
         {
 
@@ -170,26 +247,55 @@ namespace kppApp
                 this.BackColor = Color.DimGray;
                 if (xxx.Length > 0)
                 {
-                   // buttonGuardo.Enabled = false;
                     lastCrossing.card = xxx;
-                    // this.lb_read.Items.Insert(0, xxx+" ("+ xxx.Length.ToString()+")");
-                    string PersDesc = "Карта не найдена!";
-                    WorkerPerson myWP;
-                    if (PersonsStructs.ContainsKey(xxx))
-                    {
-                        myWP = PersonsStructs[xxx];
-                        var guardo = myWP.isGuardian == 1 ? "Да" : "Нет";
-                        PersDesc = $"Табельный №: {myWP.tabnom}\r\nФИО: {myWP.fio}\r\nДолжность: {myWP.job}\r\nБезопасник: {guardo}";
+                    labelEventName.Text = "";
+                    labelEventFamOtc.Text = "";
+                    labelEventUserguid.Text = "";
+                    labelEventName.ForeColor = Color.Black;
+                    labelEventFamOtc.ForeColor = Color.Black;
+                    labelEventUserguid.ForeColor = Color.Black;
 
+                    WorkerPerson myWP = getWorkerByCard(xxx);
+                    if (myWP.userguid != "")
+                    {
+                        panelSignal.BackColor = Color.Transparent;
                         lastCrossing.tabnom = myWP.tabnom;
-                       // if (myWP.isGuardian == 1) buttonGuardo.Enabled = true;
                     }
                     else
                     {
-                        this.BackColor = Color.Coral;
+                        labelEventName.Text = labelTPL.Text;
+                        labelEventName.ForeColor = Color.Coral;
+                        labelEventFamOtc.Text = "";
+                        labelEventUserguid.Text = labelTPL.Text;
+                        labelEventUserguid.ForeColor = Color.Coral;
+                        panelSignal.BackColor = Color.Coral;
                     }
+                    System.DateTime dtDateTime = DateTime.Now;
+                    string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToShortTimeString();
+                    labelEventDate.Text = timeText;
+                    labelEventCard.Text = xxx;
+                    string[] arr=new string[0];
+                    if (myWP.fio != "") {
+                        arr= myWP.fio.Split('@');
+                    };
+                    if (myWP.userguid != "")
+                    {
+                        labelEventUserguid.Text = myWP.userguid;
+                    };
 
-                    //textBox1.Text = "Карта №" + xxx + "\r\n" + PersDesc;
+                    if (arr.Length > 0) {
+                        labelEventName.Text = arr[0];
+                        string s="";
+                        if (arr.Length > 1)
+                        {
+                            s += arr[1];
+                        }
+                        if (arr.Length > 2)
+                        {
+                            s +=" " +  arr[2];
+                        }
+                        labelEventFamOtc.Text = s;
+                    }
                 }
             }
         }
@@ -211,7 +317,7 @@ namespace kppApp
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
-                    SELECT card, tabnom, fio, job, isGuardian FROM buffer_workers
+                    SELECT card, tabnom, fio, userguid, isGuardian FROM buffer_workers
                 ";
                 //                command.Parameters.AddWithValue("$card", "74 4669");
 
@@ -222,9 +328,9 @@ namespace kppApp
                         WorkerPerson myWP = new WorkerPerson();
                         myWP.card = reader.GetString(0);
                         myWP.tabnom = reader.GetInt64(1);
-                        myWP.fio = reader.GetString(2);
-                        myWP.job = reader.GetString(3);
-                        myWP.isGuardian = reader.GetInt16(4);
+                        myWP.fio = reader.GetString(2).Replace("@"," ");
+                        myWP.userguid = reader.GetString(3);
+                        myWP.isGuardian = 0;
                         if (myWP.card != "")
                         {
                             PersonsDictStruct.Add($"{myWP.card}", myWP);
@@ -264,6 +370,8 @@ namespace kppApp
 
         private void XForm1_Load(object sender, EventArgs e)
         {
+            //listView2.DrawColumnHeader += listView2_DrawColumnHeader;
+            //listView2.DrawItem += listView2_DrawItem;
             try
             {
                 this.usb.ProductId = Int32.Parse(this.tb_product.Text, System.Globalization.NumberStyles.HexNumber);
@@ -404,7 +512,7 @@ namespace kppApp
                             {
                                 if (wp.card != "" & wp.fio != "" & wp.tabnom != 0)
                                 {
-                                    command3.CommandText = $"insert into buffer_workers_input(card,fio,tabnom,job,isGuardian) values('{wp.card}','{wp.fio}',{wp.tabnom},'{wp.job}',{wp.isGuardian})";
+                                    command3.CommandText = $"insert into buffer_workers_input(card,fio,tabnom,userguid,isGuardian) values('{wp.card}','{wp.fio}',{wp.tabnom},'{wp.userguid}',0)";
                                     command3.ExecuteNonQuery();
                                 }
                             }
@@ -533,10 +641,6 @@ namespace kppApp
             return first_pass;
         }
 
-        private void label10_Click(object sender, EventArgs e)
-        {
-
-        }
 
         public void label10_DoubleClick(object sender, EventArgs e)
         {
@@ -545,7 +649,7 @@ namespace kppApp
 
             try
             {
-                while (listView2.Items.Count > 0) { listView2.Items.RemoveAt(0); };
+                while (listView2.Items.Count > 1) { listView2.Items.RemoveAt(0); };
                 string qry_select_first_undelivered = @"SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual, isDelivered
                 FROM buffer_passage
                 order by timestampUTC";
@@ -616,7 +720,7 @@ namespace kppApp
             }finally{
                 listView2.Visible = true;
             }
-            label10.Text = $"Счетчик событий: {cnt - 1}";
+            labelEventCounter.Text = $"{cnt - 1}";
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -635,10 +739,7 @@ namespace kppApp
             label10_DoubleClick(sender, e);
         }
 
-        public void setDuty(string fio)
-        {
-            dutyBox.Text = fio;
-        }
+
 
         private void startBtnSelect_Click(object sender, EventArgs e)
         {
@@ -676,7 +777,7 @@ namespace kppApp
                         {
                             lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].tabnom}");
                             lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].fio}");
-                            lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].job}");
+                            lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].userguid}");
                         }
                         else
                         {
@@ -731,5 +832,55 @@ namespace kppApp
                 }
             }
         }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        #region
+        private void listView2_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
+        {
+            e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
+            e.DrawText();
+            using (StringFormat sf = new StringFormat())
+            {
+                // Store the column text alignment, letting it default
+                // to Left if it has not been set to Center or Right.
+                switch (e.Header.TextAlign)
+                {
+                    case HorizontalAlignment.Center:
+                        sf.Alignment = StringAlignment.Center;
+                        break;
+                    case HorizontalAlignment.Right:
+                        sf.Alignment = StringAlignment.Far;
+                        break;
+                }
+
+                // Draw the standard header background.
+                e.DrawBackground();
+
+                // Draw the header text.
+                using (Font headerFont =
+                            new Font("Helvetica", 10, FontStyle.Bold))
+                {
+                    e.Graphics.DrawString(e.Header.Text, headerFont,
+                        Brushes.Black, e.Bounds, sf);
+                }
+            }
+            return;
+
+
+        }
+
+        private void listView2_DrawItem(object sender,
+                                DrawListViewItemEventArgs e)
+        {
+            e.DrawDefault = true;
+        }
+
+        #endregion
+
+
     }
 }

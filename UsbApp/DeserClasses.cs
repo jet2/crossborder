@@ -22,11 +22,20 @@ namespace kppApp
     {
         [JsonProperty("f")] public string fio { get; set; }
         [JsonProperty("t")] public long tabnom { get; set; }
-        [JsonProperty("j")] public string job { get; set; }
+        [JsonProperty("u")] public string userguid { get; set; }
         [JsonProperty("k")] public string card { get; set; }
         [JsonProperty("g")] public int isGuardian { get; set; }
     }
 
+    public class perimeterOperation
+    {
+        [JsonProperty("operid")] public int operid { get; set; }
+        [JsonProperty("operdesc")] public string operdesc { get; set; }
+        [JsonProperty("operhide")] public int operhide { get; set; }
+    }
+
+
+    
     /*
     timestampUTC REAL NOT NULL,
     card TEXT NOT NULL,
