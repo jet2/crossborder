@@ -18,7 +18,7 @@ namespace kppApp
     public partial class XForm1 : Form
     {
         //public static Sniffer mySnifferForm;
-        
+        private bool restSrvState = false;        
         Dictionary<string, WorkerPerson> PersonsStructs;
         Passage lastCrossing = new Passage();
         
@@ -43,6 +43,12 @@ namespace kppApp
             {
                 MessageBox.Show("Не удалось прочитать настройки из config.ini");
             };
+
+            listView3.Columns[1].ImageIndex = 0;
+            listView3.Columns[2].ImageIndex = 0;
+            listView3.Columns[3].ImageIndex = 0;
+            listView3.Columns[4].ImageIndex = 0;
+            listView3.Columns[5].ImageIndex = 0;
         }
 
 
@@ -444,13 +450,14 @@ namespace kppApp
 
         private void timerWorkersUpdate_Tick(object sender, EventArgs e)
         {
+            labelHostAccess.Text = "Недоступен";
             timerWorkersUpdate.Enabled = false;
             threadWorkersUpdater.RunWorkerAsync();
         }
 
         private void updateWorkers(object sender, DoWorkEventArgs e)
         {
-            labelHostAccess.Text = "Недоступен";
+            restSrvState = false;
             // получаем стамп последнего обновления работников с сервера
             var client = new RestClient($"{restServerAddr}/workers/update_ts");
             client.Timeout = 5000;
@@ -466,7 +473,8 @@ namespace kppApp
                 IRestResponse response = client.Execute(request);
                 remote_updated = JsonConvert.DeserializeObject<tsUpdated>(response.Content);
                 // получаем стамп последнего обновления работников локальный
-                labelHostAccess.Text = "Доступен";
+                
+                restSrvState = true;
             }
             catch { }
             using (var connection = new SQLiteConnection(sqlite_connectionstring))
@@ -536,6 +544,7 @@ namespace kppApp
 
         private void updateWorkers_ResultHandler(object sender, RunWorkerCompletedEventArgs e)
         {
+            labelHostAccess.Text = restSrvState ? "Доступен" : "Недоступен";
             // обновляем словарь работников в памяти из локальной БД
             dictionaryWorkersUpdater();
             timerWorkersUpdate.Enabled = true;
@@ -681,7 +690,8 @@ namespace kppApp
                                 zIdx = 1;
                             }
 
-                            lvi.Text = $"{cnt}";
+                            //lvi.Text = $"{cnt}";
+                            lvi.Text = "";
                             lvi.SubItems.Add(first_pass.card);
                             if (PersonsDictStruct.ContainsKey(first_pass.card))
                             {
@@ -879,7 +889,67 @@ namespace kppApp
             e.DrawDefault = true;
         }
 
+
         #endregion
+
+        private void listView2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listView3_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            if (e.Column>=1 && e.Column <= 5)
+            {
+                panelFilterSelect.Visible = true;
+                if (e.Column != 4)
+                {
+                    tabSubfilter.Visible = true;
+                    endPickerSelect.Value = DateTime.Now;
+                    begPickerSelect.Value = endPickerSelect.Value.AddDays(-31);
+                }
+                switch (e.Column)
+                {
+                    case 1:
+                        tabSubfilter.SelectTab(0);
+                        break;
+                    case 2:
+                        tabSubfilter.SelectTab(1);
+                        break;
+                    case 3:
+                        tabSubfilter.SelectTab(2);
+                        break;
+                    case 4:
+                        tabSubfilter.Visible=false;
+                        break;
+                    case 5:
+                        tabSubfilter.SelectTab(3);
+                        break;
+                }
+            }
+            
+            ListView.SelectedListViewItemCollection breakfast = this.listView1.SelectedItems;
+
+            foreach (ListViewItem item in breakfast)
+            {
+                int idx = item.Index;
+                tabControl1.SelectTab(idx);
+                break;
+            }
+            //MessageBox.Show(listView3.Columns[e.Column].Text+" 🖉   💬");
+        }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+            tabSubfilter.Visible=false;
+            panelFilterSelect.Visible = false;
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            tabSubfilter.Visible = false;
+            panelFilterSelect.Visible = false;
+        }
 
 
     }
