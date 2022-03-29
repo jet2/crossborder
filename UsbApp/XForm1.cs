@@ -22,7 +22,7 @@ namespace kppApp
         private int prevScan = 0;
         //public static Sniffer mySnifferForm;
         private bool restSrvState = false;        
-        Passage lastCrossing = new Passage();
+        Passage lastPassage = new Passage();
         
         public static Dictionary<string, string> Persons;
         public static Dictionary<string, WorkerPerson> PersonsDictStruct;
@@ -47,11 +47,11 @@ namespace kppApp
                 MessageBox.Show("Не удалось прочитать настройки из config.ini");
             };
 
-            listView3.Columns[1].ImageIndex = 0;
-            listView3.Columns[2].ImageIndex = 0;
-            listView3.Columns[3].ImageIndex = 0;
-            listView3.Columns[4].ImageIndex = 0;
-            listView3.Columns[5].ImageIndex = 0;
+            listViewHistory.Columns[1].ImageIndex = 0;
+            listViewHistory.Columns[2].ImageIndex = 0;
+            listViewHistory.Columns[3].ImageIndex = 0;
+            listViewHistory.Columns[4].ImageIndex = 0;
+            listViewHistory.Columns[5].ImageIndex = 0;
         }
 
 
@@ -204,6 +204,7 @@ namespace kppApp
             WorkerPerson myWP = new WorkerPerson();
             myWP.userguid = "";
             myWP.fio = "";
+            myWP.card = card;
             using (var connection = new SQLiteConnection(sqlite_connectionstring))
             {
                 connection.Open();
@@ -215,7 +216,7 @@ namespace kppApp
                 {
                     while (reader.Read())
                     {
-                        myWP.card =card;
+
                         myWP.userguid = reader.GetString(0);
                         myWP.fio = reader.GetString(1);
                         myWP.tabnom = reader.GetInt64(2);
@@ -270,18 +271,19 @@ namespace kppApp
                 //args.data.CopyTo(bdata, 2);
                 Array.Copy(args.data, 1, bdata, 0, 100);
 
-                string xxx = BytesToString(bdata);
-                xxx = xxx.TrimEnd('\0');
-                if (xxx.Length < 1) return;
-                lastCrossing.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                string readerBytes = BytesToString(bdata);
+                readerBytes = readerBytes.TrimEnd('\0');
+                if (readerBytes.Length < 1) return;
+                lastPassage.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
 
 
 
                 this.BackColor = Color.DimGray;
-                if (xxx.Length > 0)
+                
+                if (readerBytes.Length > 0)
                 {
-                    lastCrossing.card = xxx;
+                    lastPassage.card = readerBytes;
                     labelEventName.Text = "";
                     labelEventFamOtc.Text = "";
                     labelEventUserguid.Text = "";
@@ -289,12 +291,11 @@ namespace kppApp
                     labelEventFamOtc.ForeColor = Color.Black;
                     labelEventUserguid.ForeColor = Color.Black;
 
-                    WorkerPerson myWP = getWorkerByCard(xxx);
-                    if (myWP.userguid != "")
+                    WorkerPerson myWorkerPerson = getWorkerByCard(readerBytes);
+                    if (myWorkerPerson.userguid != "")
                     {
-                        panelSignal.BackColor = Color.Transparent;
-                        lastCrossing.tabnom = myWP.tabnom;
-                    }
+                        panelSignal2.BackColor = Color.Transparent;
+                     }
                     else
                     {
                         labelEventName.Text = labelTPL.Text;
@@ -302,19 +303,19 @@ namespace kppApp
                         labelEventFamOtc.Text = "";
                         labelEventUserguid.Text = labelTPL.Text;
                         labelEventUserguid.ForeColor = Color.Coral;
-                        panelSignal.BackColor = Color.Coral;
+                        panelSignal2.BackColor = Color.Red;
                     }
                     System.DateTime dtDateTime = DateTime.Now;
                     string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToShortTimeString();
                     labelEventDate.Text = timeText;
-                    labelEventCard.Text = xxx;
+                    labelEventCard.Text = readerBytes;
                     string[] arr=new string[0];
-                    if (myWP.fio != "") {
-                        arr= myWP.fio.Split('@');
+                    if (myWorkerPerson.fio != "") {
+                        arr= myWorkerPerson.fio.Split('@');
                     };
-                    if (myWP.userguid != "")
+                    if (myWorkerPerson.userguid != "")
                     {
-                        labelEventUserguid.Text = myWP.userguid;
+                        labelEventUserguid.Text = myWorkerPerson.userguid;
                     };
 
                     if (arr.Length > 0) {
@@ -330,19 +331,22 @@ namespace kppApp
                         }
                         labelEventFamOtc.Text = s;
                     }
-                }
-                if (comboBoxOperationsMain.SelectedIndex != -1)
-                {
-                    string[] arr2 = new string[0];
-                    arr2 = comboBoxOperationsMain.Text.Split('-');    
-                    if (arr2.Length > 1)
+                    lastPassage.tabnom = myWorkerPerson.tabnom;
+                    lastPassage.card = myWorkerPerson.card;
+                    if (comboBoxOperationsMain.SelectedIndex != -1)
                     {
-                        int ch = -1;
-                        int.TryParse(arr2[0], out ch);
-                        lastCrossing.isOut = ch;
+                        string[] arr2 = new string[0];
+                        arr2 = comboBoxOperationsMain.Text.Split('-');
+                        if (arr2.Length > 1)
+                        {
+                            int ch = -1;
+                            int.TryParse(arr2[0], out ch);
+                            lastPassage.isOut = ch;
+                        }
+                        write2sqlite(lastPassage);
                     }
-                    write2sqlite(lastCrossing);
                 }
+
             }
         }
 
@@ -826,7 +830,7 @@ namespace kppApp
                 //textBoxJSON.Text = $"{dtbegLong}\r\n{dtendLong}\r\n" +  response.Content;
 
 
-                while (listView3.Items.Count > 0) { listView3.Items.RemoveAt(0); };
+                while (listViewHistory.Items.Count > 0) { listViewHistory.Items.RemoveAt(0); };
 
 
                 // заполняем список записей
@@ -869,7 +873,7 @@ namespace kppApp
                         lvi.SubItems.Add($"{myMan}");
                         myMan = first_pass.isManual == 1 ? "Да" : "Нет";
                         lvi.SubItems.Add($"{myMan}");
-                        listView3.Items.Add(lvi);
+                        listViewHistory.Items.Add(lvi);
                         cnt++;
                     }
                 }
@@ -960,12 +964,13 @@ namespace kppApp
         {
             if (e.Column>=1 && e.Column <= 5)
             {
+                endPickerSelect.Value = DateTime.Now;
+                begPickerSelect.Value = endPickerSelect.Value.AddDays(-31);
                 panelFilterSelect.Visible = true;
                 if (e.Column != 4)
                 {
                     tabSubfilter.Visible = true;
-                    endPickerSelect.Value = DateTime.Now;
-                    begPickerSelect.Value = endPickerSelect.Value.AddDays(-31);
+
                 }
                 switch (e.Column)
                 {
@@ -979,14 +984,16 @@ namespace kppApp
                         tabSubfilter.SelectTab(2);
                         break;
                     case 4:
-                        tabSubfilter.Visible=false;
+                        
+                        tabSubfilter.Visible = false;
                         break;
                     case 5:
                         tabSubfilter.SelectTab(3);
+
                         break;
                 }
             }
-            
+            /*
             ListView.SelectedListViewItemCollection breakfast = this.listView1.SelectedItems;
 
             foreach (ListViewItem item in breakfast)
@@ -995,19 +1002,161 @@ namespace kppApp
                 tabSubfilter.SelectTab(idx);
                 break;
             }
+            */
             //MessageBox.Show(listView3.Columns[e.Column].Text+" 🖉   💬");
         }
 
-        private void button14_Click(object sender, EventArgs e)
+        private void buttonHistoryFilterHide_Click(object sender, EventArgs e)
         {
             tabSubfilter.Visible=false;
             panelFilterSelect.Visible = false;
         }
 
-        private void button11_Click(object sender, EventArgs e)
+        private void buttonHistorySelect_Click(object sender, EventArgs e)
         {
+
+            bool withFilter = tabSubfilter.Visible;
             tabSubfilter.Visible = false;
             panelFilterSelect.Visible = false;
+
+            #region history view update
+            string from_clause = " FROM buffer_passage p ";
+            // готовим фильтрацию
+            long tsUTCbeg = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            long tsUTCend = (long)endPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            string where_clause = $" where p.timestampUTC >= {tsUTCbeg} and p.timestampUTC <= {tsUTCend} ";
+
+            if (withFilter)
+            {
+                switch (tabSubfilter.SelectedIndex)
+                {
+                    case 0:
+                        where_clause += $" and p.card='{cardTextSelect.Text}' ";
+                        break;
+                    case 1:
+                        where_clause += $" and p.tabnom={tabnomTextSelect.Text} ";
+                        break;
+                    case 2:
+                        from_clause = " FROM buffer_passage p, buffer_workers w ";
+                        where_clause += $" and p.tabnom=w.tabnom and w.fio is not null and w.fio LIKE '%{fioTextSelect.Text}%' ";
+                        break;
+                    case 3:
+                        if (comboBoxHistoryOperations.SelectedIndex != -1)
+                        {
+                            string[] arr2 = new string[0];
+                            arr2 = comboBoxOperationsMain.Text.Split('-');
+                            if (arr2.Length > 1)
+                            {
+                                int cheker = -1;
+                                int.TryParse(arr2[0], out cheker);
+                                where_clause += $" and isOut={cheker} ";
+                            };
+                        };
+                        break;
+                }
+            }
+
+            listViewHistory.Visible = false;
+            int cnt = 1;
+            
+            try
+            {
+                while (listViewHistory.Items.Count > 0) { listViewHistory.Items.RemoveAt(0); };
+                string qry_select = "SELECT p.passageID, p.timestampUTC, p.card, p.isOut, p.kppId, p.tabnom, p.isManual, p.isDelivered, p.description, p.isСhecked" +
+                $" {from_clause} {where_clause} order by p.timestampUTC";
+
+                using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = qry_select;
+
+                    using (var reader = command.ExecuteReader())
+                    {
+
+                        while (reader.Read())
+                        {
+                            Passage history_pass = new Passage();
+                            history_pass.passageID = reader.GetInt64(0);
+                            history_pass.timestampUTC = reader.GetDouble(1);
+                            history_pass.card = reader.GetString(2);
+                            history_pass.isOut = reader.GetInt16(3);
+                            history_pass.kppId = reader.GetString(4);
+                            history_pass.tabnom = reader.GetInt64(5);
+                            history_pass.isManual = reader.GetInt16(6);
+                            history_pass.isDelivered = reader.GetInt16(7);
+                            history_pass.description += reader.IsDBNull(8) ? String.Empty : reader.GetString(8);
+
+                            ListViewItem lvi = new ListViewItem();
+
+                            lvi.Text = "      ";
+
+                            
+                            //lvi.Text = "";
+                            lvi.SubItems.Add(history_pass.card);
+                            if (PersonsDictStruct.ContainsKey(history_pass.card))
+                            {
+                                lvi.SubItems.Add($"{PersonsDictStruct[history_pass.card].tabnom}");
+                                lvi.SubItems.Add($"{PersonsDictStruct[history_pass.card].fio}");
+                            }
+                            else
+                            {
+                                lvi.SubItems.Add("-");
+                                lvi.SubItems.Add("-");
+                                lvi.ForeColor = Color.Red;
+                                lvi.UseItemStyleForSubItems = false;
+                                lvi.Text += "💡";
+                            }
+
+                            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+                            dtDateTime = dtDateTime.AddSeconds(history_pass.timestampUTC).ToLocalTime();
+                            string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
+                            lvi.SubItems.Add(timeText);
+
+                            string myOperation = "?";
+                            if (OperationsSelector.ContainsKey(history_pass.isOut))
+                            {
+                                myOperation = OperationsSelector[history_pass.isOut];
+                            };
+                            lvi.SubItems.Add($"{myOperation}");
+
+                            string finalManual = "";
+                            if (history_pass.isManual == 1)
+                            {
+                                finalManual += symbol_pencil;
+                            }
+
+                            if (history_pass.description != "")
+                            {
+                                if (finalManual != "")
+                                {
+                                    finalManual += " ";
+                                }
+                                finalManual += symbol_comment;
+                            }
+
+                            lvi.SubItems.Add($"{finalManual}");
+                            string waitSymbol = "";
+                            if (history_pass.isDelivered == 0)
+                            {
+                                waitSymbol += "⌛";
+                            }
+                            
+                            lvi.SubItems.Add($"{cnt} {waitSymbol}");
+                            listViewHistory.Items.Insert(0, lvi);
+                            cnt++;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                listViewHistory.Visible = true;
+            }
+            labelSelectedEventsCount.Text = $"{cnt - 1}";
+
+            #endregion history update
+
         }
 
         private void makeCheck(object sender, EventArgs e)
