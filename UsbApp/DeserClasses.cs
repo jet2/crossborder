@@ -53,5 +53,7 @@ namespace kppApp
         [JsonProperty("kppId")] public string kppId { get; set; }
         [JsonProperty("tabnom")] public long tabnom { get; set; }
         [JsonProperty("isManual")] public int isManual { get; set; }
+        [JsonProperty("isDelivered")] public int isDelivered { get; set; }
+        [JsonProperty("description")] public string description { get; set; }
     }
 }

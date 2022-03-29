@@ -17,13 +17,16 @@ namespace kppApp
 
     public partial class XForm1 : Form
     {
+        private string symbol_pencil = "🖉";
+        private string symbol_comment = "💬";
+        private int prevScan = 0;
         //public static Sniffer mySnifferForm;
         private bool restSrvState = false;        
-        Dictionary<string, WorkerPerson> PersonsStructs;
         Passage lastCrossing = new Passage();
         
         public static Dictionary<string, string> Persons;
         public static Dictionary<string, WorkerPerson> PersonsDictStruct;
+        public static Dictionary<int, string> OperationsSelector = new Dictionary<int, string>();
         private WcfServer srv;
         IniFile INI;
         private string restServerAddr = "http://localhost:3002";
@@ -89,9 +92,6 @@ namespace kppApp
             }
             // read JSON directly from a file
             //            string mypath = AppDomain.CurrentDomain.BaseDirectory  + @"operations.json";
-            
-            
-
 
             using (StreamReader file = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + @"operations.json"))
             {
@@ -104,11 +104,15 @@ namespace kppApp
                     {
                         if (oper.operhide != 1) {
                             xList.Add($"{oper.operid}-{oper.operdesc}");
-                            
+                            OperationsSelector.Add(oper.operid, oper.operdesc);
                         }
                     }
                     operSource = xList.ToArray();
-                    comboBox1.DataSource = operSource;
+                    comboBoxOperationsMain.DataSource = operSource;
+                    comboBoxOperationsEditRed.DataSource = operSource;
+                    comboBoxOperationsEditManual.DataSource = operSource;
+                    comboBoxCreateOperations.DataSource = operSource;
+                    comboBoxHistoryOperations.DataSource = operSource;
                 }
             }
             /*
@@ -134,10 +138,7 @@ namespace kppApp
 
               */
             return result;
-
-
         }
-
 
         private void usb_OnDeviceArrived(object sender, EventArgs e)
         {
@@ -226,10 +227,31 @@ namespace kppApp
             return myWP;
         }
 
+        private void write2sqlite(Passage myPassage)
+        {
+            // записываем информацию в базу данных
+            using (SQLiteConnection Connect = new SQLiteConnection(sqlite_connectionstring))
+            {
+                string commandText = @"INSERT INTO buffer_passage ([timestampUTC], [card], [IsOUT], [KPPID], [tabnom],[isManual],[description],[isСhecked]) 
+                                       VALUES(@timestampUTC, @card, @IsOUT, @KPPID, @tabnom,@isManual,@description, 0)";
+                SQLiteCommand Command = new SQLiteCommand(commandText, Connect);
+                Command.Parameters.AddWithValue("@timestampUTC", myPassage.timestampUTC);
+                Command.Parameters.AddWithValue("@card", myPassage.card);
+                Command.Parameters.AddWithValue("@tabnom", myPassage.tabnom);
+                Command.Parameters.AddWithValue("@IsOut", myPassage.isOut);
+                Command.Parameters.AddWithValue("@KPPID", Environment.MachineName);
+                Command.Parameters.AddWithValue("@isManual", myPassage.isManual);
+                Command.Parameters.AddWithValue("@description", myPassage.description);
+                Connect.Open();
+                Command.ExecuteNonQuery();
+                Connect.Close();
+                // MessageBox.Show("Проход записан в базу данных");
+            }
+            label10_DoubleClick(this, new EventArgs());
+        }
+
         private void usb_OnDataRecieved(object sender, DataRecievedEventArgs args)
         {
-
-            lastCrossing.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             if (InvokeRequired)
             {
                 try
@@ -250,6 +272,12 @@ namespace kppApp
 
                 string xxx = BytesToString(bdata);
                 xxx = xxx.TrimEnd('\0');
+                if (xxx.Length < 1) return;
+                lastCrossing.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+
+
+
+
                 this.BackColor = Color.DimGray;
                 if (xxx.Length > 0)
                 {
@@ -302,6 +330,18 @@ namespace kppApp
                         }
                         labelEventFamOtc.Text = s;
                     }
+                }
+                if (comboBoxOperationsMain.SelectedIndex != -1)
+                {
+                    string[] arr2 = new string[0];
+                    arr2 = comboBoxOperationsMain.Text.Split('-');    
+                    if (arr2.Length > 1)
+                    {
+                        int ch = -1;
+                        int.TryParse(arr2[0], out ch);
+                        lastCrossing.isOut = ch;
+                    }
+                    write2sqlite(lastCrossing);
                 }
             }
         }
@@ -619,7 +659,7 @@ namespace kppApp
 
         private Passage getFirstUndelivered()
         {
-            string qry_select_first_undelivered = @"SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual
+            string qry_select_first_undelivered = @"SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual,description
                 FROM buffer_passage
                 where isDelivered=0
                 order by passageID 
@@ -644,6 +684,7 @@ namespace kppApp
                         first_pass.kppId = reader.GetString(4);
                         first_pass.tabnom = reader.GetInt32(5);
                         first_pass.isManual = reader.GetInt16(6);
+                        first_pass.description += reader.IsDBNull(7) ? String.Empty : reader.GetString(7);
                     }
                 }
             }
@@ -653,15 +694,19 @@ namespace kppApp
 
         public void label10_DoubleClick(object sender, EventArgs e)
         {
-            listView2.Visible = false;
+            listViewHotBuffer.Visible = false;
             int cnt = 1;
-
+            string where_clause = "where isСhecked = 0";
+            if (radioButtonDaily.Checked)
+            {
+                long timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                where_clause = $"where {timestampUTC}-timestampUTC <= 60*60*24 ";
+            }
             try
             {
-                while (listView2.Items.Count > 1) { listView2.Items.RemoveAt(0); };
-                string qry_select_first_undelivered = @"SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual, isDelivered
-                FROM buffer_passage
-                order by timestampUTC";
+                while (listViewHotBuffer.Items.Count > 0) { listViewHotBuffer.Items.RemoveAt(0); };
+                string qry_select_first_undelivered = "SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual, isDelivered, description, isСhecked" +
+                $" FROM buffer_passage {where_clause} order by timestampUTC";
 
                 using (var connection = new SQLiteConnection(sqlite_connectionstring))
                 {
@@ -682,10 +727,12 @@ namespace kppApp
                             first_pass.kppId = reader.GetString(4);
                             first_pass.tabnom = reader.GetInt64(5);
                             first_pass.isManual = reader.GetInt16(6);
-                            int isDelivered = reader.GetInt16(7);
+                            first_pass.isDelivered = reader.GetInt16(7);
+                            first_pass.description += reader.IsDBNull(8) ? String.Empty : reader.GetString(8);
+
                             ListViewItem lvi = new ListViewItem();
                             int zIdx = 0;
-                            if (isDelivered == 1)
+                            if (first_pass.isDelivered == 1)
                             {
                                 zIdx = 1;
                             }
@@ -710,25 +757,37 @@ namespace kppApp
                             dtDateTime = dtDateTime.AddSeconds(first_pass.timestampUTC).ToLocalTime();
                             string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
                             lvi.SubItems.Add(timeText);
-                            string myMan = "Вход";
-                            switch (first_pass.isOut)
+
+                            string myOperation = "?";
+                            if (OperationsSelector.ContainsKey(first_pass.isOut))
                             {
-                                case 1: { myMan = "Выход"; break; };
-                                case 3: { myMan = "Ошибка"; break; };
-                                case 2: { myMan = "Авторизация"; break; };
+                                myOperation = OperationsSelector[first_pass.isOut];
+                            };
+                            lvi.SubItems.Add($"{myOperation}");
+
+                            string finalManual = ""; 
+                            if (first_pass.isManual == 1)
+                            {
+                                finalManual += symbol_pencil;
                             }
-                            lvi.SubItems.Add($"{myMan}");
-                            myMan = first_pass.isManual == 1 ? "Да" : "Нет";
-                            lvi.SubItems.Add($"{myMan}");
-                            listView2.Items.Insert(0, lvi);
+
+                            if (first_pass.description != "")
+                            {
+                                if (finalManual != "")
+                                {
+                                    finalManual += " ";
+                                }
+                                finalManual += symbol_comment;
+                            }
+
+                            lvi.SubItems.Add($"{finalManual}");
+                            listViewHotBuffer.Items.Insert(0, lvi);
                             cnt++;
-
                         }
-
                     }
                 }
             }finally{
-                listView2.Visible = true;
+                listViewHotBuffer.Visible = true;
             }
             labelEventCounter.Text = $"{cnt - 1}";
         }
@@ -933,7 +992,7 @@ namespace kppApp
             foreach (ListViewItem item in breakfast)
             {
                 int idx = item.Index;
-                tabControl1.SelectTab(idx);
+                tabSubfilter.SelectTab(idx);
                 break;
             }
             //MessageBox.Show(listView3.Columns[e.Column].Text+" 🖉   💬");
@@ -951,6 +1010,27 @@ namespace kppApp
             panelFilterSelect.Visible = false;
         }
 
+        private void makeCheck(object sender, EventArgs e)
+        {
+            string qry_check = @"update buffer_passage set isСhecked=1 where isСhecked=0";
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = qry_check;
+                command.ExecuteNonQuery();
+            }
+            label10_DoubleClick(sender, e);
+        }
 
+        private void radioButton1_Click(object sender, EventArgs e)
+        {
+            label10_DoubleClick(sender, e);
+        }
+
+        private void radioButtonDaily_Click(object sender, EventArgs e)
+        {
+            label10_DoubleClick(sender, e);
+        }
     }
 }
