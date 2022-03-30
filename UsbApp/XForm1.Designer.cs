@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("История считываний", 1);
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("История считываний", 1);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(XForm1));
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "", System.Drawing.SystemColors.WindowText, System.Drawing.SystemColors.Window, new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "111-111"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "#12356"),
@@ -42,7 +42,7 @@
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "🖉   💬", System.Drawing.Color.Teal, System.Drawing.Color.White, new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "55555"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "123")}, 0);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "      💡", System.Drawing.Color.Red, System.Drawing.SystemColors.Window, new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "111-111"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "#12356"),
@@ -52,16 +52,11 @@
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "🖉   💬", System.Drawing.Color.Teal, System.Drawing.Color.White, new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "55555"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "123")}, -1);
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
-            new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "1", System.Drawing.SystemColors.WindowText, System.Drawing.SystemColors.Window, new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel)),
-            new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "🖉   💬", System.Drawing.Color.Teal, System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192))))), new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
-            new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "ok050ewk-1bit"),
-            new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "Даудов Ильмутдин Вилович")}, -1);
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
-            new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "1", System.Drawing.SystemColors.WindowText, System.Drawing.SystemColors.Window, new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel)),
-            new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "🖉   💬", System.Drawing.Color.Teal, System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192))))), new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
-            new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "ok050ewk-1bit"),
-            new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "Даудов Ильмутдин Вилович")}, -1);
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new string[] {
+            "1",
+            "2",
+            "3",
+            "4"}, -1);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -88,7 +83,7 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.panel14 = new System.Windows.Forms.Panel();
-            this.button2 = new System.Windows.Forms.Button();
+            this.buttonMakeManual = new System.Windows.Forms.Button();
             this.comboBoxOperationsMain = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.panel15 = new System.Windows.Forms.Panel();
@@ -120,11 +115,13 @@
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnEventID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList2 = new System.Windows.Forms.ImageList(this.components);
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panel12 = new System.Windows.Forms.Panel();
             this.label32 = new System.Windows.Forms.Label();
             this.panel11 = new System.Windows.Forms.Panel();
+            this.labelShomItem = new System.Windows.Forms.Label();
             this.startBtnSelect = new System.Windows.Forms.Button();
             this.radioButtonDaily = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
@@ -168,29 +165,33 @@
             this.columnIndex = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList3 = new System.Windows.Forms.ImageList(this.components);
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label31 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label12 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.listBoxCardNew = new System.Windows.Forms.ListBox();
-            this.listBoxFIONew = new System.Windows.Forms.ListBox();
-            this.listBoxGUIDNew = new System.Windows.Forms.ListBox();
-            this.listView4 = new System.Windows.Forms.ListView();
+            this.editManualEventTabnom = new System.Windows.Forms.NumericUpDown();
+            this.labelManualEventOperation = new System.Windows.Forms.Label();
+            this.labelManualEventCard = new System.Windows.Forms.Label();
+            this.hintsManualEventCard = new System.Windows.Forms.ListBox();
+            this.hintsManualEventFIO = new System.Windows.Forms.ListBox();
+            this.hintsManualEventGUID = new System.Windows.Forms.ListBox();
+            this.lvManualEventSearch = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader17 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader18 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.comboBoxCreateOperations = new System.Windows.Forms.ComboBox();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.comboManualEventOperation = new System.Windows.Forms.ComboBox();
+            this.buttonManualEventSearchByCard = new System.Windows.Forms.Button();
+            this.buttonManualEventSearchByGUID = new System.Windows.Forms.Button();
+            this.buttonManualEventSearchByFIO = new System.Windows.Forms.Button();
+            this.editManualEventComment = new System.Windows.Forms.TextBox();
+            this.editManualEventCard = new System.Windows.Forms.TextBox();
+            this.editManualEventFIO = new System.Windows.Forms.TextBox();
+            this.editManualEventGUID = new System.Windows.Forms.TextBox();
+            this.buttonCancelManualEvent = new System.Windows.Forms.Button();
+            this.buttonOKManualEvent = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label44 = new System.Windows.Forms.Label();
             this.label43 = new System.Windows.Forms.Label();
@@ -198,18 +199,20 @@
             this.label41 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.labelRedOperation = new System.Windows.Forms.Label();
             this.panel9 = new System.Windows.Forms.Panel();
             this.label28 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.label30 = new System.Windows.Forms.Label();
+            this.labelRedEventID = new System.Windows.Forms.Label();
             this.panel8 = new System.Windows.Forms.Panel();
-            this.comboBoxOperationsEditRed = new System.Windows.Forms.ComboBox();
-            this.textBox9 = new System.Windows.Forms.TextBox();
-            this.textBox10 = new System.Windows.Forms.TextBox();
-            this.textBox11 = new System.Windows.Forms.TextBox();
-            this.textBox12 = new System.Windows.Forms.TextBox();
-            this.button12 = new System.Windows.Forms.Button();
-            this.button16 = new System.Windows.Forms.Button();
+            this.comboRedEventOperation = new System.Windows.Forms.ComboBox();
+            this.editRedEventComment = new System.Windows.Forms.TextBox();
+            this.editRedEventCard = new System.Windows.Forms.TextBox();
+            this.editRedEventFIO = new System.Windows.Forms.TextBox();
+            this.editRedEventGUID = new System.Windows.Forms.TextBox();
+            this.buttonCancelRedEvent = new System.Windows.Forms.Button();
+            this.buttonOkRedEvent = new System.Windows.Forms.Button();
             this.label20 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
@@ -221,34 +224,39 @@
             this.label24 = new System.Windows.Forms.Label();
             this.label27 = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
-            this.listBoxCardEdit = new System.Windows.Forms.ListBox();
-            this.listBoxFIOEdit = new System.Windows.Forms.ListBox();
-            this.listBoxGUIDEdit = new System.Windows.Forms.ListBox();
-            this.comboBoxOperationsEditManual = new System.Windows.Forms.ComboBox();
-            this.button9 = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
-            this.button13 = new System.Windows.Forms.Button();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.textBox7 = new System.Windows.Forms.TextBox();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.button15 = new System.Windows.Forms.Button();
-            this.button18 = new System.Windows.Forms.Button();
+            this.editGreenEventTabnom = new System.Windows.Forms.NumericUpDown();
+            this.labelGreenOperation = new System.Windows.Forms.Label();
+            this.labelGreenTabnom = new System.Windows.Forms.Label();
+            this.labelGreenEventID = new System.Windows.Forms.Label();
+            this.hintsGreenEventCard = new System.Windows.Forms.ListBox();
+            this.hintsGreenEventFIO = new System.Windows.Forms.ListBox();
+            this.hintsGreenEventGUID = new System.Windows.Forms.ListBox();
+            this.comboGreenEventOperation = new System.Windows.Forms.ComboBox();
+            this.buttonGreenEventSearchByCard = new System.Windows.Forms.Button();
+            this.buttonGreenEventSearchByGUID = new System.Windows.Forms.Button();
+            this.buttonGreenEventSearchByFIO = new System.Windows.Forms.Button();
+            this.editGreenEventComment = new System.Windows.Forms.TextBox();
+            this.editGreenEventCard = new System.Windows.Forms.TextBox();
+            this.editGreenEventFIO = new System.Windows.Forms.TextBox();
+            this.editGreenEventGUID = new System.Windows.Forms.TextBox();
+            this.buttonCancelGreenEvent = new System.Windows.Forms.Button();
+            this.buttonOkGreenEvent = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
-            this.listView5 = new System.Windows.Forms.ListView();
+            this.lvGreenEventSearch = new System.Windows.Forms.ListView();
             this.columnHeader19 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader20 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader21 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader23 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.button8 = new System.Windows.Forms.Button();
+            this.buttonDeleteGreenEvent = new System.Windows.Forms.Button();
             this.timerWorkersUpdate = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.timerPassageSender = new System.Windows.Forms.Timer(this.components);
             this.usb = new UsbLibrary.UsbHidPort(this.components);
+            this.buttonPOST = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -281,12 +289,14 @@
             this.tabPage3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.editManualEventTabnom)).BeginInit();
             this.tabPage5.SuspendLayout();
             this.panel9.SuspendLayout();
             this.panel8.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.panel7.SuspendLayout();
             this.panel6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.editGreenEventTabnom)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -469,11 +479,11 @@
             this.listView1.FullRowSelect = true;
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listView1.HideSelection = false;
-            listViewItem6.IndentCount = 5;
-            listViewItem8.IndentCount = 5;
+            listViewItem1.IndentCount = 5;
+            listViewItem2.IndentCount = 5;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem6,
-            listViewItem8});
+            listViewItem1,
+            listViewItem2});
             this.listView1.LabelWrap = false;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(28, 227);
@@ -521,7 +531,7 @@
             this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.ItemSize = new System.Drawing.Size(100, 10);
+            this.tabControl1.ItemSize = new System.Drawing.Size(100, 50);
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
@@ -536,11 +546,11 @@
             this.tabPage1.Controls.Add(this.flowLayoutPanel1);
             this.tabPage1.Controls.Add(this.panelSignal);
             this.tabPage1.Controls.Add(this.panel10);
-            this.tabPage1.Location = new System.Drawing.Point(4, 14);
+            this.tabPage1.Location = new System.Drawing.Point(4, 54);
             this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(1572, 946);
+            this.tabPage1.Size = new System.Drawing.Size(1572, 906);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Главное";
             // 
@@ -560,7 +570,7 @@
             // panel14
             // 
             this.panel14.BackColor = System.Drawing.Color.Transparent;
-            this.panel14.Controls.Add(this.button2);
+            this.panel14.Controls.Add(this.buttonMakeManual);
             this.panel14.Controls.Add(this.comboBoxOperationsMain);
             this.panel14.Controls.Add(this.label9);
             this.panel14.Location = new System.Drawing.Point(5, 5);
@@ -569,24 +579,26 @@
             this.panel14.Size = new System.Drawing.Size(460, 190);
             this.panel14.TabIndex = 5;
             // 
-            // button2
+            // buttonMakeManual
             // 
-            this.button2.BackColor = System.Drawing.Color.Teal;
-            this.button2.FlatAppearance.BorderSize = 0;
-            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Location = new System.Drawing.Point(4, 113);
-            this.button2.Margin = new System.Windows.Forms.Padding(2);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(210, 50);
-            this.button2.TabIndex = 13;
-            this.button2.Text = "Создать событие";
-            this.button2.UseVisualStyleBackColor = false;
+            this.buttonMakeManual.BackColor = System.Drawing.Color.Teal;
+            this.buttonMakeManual.FlatAppearance.BorderSize = 0;
+            this.buttonMakeManual.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonMakeManual.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.buttonMakeManual.ForeColor = System.Drawing.Color.White;
+            this.buttonMakeManual.Location = new System.Drawing.Point(4, 113);
+            this.buttonMakeManual.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonMakeManual.Name = "buttonMakeManual";
+            this.buttonMakeManual.Size = new System.Drawing.Size(210, 50);
+            this.buttonMakeManual.TabIndex = 13;
+            this.buttonMakeManual.Text = "Создать событие";
+            this.buttonMakeManual.UseVisualStyleBackColor = false;
+            this.buttonMakeManual.Click += new System.EventHandler(this.buttonMakeManual_Click);
             // 
             // comboBoxOperationsMain
             // 
             this.comboBoxOperationsMain.BackColor = System.Drawing.Color.White;
+            this.comboBoxOperationsMain.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxOperationsMain.DropDownWidth = 450;
             this.comboBoxOperationsMain.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxOperationsMain.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -820,7 +832,7 @@
             // labelEventDate
             // 
             this.labelEventDate.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelEventDate.Font = new System.Drawing.Font("Roboto", 26F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.labelEventDate.Font = new System.Drawing.Font("Roboto", 25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.labelEventDate.Location = new System.Drawing.Point(228, 4);
             this.labelEventDate.Margin = new System.Windows.Forms.Padding(0, 4, 3, 0);
             this.labelEventDate.Name = "labelEventDate";
@@ -917,7 +929,8 @@
             this.columnHeader4,
             this.columnHeader5,
             this.columnHeader6,
-            this.columnHeader7});
+            this.columnHeader7,
+            this.columnEventID});
             this.listViewHotBuffer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewHotBuffer.Font = new System.Drawing.Font("Roboto", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.listViewHotBuffer.ForeColor = System.Drawing.Color.Gray;
@@ -925,10 +938,10 @@
             this.listViewHotBuffer.GridLines = true;
             this.listViewHotBuffer.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewHotBuffer.HideSelection = false;
-            listViewItem4.Checked = true;
-            listViewItem4.StateImageIndex = 1;
+            listViewItem3.Checked = true;
+            listViewItem3.StateImageIndex = 1;
             this.listViewHotBuffer.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem4});
+            listViewItem3});
             this.listViewHotBuffer.Location = new System.Drawing.Point(0, 0);
             this.listViewHotBuffer.Margin = new System.Windows.Forms.Padding(2);
             this.listViewHotBuffer.MultiSelect = false;
@@ -939,7 +952,7 @@
             this.listViewHotBuffer.TabIndex = 3;
             this.listViewHotBuffer.UseCompatibleStateImageBehavior = false;
             this.listViewHotBuffer.View = System.Windows.Forms.View.Details;
-            this.listViewHotBuffer.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
+            this.listViewHotBuffer.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listViewHotBuffer_MouseUp);
             // 
             // columnHeader16
             // 
@@ -952,14 +965,14 @@
             this.columnHeader2.DisplayIndex = 0;
             this.columnHeader2.Text = "Номер карты";
             this.columnHeader2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader2.Width = 156;
+            this.columnHeader2.Width = 143;
             // 
             // columnHeader3
             // 
             this.columnHeader3.DisplayIndex = 1;
             this.columnHeader3.Text = "Таб.номер";
             this.columnHeader3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader3.Width = 144;
+            this.columnHeader3.Width = 122;
             // 
             // columnHeader4
             // 
@@ -973,7 +986,7 @@
             this.columnHeader5.DisplayIndex = 3;
             this.columnHeader5.Text = "Дата регистрации";
             this.columnHeader5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader5.Width = 189;
+            this.columnHeader5.Width = 194;
             // 
             // columnHeader6
             // 
@@ -988,6 +1001,11 @@
             this.columnHeader7.Text = "Вручную";
             this.columnHeader7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.columnHeader7.Width = 132;
+            // 
+            // columnEventID
+            // 
+            this.columnEventID.Text = "";
+            this.columnEventID.Width = 0;
             // 
             // imageList2
             // 
@@ -1034,6 +1052,7 @@
             // 
             this.panel11.BackColor = System.Drawing.Color.White;
             this.panel11.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.panel11.Controls.Add(this.labelShomItem);
             this.panel11.Controls.Add(this.startBtnSelect);
             this.panel11.Controls.Add(this.radioButtonDaily);
             this.panel11.Controls.Add(this.radioButton1);
@@ -1044,6 +1063,15 @@
             this.panel11.Name = "panel11";
             this.panel11.Size = new System.Drawing.Size(1534, 52);
             this.panel11.TabIndex = 3;
+            // 
+            // labelShomItem
+            // 
+            this.labelShomItem.AutoSize = true;
+            this.labelShomItem.Location = new System.Drawing.Point(543, 19);
+            this.labelShomItem.Name = "labelShomItem";
+            this.labelShomItem.Size = new System.Drawing.Size(60, 20);
+            this.labelShomItem.TabIndex = 9;
+            this.labelShomItem.Text = "label31";
             // 
             // startBtnSelect
             // 
@@ -1109,11 +1137,11 @@
             this.tabPage2.Controls.Add(this.label36);
             this.tabPage2.Controls.Add(this.panel1);
             this.tabPage2.Controls.Add(this.panel18);
-            this.tabPage2.Location = new System.Drawing.Point(4, 14);
+            this.tabPage2.Location = new System.Drawing.Point(4, 54);
             this.tabPage2.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage2.Size = new System.Drawing.Size(1572, 946);
+            this.tabPage2.Size = new System.Drawing.Size(1572, 906);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "История";
             // 
@@ -1461,10 +1489,10 @@
             this.listViewHistory.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.listViewHistory.GridLines = true;
             this.listViewHistory.HideSelection = false;
-            listViewItem2.StateImageIndex = 0;
-            listViewItem2.UseItemStyleForSubItems = false;
+            listViewItem4.StateImageIndex = 0;
+            listViewItem4.UseItemStyleForSubItems = false;
             this.listViewHistory.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem2});
+            listViewItem4});
             this.listViewHistory.Location = new System.Drawing.Point(0, 0);
             this.listViewHistory.Margin = new System.Windows.Forms.Padding(2);
             this.listViewHistory.MultiSelect = false;
@@ -1534,15 +1562,25 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(238)))), ((int)(((byte)(233)))));
+            this.tabPage3.Controls.Add(this.label31);
             this.tabPage3.Controls.Add(this.panel4);
             this.tabPage3.Controls.Add(this.panel5);
-            this.tabPage3.Location = new System.Drawing.Point(4, 14);
+            this.tabPage3.Location = new System.Drawing.Point(4, 54);
             this.tabPage3.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage3.Size = new System.Drawing.Size(1572, 946);
+            this.tabPage3.Size = new System.Drawing.Size(1572, 906);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Создание";
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(138, 753);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(60, 20);
+            this.label31.TabIndex = 31;
+            this.label31.Text = "label31";
             // 
             // panel4
             // 
@@ -1600,20 +1638,23 @@
             // panel5
             // 
             this.panel5.BackColor = System.Drawing.Color.White;
-            this.panel5.Controls.Add(this.listBoxCardNew);
-            this.panel5.Controls.Add(this.listBoxFIONew);
-            this.panel5.Controls.Add(this.listBoxGUIDNew);
-            this.panel5.Controls.Add(this.listView4);
-            this.panel5.Controls.Add(this.comboBoxCreateOperations);
-            this.panel5.Controls.Add(this.button7);
-            this.panel5.Controls.Add(this.button5);
-            this.panel5.Controls.Add(this.button6);
-            this.panel5.Controls.Add(this.textBox4);
-            this.panel5.Controls.Add(this.textBox1);
-            this.panel5.Controls.Add(this.textBox3);
-            this.panel5.Controls.Add(this.textBox2);
-            this.panel5.Controls.Add(this.button3);
-            this.panel5.Controls.Add(this.button4);
+            this.panel5.Controls.Add(this.editManualEventTabnom);
+            this.panel5.Controls.Add(this.labelManualEventOperation);
+            this.panel5.Controls.Add(this.labelManualEventCard);
+            this.panel5.Controls.Add(this.hintsManualEventCard);
+            this.panel5.Controls.Add(this.hintsManualEventFIO);
+            this.panel5.Controls.Add(this.hintsManualEventGUID);
+            this.panel5.Controls.Add(this.lvManualEventSearch);
+            this.panel5.Controls.Add(this.comboManualEventOperation);
+            this.panel5.Controls.Add(this.buttonManualEventSearchByCard);
+            this.panel5.Controls.Add(this.buttonManualEventSearchByGUID);
+            this.panel5.Controls.Add(this.buttonManualEventSearchByFIO);
+            this.panel5.Controls.Add(this.editManualEventComment);
+            this.panel5.Controls.Add(this.editManualEventCard);
+            this.panel5.Controls.Add(this.editManualEventFIO);
+            this.panel5.Controls.Add(this.editManualEventGUID);
+            this.panel5.Controls.Add(this.buttonCancelManualEvent);
+            this.panel5.Controls.Add(this.buttonOKManualEvent);
             this.panel5.Controls.Add(this.label4);
             this.panel5.Controls.Add(this.label44);
             this.panel5.Controls.Add(this.label43);
@@ -1626,11 +1667,44 @@
             this.panel5.Size = new System.Drawing.Size(1376, 631);
             this.panel5.TabIndex = 29;
             // 
-            // listBoxCardNew
+            // editManualEventTabnom
             // 
-            this.listBoxCardNew.FormattingEnabled = true;
-            this.listBoxCardNew.ItemHeight = 20;
-            this.listBoxCardNew.Items.AddRange(new object[] {
+            this.editManualEventTabnom.AccessibleName = "";
+            this.editManualEventTabnom.Location = new System.Drawing.Point(248, 596);
+            this.editManualEventTabnom.Maximum = new decimal(new int[] {
+            276447231,
+            23283,
+            0,
+            0});
+            this.editManualEventTabnom.Name = "editManualEventTabnom";
+            this.editManualEventTabnom.Size = new System.Drawing.Size(120, 26);
+            this.editManualEventTabnom.TabIndex = 82;
+            // 
+            // labelManualEventOperation
+            // 
+            this.labelManualEventOperation.AutoSize = true;
+            this.labelManualEventOperation.Location = new System.Drawing.Point(475, 611);
+            this.labelManualEventOperation.Name = "labelManualEventOperation";
+            this.labelManualEventOperation.Size = new System.Drawing.Size(205, 20);
+            this.labelManualEventOperation.TabIndex = 81;
+            this.labelManualEventOperation.Text = "labelManualEventOperation";
+            // 
+            // labelManualEventCard
+            // 
+            this.labelManualEventCard.AutoSize = true;
+            this.labelManualEventCard.Location = new System.Drawing.Point(23, 610);
+            this.labelManualEventCard.Name = "labelManualEventCard";
+            this.labelManualEventCard.Size = new System.Drawing.Size(169, 20);
+            this.labelManualEventCard.TabIndex = 79;
+            this.labelManualEventCard.Text = "labelManualEventCard";
+            // 
+            // hintsManualEventCard
+            // 
+            this.hintsManualEventCard.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.hintsManualEventCard.ForeColor = System.Drawing.Color.DimGray;
+            this.hintsManualEventCard.FormattingEnabled = true;
+            this.hintsManualEventCard.ItemHeight = 24;
+            this.hintsManualEventCard.Items.AddRange(new object[] {
             "1",
             "2",
             "3",
@@ -1645,59 +1719,73 @@
             "0",
             "11",
             "--"});
-            this.listBoxCardNew.Location = new System.Drawing.Point(726, 162);
-            this.listBoxCardNew.Name = "listBoxCardNew";
-            this.listBoxCardNew.Size = new System.Drawing.Size(374, 244);
-            this.listBoxCardNew.TabIndex = 77;
-            this.listBoxCardNew.Visible = false;
+            this.hintsManualEventCard.Location = new System.Drawing.Point(48, 95);
+            this.hintsManualEventCard.Name = "hintsManualEventCard";
+            this.hintsManualEventCard.ScrollAlwaysVisible = true;
+            this.hintsManualEventCard.Size = new System.Drawing.Size(374, 172);
+            this.hintsManualEventCard.TabIndex = 77;
+            this.hintsManualEventCard.Visible = false;
+            this.hintsManualEventCard.MouseClick += new System.Windows.Forms.MouseEventHandler(this.hintsManualEventCard_MouseClick);
+            this.hintsManualEventCard.MouseLeave += new System.EventHandler(this.hintsManualEventCard_MouseLeave);
+            this.hintsManualEventCard.MouseHover += new System.EventHandler(this.hintsManualEventCard_MouseHover);
             // 
-            // listBoxFIONew
+            // hintsManualEventFIO
             // 
-            this.listBoxFIONew.FormattingEnabled = true;
-            this.listBoxFIONew.ItemHeight = 20;
-            this.listBoxFIONew.Location = new System.Drawing.Point(900, 162);
-            this.listBoxFIONew.Name = "listBoxFIONew";
-            this.listBoxFIONew.Size = new System.Drawing.Size(374, 244);
-            this.listBoxFIONew.TabIndex = 77;
-            this.listBoxFIONew.Visible = false;
+            this.hintsManualEventFIO.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.hintsManualEventFIO.ForeColor = System.Drawing.Color.DimGray;
+            this.hintsManualEventFIO.FormattingEnabled = true;
+            this.hintsManualEventFIO.ItemHeight = 24;
+            this.hintsManualEventFIO.Location = new System.Drawing.Point(48, 176);
+            this.hintsManualEventFIO.Name = "hintsManualEventFIO";
+            this.hintsManualEventFIO.ScrollAlwaysVisible = true;
+            this.hintsManualEventFIO.Size = new System.Drawing.Size(374, 172);
+            this.hintsManualEventFIO.TabIndex = 77;
+            this.hintsManualEventFIO.Visible = false;
+            this.hintsManualEventFIO.MouseClick += new System.Windows.Forms.MouseEventHandler(this.hintsManualEventFIO_MouseClick);
+            this.hintsManualEventFIO.MouseLeave += new System.EventHandler(this.hintsManualEventFIO_MouseLeave);
+            this.hintsManualEventFIO.MouseHover += new System.EventHandler(this.hintsManualEventFIO_MouseHover);
             // 
-            // listBoxGUIDNew
+            // hintsManualEventGUID
             // 
-            this.listBoxGUIDNew.FormattingEnabled = true;
-            this.listBoxGUIDNew.ItemHeight = 20;
-            this.listBoxGUIDNew.Location = new System.Drawing.Point(458, 162);
-            this.listBoxGUIDNew.Name = "listBoxGUIDNew";
-            this.listBoxGUIDNew.Size = new System.Drawing.Size(374, 244);
-            this.listBoxGUIDNew.TabIndex = 78;
-            this.listBoxGUIDNew.Visible = false;
+            this.hintsManualEventGUID.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.hintsManualEventGUID.ForeColor = System.Drawing.Color.DimGray;
+            this.hintsManualEventGUID.FormattingEnabled = true;
+            this.hintsManualEventGUID.ItemHeight = 24;
+            this.hintsManualEventGUID.Location = new System.Drawing.Point(48, 255);
+            this.hintsManualEventGUID.Name = "hintsManualEventGUID";
+            this.hintsManualEventGUID.ScrollAlwaysVisible = true;
+            this.hintsManualEventGUID.Size = new System.Drawing.Size(374, 172);
+            this.hintsManualEventGUID.TabIndex = 78;
+            this.hintsManualEventGUID.Visible = false;
+            this.hintsManualEventGUID.MouseClick += new System.Windows.Forms.MouseEventHandler(this.hintsManualEventGUID_MouseClick);
+            this.hintsManualEventGUID.MouseLeave += new System.EventHandler(this.hintsManualEventGUID_MouseLeave);
+            this.hintsManualEventGUID.MouseHover += new System.EventHandler(this.hintsManualEventGUID_MouseHover);
             // 
-            // listView4
+            // lvManualEventSearch
             // 
-            this.listView4.Activation = System.Windows.Forms.ItemActivation.OneClick;
-            this.listView4.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listView4.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.lvManualEventSearch.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.lvManualEventSearch.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lvManualEventSearch.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader15,
             this.columnHeader17,
             this.columnHeader18});
-            this.listView4.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.listView4.GridLines = true;
-            this.listView4.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.listView4.HideSelection = false;
-            listViewItem1.Checked = true;
-            listViewItem1.StateImageIndex = 1;
-            this.listView4.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
-            this.listView4.Location = new System.Drawing.Point(470, 33);
-            this.listView4.Margin = new System.Windows.Forms.Padding(2);
-            this.listView4.MultiSelect = false;
-            this.listView4.Name = "listView4";
-            this.listView4.ShowGroups = false;
-            this.listView4.Size = new System.Drawing.Size(883, 559);
-            this.listView4.SmallImageList = this.imageList2;
-            this.listView4.TabIndex = 64;
-            this.listView4.UseCompatibleStateImageBehavior = false;
-            this.listView4.View = System.Windows.Forms.View.Details;
+            this.lvManualEventSearch.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.lvManualEventSearch.FullRowSelect = true;
+            this.lvManualEventSearch.GridLines = true;
+            this.lvManualEventSearch.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lvManualEventSearch.HideSelection = false;
+            this.lvManualEventSearch.Location = new System.Drawing.Point(470, 33);
+            this.lvManualEventSearch.Margin = new System.Windows.Forms.Padding(2);
+            this.lvManualEventSearch.MultiSelect = false;
+            this.lvManualEventSearch.Name = "lvManualEventSearch";
+            this.lvManualEventSearch.ShowGroups = false;
+            this.lvManualEventSearch.Size = new System.Drawing.Size(883, 559);
+            this.lvManualEventSearch.SmallImageList = this.imageList2;
+            this.lvManualEventSearch.TabIndex = 64;
+            this.lvManualEventSearch.UseCompatibleStateImageBehavior = false;
+            this.lvManualEventSearch.View = System.Windows.Forms.View.Details;
+            this.lvManualEventSearch.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvManualEventSearch_MouseDoubleClick);
             // 
             // columnHeader1
             // 
@@ -1722,138 +1810,151 @@
             this.columnHeader18.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.columnHeader18.Width = 304;
             // 
-            // comboBoxCreateOperations
+            // comboManualEventOperation
             // 
-            this.comboBoxCreateOperations.BackColor = System.Drawing.Color.White;
-            this.comboBoxCreateOperations.DropDownWidth = 450;
-            this.comboBoxCreateOperations.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.comboBoxCreateOperations.IntegralHeight = false;
-            this.comboBoxCreateOperations.ItemHeight = 24;
-            this.comboBoxCreateOperations.Location = new System.Drawing.Point(30, 298);
-            this.comboBoxCreateOperations.Margin = new System.Windows.Forms.Padding(5);
-            this.comboBoxCreateOperations.MaxDropDownItems = 30;
-            this.comboBoxCreateOperations.Name = "comboBoxCreateOperations";
-            this.comboBoxCreateOperations.Size = new System.Drawing.Size(410, 32);
-            this.comboBoxCreateOperations.TabIndex = 63;
-            this.comboBoxCreateOperations.TabStop = false;
+            this.comboManualEventOperation.BackColor = System.Drawing.Color.White;
+            this.comboManualEventOperation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboManualEventOperation.DropDownWidth = 450;
+            this.comboManualEventOperation.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.comboManualEventOperation.IntegralHeight = false;
+            this.comboManualEventOperation.ItemHeight = 24;
+            this.comboManualEventOperation.Location = new System.Drawing.Point(30, 298);
+            this.comboManualEventOperation.Margin = new System.Windows.Forms.Padding(5);
+            this.comboManualEventOperation.MaxDropDownItems = 30;
+            this.comboManualEventOperation.Name = "comboManualEventOperation";
+            this.comboManualEventOperation.Size = new System.Drawing.Size(410, 32);
+            this.comboManualEventOperation.TabIndex = 63;
+            this.comboManualEventOperation.TabStop = false;
             // 
-            // button7
+            // buttonManualEventSearchByCard
             // 
-            this.button7.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.button7.FlatAppearance.BorderSize = 2;
-            this.button7.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button7.ForeColor = System.Drawing.Color.Transparent;
-            this.button7.Image = global::kppApp.Properties.Resources.zoomer;
-            this.button7.Location = new System.Drawing.Point(413, 62);
-            this.button7.Margin = new System.Windows.Forms.Padding(2);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(27, 28);
-            this.button7.TabIndex = 61;
-            this.button7.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.button7.UseVisualStyleBackColor = true;
+            this.buttonManualEventSearchByCard.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.buttonManualEventSearchByCard.FlatAppearance.BorderSize = 2;
+            this.buttonManualEventSearchByCard.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.buttonManualEventSearchByCard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonManualEventSearchByCard.ForeColor = System.Drawing.Color.Transparent;
+            this.buttonManualEventSearchByCard.Image = global::kppApp.Properties.Resources.zoomer;
+            this.buttonManualEventSearchByCard.Location = new System.Drawing.Point(413, 62);
+            this.buttonManualEventSearchByCard.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonManualEventSearchByCard.Name = "buttonManualEventSearchByCard";
+            this.buttonManualEventSearchByCard.Size = new System.Drawing.Size(27, 28);
+            this.buttonManualEventSearchByCard.TabIndex = 61;
+            this.buttonManualEventSearchByCard.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.buttonManualEventSearchByCard.UseVisualStyleBackColor = true;
+            this.buttonManualEventSearchByCard.Click += new System.EventHandler(this.buttonManualEventSearchByCard_Click);
             // 
-            // button5
+            // buttonManualEventSearchByGUID
             // 
-            this.button5.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.button5.FlatAppearance.BorderSize = 2;
-            this.button5.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button5.ForeColor = System.Drawing.Color.Transparent;
-            this.button5.Image = global::kppApp.Properties.Resources.zoomer;
-            this.button5.Location = new System.Drawing.Point(413, 222);
-            this.button5.Margin = new System.Windows.Forms.Padding(2);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(27, 28);
-            this.button5.TabIndex = 61;
-            this.button5.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.button5.UseVisualStyleBackColor = true;
+            this.buttonManualEventSearchByGUID.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.buttonManualEventSearchByGUID.FlatAppearance.BorderSize = 2;
+            this.buttonManualEventSearchByGUID.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.buttonManualEventSearchByGUID.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonManualEventSearchByGUID.ForeColor = System.Drawing.Color.Transparent;
+            this.buttonManualEventSearchByGUID.Image = global::kppApp.Properties.Resources.zoomer;
+            this.buttonManualEventSearchByGUID.Location = new System.Drawing.Point(413, 222);
+            this.buttonManualEventSearchByGUID.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonManualEventSearchByGUID.Name = "buttonManualEventSearchByGUID";
+            this.buttonManualEventSearchByGUID.Size = new System.Drawing.Size(27, 28);
+            this.buttonManualEventSearchByGUID.TabIndex = 61;
+            this.buttonManualEventSearchByGUID.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.buttonManualEventSearchByGUID.UseVisualStyleBackColor = true;
+            this.buttonManualEventSearchByGUID.Click += new System.EventHandler(this.buttonManualEventSearchByGUID_Click);
             // 
-            // button6
+            // buttonManualEventSearchByFIO
             // 
-            this.button6.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.button6.FlatAppearance.BorderSize = 2;
-            this.button6.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button6.ForeColor = System.Drawing.Color.Transparent;
-            this.button6.Image = global::kppApp.Properties.Resources.zoomer;
-            this.button6.Location = new System.Drawing.Point(413, 141);
-            this.button6.Margin = new System.Windows.Forms.Padding(2);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(27, 28);
-            this.button6.TabIndex = 61;
-            this.button6.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.button6.UseVisualStyleBackColor = true;
+            this.buttonManualEventSearchByFIO.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.buttonManualEventSearchByFIO.FlatAppearance.BorderSize = 2;
+            this.buttonManualEventSearchByFIO.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.buttonManualEventSearchByFIO.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonManualEventSearchByFIO.ForeColor = System.Drawing.Color.Transparent;
+            this.buttonManualEventSearchByFIO.Image = global::kppApp.Properties.Resources.zoomer;
+            this.buttonManualEventSearchByFIO.Location = new System.Drawing.Point(413, 141);
+            this.buttonManualEventSearchByFIO.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonManualEventSearchByFIO.Name = "buttonManualEventSearchByFIO";
+            this.buttonManualEventSearchByFIO.Size = new System.Drawing.Size(27, 28);
+            this.buttonManualEventSearchByFIO.TabIndex = 61;
+            this.buttonManualEventSearchByFIO.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.buttonManualEventSearchByFIO.UseVisualStyleBackColor = true;
+            this.buttonManualEventSearchByFIO.Click += new System.EventHandler(this.buttonManualEventSearchByFIO_Click);
             // 
-            // textBox4
+            // editManualEventComment
             // 
-            this.textBox4.BackColor = System.Drawing.Color.White;
-            this.textBox4.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox4.ForeColor = System.Drawing.Color.Silver;
-            this.textBox4.Location = new System.Drawing.Point(30, 378);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(410, 32);
-            this.textBox4.TabIndex = 57;
+            this.editManualEventComment.BackColor = System.Drawing.Color.White;
+            this.editManualEventComment.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editManualEventComment.ForeColor = System.Drawing.Color.Black;
+            this.editManualEventComment.Location = new System.Drawing.Point(30, 378);
+            this.editManualEventComment.Margin = new System.Windows.Forms.Padding(2);
+            this.editManualEventComment.Name = "editManualEventComment";
+            this.editManualEventComment.Size = new System.Drawing.Size(410, 32);
+            this.editManualEventComment.TabIndex = 57;
             // 
-            // textBox1
+            // editManualEventCard
             // 
-            this.textBox1.BackColor = System.Drawing.Color.White;
-            this.textBox1.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox1.Location = new System.Drawing.Point(30, 60);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(374, 32);
-            this.textBox1.TabIndex = 28;
+            this.editManualEventCard.BackColor = System.Drawing.Color.White;
+            this.editManualEventCard.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editManualEventCard.Location = new System.Drawing.Point(30, 60);
+            this.editManualEventCard.Margin = new System.Windows.Forms.Padding(2);
+            this.editManualEventCard.Name = "editManualEventCard";
+            this.editManualEventCard.Size = new System.Drawing.Size(374, 32);
+            this.editManualEventCard.TabIndex = 28;
+            this.editManualEventCard.TextChanged += new System.EventHandler(this.editManualEventCard_TextChanged);
+            this.editManualEventCard.KeyUp += new System.Windows.Forms.KeyEventHandler(this.editManualEventCard_KeyUp);
+            this.editManualEventCard.Leave += new System.EventHandler(this.editManualEventCard_Leave);
             // 
-            // textBox3
+            // editManualEventFIO
             // 
-            this.textBox3.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox3.Location = new System.Drawing.Point(30, 139);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(374, 32);
-            this.textBox3.TabIndex = 33;
+            this.editManualEventFIO.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editManualEventFIO.Location = new System.Drawing.Point(30, 139);
+            this.editManualEventFIO.Margin = new System.Windows.Forms.Padding(2);
+            this.editManualEventFIO.Name = "editManualEventFIO";
+            this.editManualEventFIO.Size = new System.Drawing.Size(374, 32);
+            this.editManualEventFIO.TabIndex = 33;
+            this.editManualEventFIO.KeyUp += new System.Windows.Forms.KeyEventHandler(this.editManualEventFIO_KeyUp);
+            this.editManualEventFIO.Leave += new System.EventHandler(this.editManualEventFIO_Leave);
             // 
-            // textBox2
+            // editManualEventGUID
             // 
-            this.textBox2.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox2.Location = new System.Drawing.Point(30, 220);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(374, 32);
-            this.textBox2.TabIndex = 31;
+            this.editManualEventGUID.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editManualEventGUID.Location = new System.Drawing.Point(30, 220);
+            this.editManualEventGUID.Margin = new System.Windows.Forms.Padding(2);
+            this.editManualEventGUID.Name = "editManualEventGUID";
+            this.editManualEventGUID.Size = new System.Drawing.Size(374, 32);
+            this.editManualEventGUID.TabIndex = 31;
+            this.editManualEventGUID.KeyUp += new System.Windows.Forms.KeyEventHandler(this.editManualEventGUID_KeyUp);
+            this.editManualEventGUID.Leave += new System.EventHandler(this.editManualEventGUID_Leave);
             // 
-            // button3
+            // buttonCancelManualEvent
             // 
-            this.button3.BackColor = System.Drawing.Color.White;
-            this.button3.FlatAppearance.BorderSize = 0;
-            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button3.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.button3.ForeColor = System.Drawing.Color.Black;
-            this.button3.Location = new System.Drawing.Point(33, 545);
-            this.button3.Margin = new System.Windows.Forms.Padding(2);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(190, 42);
-            this.button3.TabIndex = 47;
-            this.button3.Text = "Отмена";
-            this.button3.UseVisualStyleBackColor = false;
+            this.buttonCancelManualEvent.BackColor = System.Drawing.Color.White;
+            this.buttonCancelManualEvent.FlatAppearance.BorderSize = 0;
+            this.buttonCancelManualEvent.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonCancelManualEvent.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.buttonCancelManualEvent.ForeColor = System.Drawing.Color.Black;
+            this.buttonCancelManualEvent.Location = new System.Drawing.Point(33, 545);
+            this.buttonCancelManualEvent.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonCancelManualEvent.Name = "buttonCancelManualEvent";
+            this.buttonCancelManualEvent.Size = new System.Drawing.Size(190, 42);
+            this.buttonCancelManualEvent.TabIndex = 47;
+            this.buttonCancelManualEvent.Text = "Отмена";
+            this.buttonCancelManualEvent.UseVisualStyleBackColor = false;
+            this.buttonCancelManualEvent.Click += new System.EventHandler(this.buttonCancelManualEvent_Click);
             // 
-            // button4
+            // buttonOKManualEvent
             // 
-            this.button4.BackColor = System.Drawing.Color.Gainsboro;
-            this.button4.Enabled = false;
-            this.button4.FlatAppearance.BorderSize = 0;
-            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button4.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.button4.ForeColor = System.Drawing.Color.White;
-            this.button4.Location = new System.Drawing.Point(252, 545);
-            this.button4.Margin = new System.Windows.Forms.Padding(2);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(190, 42);
-            this.button4.TabIndex = 48;
-            this.button4.Text = "Создать";
-            this.button4.UseVisualStyleBackColor = false;
+            this.buttonOKManualEvent.BackColor = System.Drawing.Color.Gainsboro;
+            this.buttonOKManualEvent.Enabled = false;
+            this.buttonOKManualEvent.FlatAppearance.BorderSize = 0;
+            this.buttonOKManualEvent.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonOKManualEvent.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.buttonOKManualEvent.ForeColor = System.Drawing.Color.White;
+            this.buttonOKManualEvent.Location = new System.Drawing.Point(252, 545);
+            this.buttonOKManualEvent.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonOKManualEvent.Name = "buttonOKManualEvent";
+            this.buttonOKManualEvent.Size = new System.Drawing.Size(190, 42);
+            this.buttonOKManualEvent.TabIndex = 48;
+            this.buttonOKManualEvent.Text = "Создать";
+            this.buttonOKManualEvent.UseVisualStyleBackColor = false;
+            this.buttonOKManualEvent.Click += new System.EventHandler(this.buttonOKManualEvent_Click);
             // 
             // label4
             // 
@@ -1929,15 +2030,26 @@
             // tabPage5
             // 
             this.tabPage5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(238)))), ((int)(((byte)(233)))));
+            this.tabPage5.Controls.Add(this.labelRedOperation);
             this.tabPage5.Controls.Add(this.panel9);
+            this.tabPage5.Controls.Add(this.labelRedEventID);
             this.tabPage5.Controls.Add(this.panel8);
-            this.tabPage5.Location = new System.Drawing.Point(4, 14);
+            this.tabPage5.Location = new System.Drawing.Point(4, 54);
             this.tabPage5.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage5.Size = new System.Drawing.Size(1572, 946);
+            this.tabPage5.Size = new System.Drawing.Size(1572, 906);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Красная";
+            // 
+            // labelRedOperation
+            // 
+            this.labelRedOperation.AutoSize = true;
+            this.labelRedOperation.Location = new System.Drawing.Point(399, 669);
+            this.labelRedOperation.Name = "labelRedOperation";
+            this.labelRedOperation.Size = new System.Drawing.Size(142, 20);
+            this.labelRedOperation.TabIndex = 83;
+            this.labelRedOperation.Text = "labelRedOperation";
             // 
             // panel9
             // 
@@ -1992,16 +2104,25 @@
             this.label30.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.label30.Visible = false;
             // 
+            // labelRedEventID
+            // 
+            this.labelRedEventID.AutoSize = true;
+            this.labelRedEventID.Location = new System.Drawing.Point(270, 668);
+            this.labelRedEventID.Name = "labelRedEventID";
+            this.labelRedEventID.Size = new System.Drawing.Size(130, 20);
+            this.labelRedEventID.TabIndex = 82;
+            this.labelRedEventID.Text = "labelRedEventID";
+            // 
             // panel8
             // 
             this.panel8.BackColor = System.Drawing.Color.White;
-            this.panel8.Controls.Add(this.comboBoxOperationsEditRed);
-            this.panel8.Controls.Add(this.textBox9);
-            this.panel8.Controls.Add(this.textBox10);
-            this.panel8.Controls.Add(this.textBox11);
-            this.panel8.Controls.Add(this.textBox12);
-            this.panel8.Controls.Add(this.button12);
-            this.panel8.Controls.Add(this.button16);
+            this.panel8.Controls.Add(this.comboRedEventOperation);
+            this.panel8.Controls.Add(this.editRedEventComment);
+            this.panel8.Controls.Add(this.editRedEventCard);
+            this.panel8.Controls.Add(this.editRedEventFIO);
+            this.panel8.Controls.Add(this.editRedEventGUID);
+            this.panel8.Controls.Add(this.buttonCancelRedEvent);
+            this.panel8.Controls.Add(this.buttonOkRedEvent);
             this.panel8.Controls.Add(this.label20);
             this.panel8.Controls.Add(this.label21);
             this.panel8.Controls.Add(this.label22);
@@ -2013,95 +2134,98 @@
             this.panel8.Size = new System.Drawing.Size(488, 620);
             this.panel8.TabIndex = 33;
             // 
-            // comboBoxOperationsEditRed
+            // comboRedEventOperation
             // 
-            this.comboBoxOperationsEditRed.BackColor = System.Drawing.Color.White;
-            this.comboBoxOperationsEditRed.DropDownWidth = 450;
-            this.comboBoxOperationsEditRed.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.comboBoxOperationsEditRed.IntegralHeight = false;
-            this.comboBoxOperationsEditRed.ItemHeight = 24;
-            this.comboBoxOperationsEditRed.Location = new System.Drawing.Point(30, 298);
-            this.comboBoxOperationsEditRed.Margin = new System.Windows.Forms.Padding(5);
-            this.comboBoxOperationsEditRed.MaxDropDownItems = 30;
-            this.comboBoxOperationsEditRed.Name = "comboBoxOperationsEditRed";
-            this.comboBoxOperationsEditRed.Size = new System.Drawing.Size(410, 32);
-            this.comboBoxOperationsEditRed.TabIndex = 75;
-            this.comboBoxOperationsEditRed.TabStop = false;
+            this.comboRedEventOperation.BackColor = System.Drawing.Color.White;
+            this.comboRedEventOperation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboRedEventOperation.DropDownWidth = 450;
+            this.comboRedEventOperation.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.comboRedEventOperation.IntegralHeight = false;
+            this.comboRedEventOperation.ItemHeight = 24;
+            this.comboRedEventOperation.Location = new System.Drawing.Point(30, 298);
+            this.comboRedEventOperation.Margin = new System.Windows.Forms.Padding(5);
+            this.comboRedEventOperation.MaxDropDownItems = 30;
+            this.comboRedEventOperation.Name = "comboRedEventOperation";
+            this.comboRedEventOperation.Size = new System.Drawing.Size(410, 32);
+            this.comboRedEventOperation.TabIndex = 75;
+            this.comboRedEventOperation.TabStop = false;
             // 
-            // textBox9
+            // editRedEventComment
             // 
-            this.textBox9.BackColor = System.Drawing.Color.White;
-            this.textBox9.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox9.ForeColor = System.Drawing.Color.Silver;
-            this.textBox9.Location = new System.Drawing.Point(30, 378);
-            this.textBox9.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(410, 32);
-            this.textBox9.TabIndex = 69;
+            this.editRedEventComment.BackColor = System.Drawing.Color.White;
+            this.editRedEventComment.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editRedEventComment.ForeColor = System.Drawing.Color.Black;
+            this.editRedEventComment.Location = new System.Drawing.Point(30, 378);
+            this.editRedEventComment.Margin = new System.Windows.Forms.Padding(2);
+            this.editRedEventComment.Name = "editRedEventComment";
+            this.editRedEventComment.Size = new System.Drawing.Size(410, 32);
+            this.editRedEventComment.TabIndex = 69;
+            this.editRedEventComment.TextChanged += new System.EventHandler(this.editRedEventComment_TextChanged);
             // 
-            // textBox10
+            // editRedEventCard
             // 
-            this.textBox10.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.textBox10.Enabled = false;
-            this.textBox10.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox10.Location = new System.Drawing.Point(30, 60);
-            this.textBox10.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new System.Drawing.Size(410, 32);
-            this.textBox10.TabIndex = 64;
+            this.editRedEventCard.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.editRedEventCard.Enabled = false;
+            this.editRedEventCard.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editRedEventCard.Location = new System.Drawing.Point(30, 60);
+            this.editRedEventCard.Margin = new System.Windows.Forms.Padding(2);
+            this.editRedEventCard.Name = "editRedEventCard";
+            this.editRedEventCard.Size = new System.Drawing.Size(410, 32);
+            this.editRedEventCard.TabIndex = 64;
             // 
-            // textBox11
+            // editRedEventFIO
             // 
-            this.textBox11.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.textBox11.Enabled = false;
-            this.textBox11.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox11.Location = new System.Drawing.Point(30, 139);
-            this.textBox11.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox11.Name = "textBox11";
-            this.textBox11.Size = new System.Drawing.Size(409, 32);
-            this.textBox11.TabIndex = 66;
+            this.editRedEventFIO.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.editRedEventFIO.Enabled = false;
+            this.editRedEventFIO.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editRedEventFIO.Location = new System.Drawing.Point(30, 139);
+            this.editRedEventFIO.Margin = new System.Windows.Forms.Padding(2);
+            this.editRedEventFIO.Name = "editRedEventFIO";
+            this.editRedEventFIO.Size = new System.Drawing.Size(409, 32);
+            this.editRedEventFIO.TabIndex = 66;
             // 
-            // textBox12
+            // editRedEventGUID
             // 
-            this.textBox12.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.textBox12.Enabled = false;
-            this.textBox12.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox12.Location = new System.Drawing.Point(30, 220);
-            this.textBox12.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox12.Name = "textBox12";
-            this.textBox12.Size = new System.Drawing.Size(409, 32);
-            this.textBox12.TabIndex = 65;
+            this.editRedEventGUID.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.editRedEventGUID.Enabled = false;
+            this.editRedEventGUID.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editRedEventGUID.Location = new System.Drawing.Point(30, 220);
+            this.editRedEventGUID.Margin = new System.Windows.Forms.Padding(2);
+            this.editRedEventGUID.Name = "editRedEventGUID";
+            this.editRedEventGUID.Size = new System.Drawing.Size(409, 32);
+            this.editRedEventGUID.TabIndex = 65;
             // 
-            // button12
+            // buttonCancelRedEvent
             // 
-            this.button12.BackColor = System.Drawing.Color.White;
-            this.button12.FlatAppearance.BorderSize = 0;
-            this.button12.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button12.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.button12.ForeColor = System.Drawing.Color.Black;
-            this.button12.Location = new System.Drawing.Point(33, 545);
-            this.button12.Margin = new System.Windows.Forms.Padding(2);
-            this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(190, 42);
-            this.button12.TabIndex = 67;
-            this.button12.Text = "Отмена";
-            this.button12.UseVisualStyleBackColor = false;
+            this.buttonCancelRedEvent.BackColor = System.Drawing.Color.White;
+            this.buttonCancelRedEvent.FlatAppearance.BorderSize = 0;
+            this.buttonCancelRedEvent.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonCancelRedEvent.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.buttonCancelRedEvent.ForeColor = System.Drawing.Color.Black;
+            this.buttonCancelRedEvent.Location = new System.Drawing.Point(33, 545);
+            this.buttonCancelRedEvent.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonCancelRedEvent.Name = "buttonCancelRedEvent";
+            this.buttonCancelRedEvent.Size = new System.Drawing.Size(190, 42);
+            this.buttonCancelRedEvent.TabIndex = 67;
+            this.buttonCancelRedEvent.Text = "Отмена";
+            this.buttonCancelRedEvent.UseVisualStyleBackColor = false;
+            this.buttonCancelRedEvent.Click += new System.EventHandler(this.buttonCancelRedEvent_Click);
             // 
-            // button16
+            // buttonOkRedEvent
             // 
-            this.button16.BackColor = System.Drawing.Color.Gainsboro;
-            this.button16.Enabled = false;
-            this.button16.FlatAppearance.BorderSize = 0;
-            this.button16.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button16.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.button16.ForeColor = System.Drawing.Color.White;
-            this.button16.Location = new System.Drawing.Point(252, 545);
-            this.button16.Margin = new System.Windows.Forms.Padding(2);
-            this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(190, 42);
-            this.button16.TabIndex = 68;
-            this.button16.Text = "Создать";
-            this.button16.UseVisualStyleBackColor = false;
+            this.buttonOkRedEvent.BackColor = System.Drawing.Color.Gainsboro;
+            this.buttonOkRedEvent.FlatAppearance.BorderSize = 0;
+            this.buttonOkRedEvent.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonOkRedEvent.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.buttonOkRedEvent.ForeColor = System.Drawing.Color.White;
+            this.buttonOkRedEvent.Location = new System.Drawing.Point(252, 545);
+            this.buttonOkRedEvent.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonOkRedEvent.Name = "buttonOkRedEvent";
+            this.buttonOkRedEvent.Size = new System.Drawing.Size(190, 42);
+            this.buttonOkRedEvent.TabIndex = 68;
+            this.buttonOkRedEvent.Text = "Сохранить";
+            this.buttonOkRedEvent.UseVisualStyleBackColor = false;
+            this.buttonOkRedEvent.Click += new System.EventHandler(this.buttonOkRedEvent_Click);
             // 
             // label20
             // 
@@ -2168,11 +2292,11 @@
             this.tabPage4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(238)))), ((int)(((byte)(233)))));
             this.tabPage4.Controls.Add(this.panel7);
             this.tabPage4.Controls.Add(this.panel6);
-            this.tabPage4.Location = new System.Drawing.Point(4, 14);
+            this.tabPage4.Location = new System.Drawing.Point(4, 54);
             this.tabPage4.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage4.Size = new System.Drawing.Size(1572, 946);
+            this.tabPage4.Size = new System.Drawing.Size(1572, 906);
             this.tabPage4.TabIndex = 5;
             this.tabPage4.Text = "Зеленая";
             // 
@@ -2232,194 +2356,261 @@
             // panel6
             // 
             this.panel6.BackColor = System.Drawing.Color.White;
-            this.panel6.Controls.Add(this.listBoxCardEdit);
-            this.panel6.Controls.Add(this.listBoxFIOEdit);
-            this.panel6.Controls.Add(this.listBoxGUIDEdit);
-            this.panel6.Controls.Add(this.comboBoxOperationsEditManual);
-            this.panel6.Controls.Add(this.button9);
-            this.panel6.Controls.Add(this.button10);
-            this.panel6.Controls.Add(this.button13);
-            this.panel6.Controls.Add(this.textBox5);
-            this.panel6.Controls.Add(this.textBox6);
-            this.panel6.Controls.Add(this.textBox7);
-            this.panel6.Controls.Add(this.textBox8);
-            this.panel6.Controls.Add(this.button15);
-            this.panel6.Controls.Add(this.button18);
+            this.panel6.Controls.Add(this.buttonPOST);
+            this.panel6.Controls.Add(this.editGreenEventTabnom);
+            this.panel6.Controls.Add(this.labelGreenOperation);
+            this.panel6.Controls.Add(this.labelGreenTabnom);
+            this.panel6.Controls.Add(this.labelGreenEventID);
+            this.panel6.Controls.Add(this.hintsGreenEventCard);
+            this.panel6.Controls.Add(this.hintsGreenEventFIO);
+            this.panel6.Controls.Add(this.hintsGreenEventGUID);
+            this.panel6.Controls.Add(this.comboGreenEventOperation);
+            this.panel6.Controls.Add(this.buttonGreenEventSearchByCard);
+            this.panel6.Controls.Add(this.buttonGreenEventSearchByGUID);
+            this.panel6.Controls.Add(this.buttonGreenEventSearchByFIO);
+            this.panel6.Controls.Add(this.editGreenEventComment);
+            this.panel6.Controls.Add(this.editGreenEventCard);
+            this.panel6.Controls.Add(this.editGreenEventFIO);
+            this.panel6.Controls.Add(this.editGreenEventGUID);
+            this.panel6.Controls.Add(this.buttonCancelGreenEvent);
+            this.panel6.Controls.Add(this.buttonOkGreenEvent);
             this.panel6.Controls.Add(this.label2);
             this.panel6.Controls.Add(this.label3);
             this.panel6.Controls.Add(this.label5);
             this.panel6.Controls.Add(this.label18);
             this.panel6.Controls.Add(this.label19);
-            this.panel6.Controls.Add(this.listView5);
-            this.panel6.Controls.Add(this.button8);
+            this.panel6.Controls.Add(this.lvGreenEventSearch);
+            this.panel6.Controls.Add(this.buttonDeleteGreenEvent);
             this.panel6.Location = new System.Drawing.Point(97, 68);
             this.panel6.Margin = new System.Windows.Forms.Padding(2);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(1377, 620);
             this.panel6.TabIndex = 33;
             // 
-            // listBoxCardEdit
+            // editGreenEventTabnom
             // 
-            this.listBoxCardEdit.FormattingEnabled = true;
-            this.listBoxCardEdit.ItemHeight = 20;
-            this.listBoxCardEdit.Location = new System.Drawing.Point(602, 129);
-            this.listBoxCardEdit.Name = "listBoxCardEdit";
-            this.listBoxCardEdit.Size = new System.Drawing.Size(374, 344);
-            this.listBoxCardEdit.TabIndex = 79;
-            this.listBoxCardEdit.Visible = false;
+            this.editGreenEventTabnom.AccessibleName = "";
+            this.editGreenEventTabnom.Location = new System.Drawing.Point(218, 594);
+            this.editGreenEventTabnom.Maximum = new decimal(new int[] {
+            276447231,
+            23283,
+            0,
+            0});
+            this.editGreenEventTabnom.Name = "editGreenEventTabnom";
+            this.editGreenEventTabnom.Size = new System.Drawing.Size(120, 26);
+            this.editGreenEventTabnom.TabIndex = 87;
             // 
-            // listBoxFIOEdit
+            // labelGreenOperation
             // 
-            this.listBoxFIOEdit.FormattingEnabled = true;
-            this.listBoxFIOEdit.ItemHeight = 20;
-            this.listBoxFIOEdit.Location = new System.Drawing.Point(649, 174);
-            this.listBoxFIOEdit.Name = "listBoxFIOEdit";
-            this.listBoxFIOEdit.Size = new System.Drawing.Size(374, 344);
-            this.listBoxFIOEdit.TabIndex = 80;
-            this.listBoxFIOEdit.Visible = false;
+            this.labelGreenOperation.AutoSize = true;
+            this.labelGreenOperation.Location = new System.Drawing.Point(362, 600);
+            this.labelGreenOperation.Name = "labelGreenOperation";
+            this.labelGreenOperation.Size = new System.Drawing.Size(157, 20);
+            this.labelGreenOperation.TabIndex = 86;
+            this.labelGreenOperation.Text = "labelGreenOperation";
             // 
-            // listBoxGUIDEdit
+            // labelGreenTabnom
             // 
-            this.listBoxGUIDEdit.FormattingEnabled = true;
-            this.listBoxGUIDEdit.ItemHeight = 20;
-            this.listBoxGUIDEdit.Location = new System.Drawing.Point(696, 242);
-            this.listBoxGUIDEdit.Name = "listBoxGUIDEdit";
-            this.listBoxGUIDEdit.Size = new System.Drawing.Size(374, 344);
-            this.listBoxGUIDEdit.TabIndex = 81;
-            this.listBoxGUIDEdit.Visible = false;
+            this.labelGreenTabnom.AutoSize = true;
+            this.labelGreenTabnom.Location = new System.Drawing.Point(193, 600);
+            this.labelGreenTabnom.Name = "labelGreenTabnom";
+            this.labelGreenTabnom.Size = new System.Drawing.Size(145, 20);
+            this.labelGreenTabnom.TabIndex = 85;
+            this.labelGreenTabnom.Text = "labelGreenTabnom";
             // 
-            // comboBoxOperationsEditManual
+            // labelGreenEventID
             // 
-            this.comboBoxOperationsEditManual.BackColor = System.Drawing.Color.White;
-            this.comboBoxOperationsEditManual.DropDownWidth = 450;
-            this.comboBoxOperationsEditManual.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.comboBoxOperationsEditManual.IntegralHeight = false;
-            this.comboBoxOperationsEditManual.ItemHeight = 24;
-            this.comboBoxOperationsEditManual.Location = new System.Drawing.Point(30, 297);
-            this.comboBoxOperationsEditManual.Margin = new System.Windows.Forms.Padding(5);
-            this.comboBoxOperationsEditManual.MaxDropDownItems = 30;
-            this.comboBoxOperationsEditManual.Name = "comboBoxOperationsEditManual";
-            this.comboBoxOperationsEditManual.Size = new System.Drawing.Size(410, 32);
-            this.comboBoxOperationsEditManual.TabIndex = 78;
-            this.comboBoxOperationsEditManual.TabStop = false;
+            this.labelGreenEventID.AutoSize = true;
+            this.labelGreenEventID.Location = new System.Drawing.Point(30, 600);
+            this.labelGreenEventID.Name = "labelGreenEventID";
+            this.labelGreenEventID.Size = new System.Drawing.Size(145, 20);
+            this.labelGreenEventID.TabIndex = 84;
+            this.labelGreenEventID.Text = "labelGreenEventID";
             // 
-            // button9
+            // hintsGreenEventCard
             // 
-            this.button9.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.button9.FlatAppearance.BorderSize = 2;
-            this.button9.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.button9.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button9.ForeColor = System.Drawing.Color.Transparent;
-            this.button9.Image = global::kppApp.Properties.Resources.zoomer;
-            this.button9.Location = new System.Drawing.Point(413, 61);
-            this.button9.Margin = new System.Windows.Forms.Padding(2);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(27, 28);
-            this.button9.TabIndex = 75;
-            this.button9.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.button9.UseVisualStyleBackColor = true;
+            this.hintsGreenEventCard.FormattingEnabled = true;
+            this.hintsGreenEventCard.ItemHeight = 20;
+            this.hintsGreenEventCard.Location = new System.Drawing.Point(47, 90);
+            this.hintsGreenEventCard.Name = "hintsGreenEventCard";
+            this.hintsGreenEventCard.Size = new System.Drawing.Size(374, 184);
+            this.hintsGreenEventCard.TabIndex = 79;
+            this.hintsGreenEventCard.Visible = false;
+            this.hintsGreenEventCard.MouseClick += new System.Windows.Forms.MouseEventHandler(this.hintsGreenEventCard_MouseClick);
+            this.hintsGreenEventCard.MouseLeave += new System.EventHandler(this.hintsGreenEventCard_MouseLeave);
+            this.hintsGreenEventCard.MouseHover += new System.EventHandler(this.hintsGreenEventCard_MouseHover);
             // 
-            // button10
+            // hintsGreenEventFIO
             // 
-            this.button10.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.button10.FlatAppearance.BorderSize = 2;
-            this.button10.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.button10.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button10.ForeColor = System.Drawing.Color.Transparent;
-            this.button10.Image = global::kppApp.Properties.Resources.zoomer;
-            this.button10.Location = new System.Drawing.Point(413, 221);
-            this.button10.Margin = new System.Windows.Forms.Padding(2);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(27, 28);
-            this.button10.TabIndex = 76;
-            this.button10.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.button10.UseVisualStyleBackColor = true;
+            this.hintsGreenEventFIO.FormattingEnabled = true;
+            this.hintsGreenEventFIO.ItemHeight = 20;
+            this.hintsGreenEventFIO.Location = new System.Drawing.Point(47, 173);
+            this.hintsGreenEventFIO.Name = "hintsGreenEventFIO";
+            this.hintsGreenEventFIO.Size = new System.Drawing.Size(374, 184);
+            this.hintsGreenEventFIO.TabIndex = 80;
+            this.hintsGreenEventFIO.Visible = false;
+            this.hintsGreenEventFIO.MouseClick += new System.Windows.Forms.MouseEventHandler(this.hintsGreenEventFIO_MouseClick);
+            this.hintsGreenEventFIO.MouseLeave += new System.EventHandler(this.hintsGreenEventFIO_MouseLeave);
+            this.hintsGreenEventFIO.MouseHover += new System.EventHandler(this.hintsGreenEventFIO_MouseHover);
             // 
-            // button13
+            // hintsGreenEventGUID
             // 
-            this.button13.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.button13.FlatAppearance.BorderSize = 2;
-            this.button13.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.button13.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button13.ForeColor = System.Drawing.Color.Transparent;
-            this.button13.Image = global::kppApp.Properties.Resources.zoomer;
-            this.button13.Location = new System.Drawing.Point(413, 140);
-            this.button13.Margin = new System.Windows.Forms.Padding(2);
-            this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(27, 28);
-            this.button13.TabIndex = 77;
-            this.button13.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.button13.UseVisualStyleBackColor = true;
+            this.hintsGreenEventGUID.FormattingEnabled = true;
+            this.hintsGreenEventGUID.ItemHeight = 20;
+            this.hintsGreenEventGUID.Location = new System.Drawing.Point(47, 254);
+            this.hintsGreenEventGUID.Name = "hintsGreenEventGUID";
+            this.hintsGreenEventGUID.Size = new System.Drawing.Size(374, 184);
+            this.hintsGreenEventGUID.TabIndex = 81;
+            this.hintsGreenEventGUID.Visible = false;
+            this.hintsGreenEventGUID.MouseClick += new System.Windows.Forms.MouseEventHandler(this.hintsGreenEventGUID_MouseClick);
+            this.hintsGreenEventGUID.MouseLeave += new System.EventHandler(this.hintsGreenEventGUID_MouseLeave);
+            this.hintsGreenEventGUID.MouseHover += new System.EventHandler(this.hintsGreenEventGUID_MouseHover);
             // 
-            // textBox5
+            // comboGreenEventOperation
             // 
-            this.textBox5.BackColor = System.Drawing.Color.White;
-            this.textBox5.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox5.ForeColor = System.Drawing.Color.Silver;
-            this.textBox5.Location = new System.Drawing.Point(30, 377);
-            this.textBox5.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(410, 32);
-            this.textBox5.TabIndex = 69;
+            this.comboGreenEventOperation.BackColor = System.Drawing.Color.White;
+            this.comboGreenEventOperation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboGreenEventOperation.DropDownWidth = 450;
+            this.comboGreenEventOperation.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.comboGreenEventOperation.IntegralHeight = false;
+            this.comboGreenEventOperation.ItemHeight = 24;
+            this.comboGreenEventOperation.Location = new System.Drawing.Point(30, 297);
+            this.comboGreenEventOperation.Margin = new System.Windows.Forms.Padding(5);
+            this.comboGreenEventOperation.MaxDropDownItems = 30;
+            this.comboGreenEventOperation.Name = "comboGreenEventOperation";
+            this.comboGreenEventOperation.Size = new System.Drawing.Size(410, 32);
+            this.comboGreenEventOperation.TabIndex = 78;
+            this.comboGreenEventOperation.TabStop = false;
             // 
-            // textBox6
+            // buttonGreenEventSearchByCard
             // 
-            this.textBox6.BackColor = System.Drawing.Color.White;
-            this.textBox6.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox6.Location = new System.Drawing.Point(30, 59);
-            this.textBox6.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(374, 32);
-            this.textBox6.TabIndex = 64;
+            this.buttonGreenEventSearchByCard.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.buttonGreenEventSearchByCard.FlatAppearance.BorderSize = 2;
+            this.buttonGreenEventSearchByCard.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.buttonGreenEventSearchByCard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonGreenEventSearchByCard.ForeColor = System.Drawing.Color.Transparent;
+            this.buttonGreenEventSearchByCard.Image = global::kppApp.Properties.Resources.zoomer;
+            this.buttonGreenEventSearchByCard.Location = new System.Drawing.Point(413, 61);
+            this.buttonGreenEventSearchByCard.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonGreenEventSearchByCard.Name = "buttonGreenEventSearchByCard";
+            this.buttonGreenEventSearchByCard.Size = new System.Drawing.Size(27, 28);
+            this.buttonGreenEventSearchByCard.TabIndex = 75;
+            this.buttonGreenEventSearchByCard.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.buttonGreenEventSearchByCard.UseVisualStyleBackColor = true;
+            this.buttonGreenEventSearchByCard.Click += new System.EventHandler(this.buttonGreenEventSearchByCard_Click);
             // 
-            // textBox7
+            // buttonGreenEventSearchByGUID
             // 
-            this.textBox7.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox7.Location = new System.Drawing.Point(30, 138);
-            this.textBox7.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(374, 32);
-            this.textBox7.TabIndex = 66;
+            this.buttonGreenEventSearchByGUID.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.buttonGreenEventSearchByGUID.FlatAppearance.BorderSize = 2;
+            this.buttonGreenEventSearchByGUID.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.buttonGreenEventSearchByGUID.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonGreenEventSearchByGUID.ForeColor = System.Drawing.Color.Transparent;
+            this.buttonGreenEventSearchByGUID.Image = global::kppApp.Properties.Resources.zoomer;
+            this.buttonGreenEventSearchByGUID.Location = new System.Drawing.Point(413, 221);
+            this.buttonGreenEventSearchByGUID.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonGreenEventSearchByGUID.Name = "buttonGreenEventSearchByGUID";
+            this.buttonGreenEventSearchByGUID.Size = new System.Drawing.Size(27, 28);
+            this.buttonGreenEventSearchByGUID.TabIndex = 76;
+            this.buttonGreenEventSearchByGUID.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.buttonGreenEventSearchByGUID.UseVisualStyleBackColor = true;
+            this.buttonGreenEventSearchByGUID.Click += new System.EventHandler(this.buttonGreenEventSearchByGUID_Click);
             // 
-            // textBox8
+            // buttonGreenEventSearchByFIO
             // 
-            this.textBox8.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox8.Location = new System.Drawing.Point(30, 219);
-            this.textBox8.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(374, 32);
-            this.textBox8.TabIndex = 65;
+            this.buttonGreenEventSearchByFIO.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.buttonGreenEventSearchByFIO.FlatAppearance.BorderSize = 2;
+            this.buttonGreenEventSearchByFIO.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.buttonGreenEventSearchByFIO.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonGreenEventSearchByFIO.ForeColor = System.Drawing.Color.Transparent;
+            this.buttonGreenEventSearchByFIO.Image = global::kppApp.Properties.Resources.zoomer;
+            this.buttonGreenEventSearchByFIO.Location = new System.Drawing.Point(413, 140);
+            this.buttonGreenEventSearchByFIO.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonGreenEventSearchByFIO.Name = "buttonGreenEventSearchByFIO";
+            this.buttonGreenEventSearchByFIO.Size = new System.Drawing.Size(27, 28);
+            this.buttonGreenEventSearchByFIO.TabIndex = 77;
+            this.buttonGreenEventSearchByFIO.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.buttonGreenEventSearchByFIO.UseVisualStyleBackColor = true;
+            this.buttonGreenEventSearchByFIO.Click += new System.EventHandler(this.buttonGreenEventSearchByFIO_Click);
             // 
-            // button15
+            // editGreenEventComment
             // 
-            this.button15.BackColor = System.Drawing.Color.White;
-            this.button15.FlatAppearance.BorderSize = 0;
-            this.button15.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button15.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.button15.ForeColor = System.Drawing.Color.Black;
-            this.button15.Location = new System.Drawing.Point(33, 545);
-            this.button15.Margin = new System.Windows.Forms.Padding(2);
-            this.button15.Name = "button15";
-            this.button15.Size = new System.Drawing.Size(190, 42);
-            this.button15.TabIndex = 67;
-            this.button15.Text = "Отмена";
-            this.button15.UseVisualStyleBackColor = false;
+            this.editGreenEventComment.BackColor = System.Drawing.Color.White;
+            this.editGreenEventComment.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editGreenEventComment.ForeColor = System.Drawing.Color.Black;
+            this.editGreenEventComment.Location = new System.Drawing.Point(30, 377);
+            this.editGreenEventComment.Margin = new System.Windows.Forms.Padding(2);
+            this.editGreenEventComment.Name = "editGreenEventComment";
+            this.editGreenEventComment.Size = new System.Drawing.Size(410, 32);
+            this.editGreenEventComment.TabIndex = 69;
             // 
-            // button18
+            // editGreenEventCard
             // 
-            this.button18.BackColor = System.Drawing.Color.Gainsboro;
-            this.button18.Enabled = false;
-            this.button18.FlatAppearance.BorderSize = 0;
-            this.button18.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button18.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.button18.ForeColor = System.Drawing.Color.White;
-            this.button18.Location = new System.Drawing.Point(252, 545);
-            this.button18.Margin = new System.Windows.Forms.Padding(2);
-            this.button18.Name = "button18";
-            this.button18.Size = new System.Drawing.Size(190, 42);
-            this.button18.TabIndex = 68;
-            this.button18.Text = "Создать";
-            this.button18.UseVisualStyleBackColor = false;
+            this.editGreenEventCard.BackColor = System.Drawing.Color.White;
+            this.editGreenEventCard.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editGreenEventCard.Location = new System.Drawing.Point(30, 59);
+            this.editGreenEventCard.Margin = new System.Windows.Forms.Padding(2);
+            this.editGreenEventCard.Name = "editGreenEventCard";
+            this.editGreenEventCard.Size = new System.Drawing.Size(374, 32);
+            this.editGreenEventCard.TabIndex = 64;
+            this.editGreenEventCard.TextChanged += new System.EventHandler(this.editGreenEventCard_TextChanged);
+            this.editGreenEventCard.KeyUp += new System.Windows.Forms.KeyEventHandler(this.editGreenEventCard_KeyUp);
+            this.editGreenEventCard.Leave += new System.EventHandler(this.editGreenEventCard_Leave);
+            // 
+            // editGreenEventFIO
+            // 
+            this.editGreenEventFIO.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editGreenEventFIO.Location = new System.Drawing.Point(30, 138);
+            this.editGreenEventFIO.Margin = new System.Windows.Forms.Padding(2);
+            this.editGreenEventFIO.Name = "editGreenEventFIO";
+            this.editGreenEventFIO.Size = new System.Drawing.Size(374, 32);
+            this.editGreenEventFIO.TabIndex = 66;
+            this.editGreenEventFIO.KeyUp += new System.Windows.Forms.KeyEventHandler(this.editGreenEventFIO_KeyUp);
+            this.editGreenEventFIO.Leave += new System.EventHandler(this.editGreenEventFIO_Leave);
+            // 
+            // editGreenEventGUID
+            // 
+            this.editGreenEventGUID.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.editGreenEventGUID.Location = new System.Drawing.Point(30, 219);
+            this.editGreenEventGUID.Margin = new System.Windows.Forms.Padding(2);
+            this.editGreenEventGUID.Name = "editGreenEventGUID";
+            this.editGreenEventGUID.Size = new System.Drawing.Size(374, 32);
+            this.editGreenEventGUID.TabIndex = 65;
+            this.editGreenEventGUID.KeyUp += new System.Windows.Forms.KeyEventHandler(this.editGreenEventGUID_KeyUp);
+            this.editGreenEventGUID.Leave += new System.EventHandler(this.editGreenEventGUID_Leave);
+            // 
+            // buttonCancelGreenEvent
+            // 
+            this.buttonCancelGreenEvent.BackColor = System.Drawing.Color.White;
+            this.buttonCancelGreenEvent.FlatAppearance.BorderSize = 0;
+            this.buttonCancelGreenEvent.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonCancelGreenEvent.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.buttonCancelGreenEvent.ForeColor = System.Drawing.Color.Black;
+            this.buttonCancelGreenEvent.Location = new System.Drawing.Point(33, 545);
+            this.buttonCancelGreenEvent.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonCancelGreenEvent.Name = "buttonCancelGreenEvent";
+            this.buttonCancelGreenEvent.Size = new System.Drawing.Size(124, 42);
+            this.buttonCancelGreenEvent.TabIndex = 67;
+            this.buttonCancelGreenEvent.Text = "Отмена";
+            this.buttonCancelGreenEvent.UseVisualStyleBackColor = false;
+            this.buttonCancelGreenEvent.Click += new System.EventHandler(this.buttonCancelGreenEvent_Click);
+            // 
+            // buttonOkGreenEvent
+            // 
+            this.buttonOkGreenEvent.BackColor = System.Drawing.Color.Gainsboro;
+            this.buttonOkGreenEvent.Enabled = false;
+            this.buttonOkGreenEvent.FlatAppearance.BorderSize = 0;
+            this.buttonOkGreenEvent.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonOkGreenEvent.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.buttonOkGreenEvent.ForeColor = System.Drawing.Color.White;
+            this.buttonOkGreenEvent.Location = new System.Drawing.Point(182, 545);
+            this.buttonOkGreenEvent.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonOkGreenEvent.Name = "buttonOkGreenEvent";
+            this.buttonOkGreenEvent.Size = new System.Drawing.Size(260, 42);
+            this.buttonOkGreenEvent.TabIndex = 68;
+            this.buttonOkGreenEvent.Text = "Сохранить изменения";
+            this.buttonOkGreenEvent.UseVisualStyleBackColor = false;
+            this.buttonOkGreenEvent.Click += new System.EventHandler(this.buttonOkGreenEvent_Click);
             // 
             // label2
             // 
@@ -2481,33 +2672,33 @@
             this.label19.TabIndex = 74;
             this.label19.Text = "Комментарий";
             // 
-            // listView5
+            // lvGreenEventSearch
             // 
-            this.listView5.Activation = System.Windows.Forms.ItemActivation.OneClick;
-            this.listView5.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listView5.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.lvGreenEventSearch.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.lvGreenEventSearch.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lvGreenEventSearch.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader19,
             this.columnHeader20,
             this.columnHeader21,
             this.columnHeader23});
-            this.listView5.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.listView5.GridLines = true;
-            this.listView5.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.listView5.HideSelection = false;
-            listViewItem3.Checked = true;
-            listViewItem3.StateImageIndex = 1;
-            this.listView5.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3});
-            this.listView5.Location = new System.Drawing.Point(470, 33);
-            this.listView5.Margin = new System.Windows.Forms.Padding(2);
-            this.listView5.MultiSelect = false;
-            this.listView5.Name = "listView5";
-            this.listView5.ShowGroups = false;
-            this.listView5.Size = new System.Drawing.Size(883, 559);
-            this.listView5.SmallImageList = this.imageList2;
-            this.listView5.TabIndex = 50;
-            this.listView5.UseCompatibleStateImageBehavior = false;
-            this.listView5.View = System.Windows.Forms.View.Details;
+            this.lvGreenEventSearch.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.lvGreenEventSearch.FullRowSelect = true;
+            this.lvGreenEventSearch.GridLines = true;
+            this.lvGreenEventSearch.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lvGreenEventSearch.HideSelection = false;
+            this.lvGreenEventSearch.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem5});
+            this.lvGreenEventSearch.Location = new System.Drawing.Point(470, 33);
+            this.lvGreenEventSearch.Margin = new System.Windows.Forms.Padding(2);
+            this.lvGreenEventSearch.MultiSelect = false;
+            this.lvGreenEventSearch.Name = "lvGreenEventSearch";
+            this.lvGreenEventSearch.ShowGroups = false;
+            this.lvGreenEventSearch.Size = new System.Drawing.Size(883, 559);
+            this.lvGreenEventSearch.SmallImageList = this.imageList2;
+            this.lvGreenEventSearch.TabIndex = 50;
+            this.lvGreenEventSearch.UseCompatibleStateImageBehavior = false;
+            this.lvGreenEventSearch.View = System.Windows.Forms.View.Details;
+            this.lvGreenEventSearch.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvGreenEventSearch_MouseDoubleClick);
             // 
             // columnHeader19
             // 
@@ -2532,20 +2723,21 @@
             this.columnHeader23.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.columnHeader23.Width = 304;
             // 
-            // button8
+            // buttonDeleteGreenEvent
             // 
-            this.button8.BackColor = System.Drawing.Color.White;
-            this.button8.FlatAppearance.BorderSize = 0;
-            this.button8.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button8.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.button8.ForeColor = System.Drawing.Color.Black;
-            this.button8.Location = new System.Drawing.Point(34, 479);
-            this.button8.Margin = new System.Windows.Forms.Padding(2);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(409, 42);
-            this.button8.TabIndex = 45;
-            this.button8.Text = "Удалить запись";
-            this.button8.UseVisualStyleBackColor = false;
+            this.buttonDeleteGreenEvent.BackColor = System.Drawing.Color.White;
+            this.buttonDeleteGreenEvent.FlatAppearance.BorderSize = 0;
+            this.buttonDeleteGreenEvent.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonDeleteGreenEvent.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.buttonDeleteGreenEvent.ForeColor = System.Drawing.Color.Black;
+            this.buttonDeleteGreenEvent.Location = new System.Drawing.Point(34, 479);
+            this.buttonDeleteGreenEvent.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonDeleteGreenEvent.Name = "buttonDeleteGreenEvent";
+            this.buttonDeleteGreenEvent.Size = new System.Drawing.Size(409, 42);
+            this.buttonDeleteGreenEvent.TabIndex = 45;
+            this.buttonDeleteGreenEvent.Text = "Удалить запись";
+            this.buttonDeleteGreenEvent.UseVisualStyleBackColor = false;
+            this.buttonDeleteGreenEvent.Click += new System.EventHandler(this.buttonDeleteGreenEvent_Click);
             // 
             // timerWorkersUpdate
             // 
@@ -2566,6 +2758,16 @@
             this.usb.OnDeviceArrived += new System.EventHandler(this.usb_OnDeviceArrived);
             this.usb.OnDeviceRemoved += new System.EventHandler(this.usb_OnDeviceRemoved);
             this.usb.OnDataRecieved += new UsbLibrary.DataRecievedEventHandler(this.usb_OnDataRecieved);
+            // 
+            // buttonPOST
+            // 
+            this.buttonPOST.Location = new System.Drawing.Point(206, 15);
+            this.buttonPOST.Name = "buttonPOST";
+            this.buttonPOST.Size = new System.Drawing.Size(131, 32);
+            this.buttonPOST.TabIndex = 88;
+            this.buttonPOST.Text = "POST";
+            this.buttonPOST.UseVisualStyleBackColor = true;
+            this.buttonPOST.Click += new System.EventHandler(this.buttonPOST_Click);
             // 
             // XForm1
             // 
@@ -2621,10 +2823,13 @@
             this.panel1.ResumeLayout(false);
             this.panel18.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.editManualEventTabnom)).EndInit();
             this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
             this.panel9.ResumeLayout(false);
             this.panel8.ResumeLayout(false);
             this.panel8.PerformLayout();
@@ -2632,6 +2837,7 @@
             this.panel7.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.editGreenEventTabnom)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2686,19 +2892,19 @@
         private System.Windows.Forms.Panel panel11;
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox editManualEventFIO;
+        private System.Windows.Forms.TextBox editManualEventGUID;
+        private System.Windows.Forms.TextBox editManualEventCard;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.ColumnHeader columnHeader16;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button buttonCancelManualEvent;
+        private System.Windows.Forms.Button buttonOKManualEvent;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.ListView listView5;
+        private System.Windows.Forms.Button buttonDeleteGreenEvent;
+        private System.Windows.Forms.ListView lvGreenEventSearch;
         private System.Windows.Forms.ColumnHeader columnHeader19;
         private System.Windows.Forms.ColumnHeader columnHeader20;
         private System.Windows.Forms.ColumnHeader columnHeader21;
@@ -2706,12 +2912,12 @@
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.RadioButton radioButtonDaily;
         private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox editManualEventComment;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button buttonManualEventSearchByFIO;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Panel panel14;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button buttonMakeManual;
         private System.Windows.Forms.ComboBox comboBoxOperationsMain;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Panel panel15;
@@ -2771,40 +2977,40 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.ComboBox comboBoxCreateOperations;
+        private System.Windows.Forms.ComboBox comboManualEventOperation;
         private System.Windows.Forms.Label label44;
         private System.Windows.Forms.Label label43;
         private System.Windows.Forms.Label label42;
         private System.Windows.Forms.Label label41;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.ComboBox comboBoxOperationsEditManual;
-        private System.Windows.Forms.Button button9;
-        private System.Windows.Forms.Button button10;
-        private System.Windows.Forms.Button button13;
-        private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.TextBox textBox7;
-        private System.Windows.Forms.TextBox textBox8;
-        private System.Windows.Forms.Button button15;
-        private System.Windows.Forms.Button button18;
+        private System.Windows.Forms.Button buttonManualEventSearchByCard;
+        private System.Windows.Forms.Button buttonManualEventSearchByGUID;
+        private System.Windows.Forms.ComboBox comboGreenEventOperation;
+        private System.Windows.Forms.Button buttonGreenEventSearchByCard;
+        private System.Windows.Forms.Button buttonGreenEventSearchByGUID;
+        private System.Windows.Forms.Button buttonGreenEventSearchByFIO;
+        private System.Windows.Forms.TextBox editGreenEventComment;
+        private System.Windows.Forms.TextBox editGreenEventCard;
+        private System.Windows.Forms.TextBox editGreenEventFIO;
+        private System.Windows.Forms.TextBox editGreenEventGUID;
+        private System.Windows.Forms.Button buttonCancelGreenEvent;
+        private System.Windows.Forms.Button buttonOkGreenEvent;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.ListView listView4;
+        private System.Windows.Forms.ListView lvManualEventSearch;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader15;
         private System.Windows.Forms.ColumnHeader columnHeader17;
         private System.Windows.Forms.ColumnHeader columnHeader18;
-        private System.Windows.Forms.ComboBox comboBoxOperationsEditRed;
-        private System.Windows.Forms.TextBox textBox9;
-        private System.Windows.Forms.TextBox textBox10;
-        private System.Windows.Forms.TextBox textBox11;
-        private System.Windows.Forms.TextBox textBox12;
-        private System.Windows.Forms.Button button12;
-        private System.Windows.Forms.Button button16;
+        private System.Windows.Forms.ComboBox comboRedEventOperation;
+        private System.Windows.Forms.TextBox editRedEventComment;
+        private System.Windows.Forms.TextBox editRedEventCard;
+        private System.Windows.Forms.TextBox editRedEventFIO;
+        private System.Windows.Forms.TextBox editRedEventGUID;
+        private System.Windows.Forms.Button buttonCancelRedEvent;
+        private System.Windows.Forms.Button buttonOkRedEvent;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label22;
@@ -2814,16 +3020,29 @@
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.ListBox listBoxCardNew;
-        private System.Windows.Forms.ListBox listBoxFIONew;
-        private System.Windows.Forms.ListBox listBoxGUIDNew;
+        private System.Windows.Forms.ListBox hintsManualEventCard;
+        private System.Windows.Forms.ListBox hintsManualEventFIO;
+        private System.Windows.Forms.ListBox hintsManualEventGUID;
         private System.Windows.Forms.Panel panel9;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.ListBox listBoxCardEdit;
-        private System.Windows.Forms.ListBox listBoxFIOEdit;
-        private System.Windows.Forms.ListBox listBoxGUIDEdit;
+        private System.Windows.Forms.ListBox hintsGreenEventCard;
+        private System.Windows.Forms.ListBox hintsGreenEventFIO;
+        private System.Windows.Forms.ListBox hintsGreenEventGUID;
         private System.Windows.Forms.ColumnHeader columnIndex;
+        private System.Windows.Forms.Label labelManualEventOperation;
+        private System.Windows.Forms.Label labelManualEventCard;
+        private System.Windows.Forms.Label labelRedOperation;
+        private System.Windows.Forms.Label labelRedEventID;
+        private System.Windows.Forms.Label labelGreenOperation;
+        private System.Windows.Forms.Label labelGreenTabnom;
+        private System.Windows.Forms.Label labelGreenEventID;
+        private System.Windows.Forms.ColumnHeader columnEventID;
+        private System.Windows.Forms.Label labelShomItem;
+        private System.Windows.Forms.NumericUpDown editManualEventTabnom;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.NumericUpDown editGreenEventTabnom;
+        private System.Windows.Forms.Button buttonPOST;
     }
 }

@@ -17,16 +17,25 @@ namespace kppApp
 
     public partial class XForm1 : Form
     {
+        int sensibleTextLenght = 6;
         private string symbol_pencil = "🖉";
         private string symbol_comment = "💬";
         private int prevScan = 0;
         //public static Sniffer mySnifferForm;
-        private bool restSrvState = false;        
+        private bool restSrvState = false;
+        bool preventorManualEventCard = false;
+        bool preventorManualEventFIO = false;
+        bool preventorManualEventGUID = false;
+        bool preventorGreenEventCard = false;
+        bool preventorGreenEventFIO = false;
+        bool preventorGreenEventGUID = false;
+
         Passage lastPassage = new Passage();
         
         public static Dictionary<string, string> Persons;
         public static Dictionary<string, WorkerPerson> PersonsDictStruct;
         public static Dictionary<int, string> OperationsSelector = new Dictionary<int, string>();
+        public static Dictionary<string, string> OperationsSelector4View = new Dictionary<string, string>();
         private WcfServer srv;
         IniFile INI;
         private string restServerAddr = "http://localhost:3002";
@@ -99,20 +108,38 @@ namespace kppApp
                 List<perimeterOperation> perop = (List<perimeterOperation>)serializer.Deserialize(file, typeof(List<perimeterOperation>));
                 if (perop.Count > 0)
                 {
-                    List<string> xList= new List<string>(); 
+                   //xList<string> xList= new List<string>(); 
                     foreach (perimeterOperation oper in perop)
                     {
                         if (oper.operhide != 1) {
-                            xList.Add($"{oper.operid}-{oper.operdesc}");
-                            OperationsSelector.Add(oper.operid, oper.operdesc);
+                            //xList.Add($"{oper.operid}-{oper.operdesc}");
+                            OperationsSelector.Add(oper.operid, $"{oper.operid}-{oper.operdesc}");
+                            OperationsSelector4View.Add($"{oper.operid}", oper.operdesc);
                         }
                     }
-                    operSource = xList.ToArray();
-                    comboBoxOperationsMain.DataSource = operSource;
-                    comboBoxOperationsEditRed.DataSource = operSource;
-                    comboBoxOperationsEditManual.DataSource = operSource;
-                    comboBoxCreateOperations.DataSource = operSource;
-                    comboBoxHistoryOperations.DataSource = operSource;
+                    //operSource = xList.ToArray();
+
+                    comboBoxOperationsMain.DataSource = new BindingSource(OperationsSelector, null);
+                    comboBoxOperationsMain.DisplayMember = "Value";
+                    comboBoxOperationsMain.ValueMember = "Key";
+
+
+                    comboManualEventOperation.DataSource = new BindingSource(OperationsSelector, null);
+                    comboManualEventOperation.DisplayMember = "Value";
+                    comboManualEventOperation.ValueMember = "Key";
+
+
+                    comboRedEventOperation.DataSource = new BindingSource(OperationsSelector, null);
+                    comboRedEventOperation.DisplayMember = "Value";
+                    comboRedEventOperation.ValueMember = "Key";
+
+                    comboGreenEventOperation.DataSource = new BindingSource(OperationsSelector, null);
+                    comboGreenEventOperation.DisplayMember = "Value";
+                    comboGreenEventOperation.ValueMember = "Key";
+
+                    comboBoxHistoryOperations.DataSource = new BindingSource(OperationsSelector, null);
+                    comboBoxHistoryOperations.DisplayMember = "Value";
+                    comboBoxHistoryOperations.ValueMember = "Key";
                 }
             }
             /*
@@ -228,6 +255,19 @@ namespace kppApp
             return myWP;
         }
 
+        private void uodate2sqlite(Passage p, string old_id)
+        {
+            using (SQLiteConnection Connect = new SQLiteConnection(sqlite_connectionstring))
+            {
+                string commandText = $"update buffer_passage set  card='{p.card}', IsOUT={p.operCode}, tabnom={p.tabnom}, description='{p.description}' where passageId={old_id} and isDelivered=0";
+                SQLiteCommand Command = new SQLiteCommand(commandText, Connect);
+                Connect.Open();
+                Command.ExecuteNonQuery();
+                Connect.Close();
+            }
+            label10_DoubleClick(this, new EventArgs());
+        }
+
         private void write2sqlite(Passage myPassage)
         {
             // записываем информацию в базу данных
@@ -239,7 +279,7 @@ namespace kppApp
                 Command.Parameters.AddWithValue("@timestampUTC", myPassage.timestampUTC);
                 Command.Parameters.AddWithValue("@card", myPassage.card);
                 Command.Parameters.AddWithValue("@tabnom", myPassage.tabnom);
-                Command.Parameters.AddWithValue("@IsOut", myPassage.isOut);
+                Command.Parameters.AddWithValue("@IsOut", myPassage.operCode);
                 Command.Parameters.AddWithValue("@KPPID", Environment.MachineName);
                 Command.Parameters.AddWithValue("@isManual", myPassage.isManual);
                 Command.Parameters.AddWithValue("@description", myPassage.description);
@@ -335,14 +375,10 @@ namespace kppApp
                     lastPassage.card = myWorkerPerson.card;
                     if (comboBoxOperationsMain.SelectedIndex != -1)
                     {
-                        string[] arr2 = new string[0];
-                        arr2 = comboBoxOperationsMain.Text.Split('-');
-                        if (arr2.Length > 1)
-                        {
-                            int ch = -1;
-                            int.TryParse(arr2[0], out ch);
-                            lastPassage.isOut = ch;
-                        }
+                        //string key = ((KeyValuePair<int, string>)comboBox1.SelectedItem).Key;
+                        //string value = ((KeyValuePair<string, string>)comboBox1.SelectedItem).Value;
+                        object xxx = comboBoxOperationsMain.SelectedItem;
+                        lastPassage.operCode = ((KeyValuePair<int, string>)xxx).Key;
                         write2sqlite(lastPassage);
                     }
                 }
@@ -684,7 +720,7 @@ namespace kppApp
                         first_pass.passageID = reader.GetInt64(0);
                         first_pass.timestampUTC = reader.GetDouble(1);
                         first_pass.card = reader.GetString(2);
-                        first_pass.isOut = reader.GetInt16(3);
+                        first_pass.operCode = reader.GetInt16(3);
                         first_pass.kppId = reader.GetString(4);
                         first_pass.tabnom = reader.GetInt32(5);
                         first_pass.isManual = reader.GetInt16(6);
@@ -727,7 +763,7 @@ namespace kppApp
                             first_pass.passageID = reader.GetInt64(0);
                             first_pass.timestampUTC = reader.GetDouble(1);
                             first_pass.card = reader.GetString(2);
-                            first_pass.isOut = reader.GetInt16(3);
+                            first_pass.operCode = reader.GetInt16(3);
                             first_pass.kppId = reader.GetString(4);
                             first_pass.tabnom = reader.GetInt64(5);
                             first_pass.isManual = reader.GetInt16(6);
@@ -763,9 +799,9 @@ namespace kppApp
                             lvi.SubItems.Add(timeText);
 
                             string myOperation = "?";
-                            if (OperationsSelector.ContainsKey(first_pass.isOut))
+                            if (OperationsSelector4View.ContainsKey($"{first_pass.operCode}"))
                             {
-                                myOperation = OperationsSelector[first_pass.isOut];
+                                myOperation = OperationsSelector4View[$"{first_pass.operCode}"];
                             };
                             lvi.SubItems.Add($"{myOperation}");
 
@@ -785,6 +821,16 @@ namespace kppApp
                             }
 
                             lvi.SubItems.Add($"{finalManual}");
+                            string eventType = "a";
+                            if (first_pass.isManual == 1)
+                            {
+                                eventType = "m";
+                            }
+                            if (first_pass.tabnom == 0)
+                            {
+                                eventType = "r";
+                            }
+                            lvi.SubItems.Add($"{first_pass.passageID}-{eventType}-{first_pass.operCode}");
                             listViewHotBuffer.Items.Insert(0, lvi);
                             cnt++;
                         }
@@ -864,7 +910,7 @@ namespace kppApp
                         string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
                         lvi.SubItems.Add(timeText);
                         string myMan = "Вход";
-                        switch (first_pass.isOut)
+                        switch (first_pass.operCode)
                         {
                             case 1: { myMan = "Выход"; break; };
                             case 3: { myMan = "Ошибка"; break; };
@@ -955,11 +1001,6 @@ namespace kppApp
 
         #endregion
 
-        private void listView2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void listView3_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             if (e.Column>=1 && e.Column <= 5)
@@ -1043,14 +1084,13 @@ namespace kppApp
                     case 3:
                         if (comboBoxHistoryOperations.SelectedIndex != -1)
                         {
+                            object xxx = comboBoxHistoryOperations.SelectedItem;
+                            /*
+                            lastPassage.operCode = ((KeyValuePair<int, string>)xxx).Key;
                             string[] arr2 = new string[0];
-                            arr2 = comboBoxOperationsMain.Text.Split('-');
-                            if (arr2.Length > 1)
-                            {
-                                int cheker = -1;
-                                int.TryParse(arr2[0], out cheker);
-                                where_clause += $" and isOut={cheker} ";
-                            };
+                            */
+                            int ch = ((KeyValuePair<int, string>)xxx).Key;
+                            where_clause += $" and isOut={ch} ";
                         };
                         break;
                 }
@@ -1080,7 +1120,7 @@ namespace kppApp
                             history_pass.passageID = reader.GetInt64(0);
                             history_pass.timestampUTC = reader.GetDouble(1);
                             history_pass.card = reader.GetString(2);
-                            history_pass.isOut = reader.GetInt16(3);
+                            history_pass.operCode = reader.GetInt16(3);
                             history_pass.kppId = reader.GetString(4);
                             history_pass.tabnom = reader.GetInt64(5);
                             history_pass.isManual = reader.GetInt16(6);
@@ -1114,9 +1154,9 @@ namespace kppApp
                             lvi.SubItems.Add(timeText);
 
                             string myOperation = "?";
-                            if (OperationsSelector.ContainsKey(history_pass.isOut))
+                            if (OperationsSelector4View.ContainsKey($"{history_pass.operCode}"))
                             {
-                                myOperation = OperationsSelector[history_pass.isOut];
+                                myOperation = OperationsSelector4View[$"{history_pass.operCode}"];
                             };
                             lvi.SubItems.Add($"{myOperation}");
 
@@ -1180,6 +1220,720 @@ namespace kppApp
         private void radioButtonDaily_Click(object sender, EventArgs e)
         {
             label10_DoubleClick(sender, e);
+        }
+
+        private void listViewHotBuffer_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            
+        }
+
+        private void buttonMakeManual_Click(object sender, EventArgs e)
+        {
+            tabControl1.SelectTab(2);
+            comboManualEventOperation.SelectedIndex = comboBoxOperationsMain.SelectedIndex;
+        }
+
+        private void buttonCancelRedEvent_Click(object sender, EventArgs e)
+        {
+            tabControl1.SelectTab(0);
+        }
+
+        private void buttonCancelManualEvent_Click(object sender, EventArgs e)
+        {
+            tabControl1.SelectTab(0);
+            editManualEventTabnom.Value = 0;
+            editManualEventGUID.Text = "";
+            editManualEventFIO.Text = "";
+            editManualEventCard.Text = "";
+            editManualEventComment.Text = "";
+
+            buttonOKManualEvent.Enabled = false;
+            buttonOKManualEvent.BackColor = false ? Color.Teal : Color.Gainsboro;
+            while (lvManualEventSearch.Items.Count > 0) { lvManualEventSearch.Items.RemoveAt(0); };
+        }
+
+        private void buttonCancelGreenEvent_Click(object sender, EventArgs e)
+        {
+            tabControl1.SelectTab(0);
+            editGreenEventTabnom.Value = 0;
+            editGreenEventGUID.Text = "";
+            editGreenEventFIO.Text = "";
+            editGreenEventCard.Text = "";
+            editGreenEventComment.Text = "";
+
+            buttonOkGreenEvent.Enabled = false;
+            buttonOkGreenEvent.BackColor = false ? Color.Teal : Color.Gainsboro;
+            while (lvGreenEventSearch.Items.Count > 0) { lvGreenEventSearch.Items.RemoveAt(0); };
+        }
+
+        private void listViewHotBuffer_MouseUp(object sender, MouseEventArgs e)
+        {
+            // 134123-a полностью автоматическое событие
+            // 134123-m полностью ручное событие
+            // 134123-r красное событие
+            if (listViewHotBuffer.SelectedItems.Count < 1) return;
+            labelShomItem.Text = listViewHotBuffer.SelectedItems[0].SubItems[7].Text;
+            string myCard = listViewHotBuffer.SelectedItems[0].SubItems[1].Text;
+            string myTabnom = listViewHotBuffer.SelectedItems[0].SubItems[2].Text;
+            string myFIO = listViewHotBuffer.SelectedItems[0].SubItems[3].Text;
+            string myGUID = "";
+            string myComment = "";
+            if (listViewHotBuffer.SelectedItems.Count > 0)
+            {
+                string[] spl = labelShomItem.Text.Split('-');
+                // редакторы для красных на странице Красные
+                // редакторы для ручных на странице Зеленые
+                if (spl.Length > 1)
+                {
+
+                    using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                    {
+                        connection.Open();
+                        var command = connection.CreateCommand();
+                        command.CommandText = $"select description from buffer_passage where passageID={spl[0] }";
+
+                        using (var reader = command.ExecuteReader())
+                        {
+
+                            while (reader.Read())
+                            {
+                                if (!reader.IsDBNull(0))
+                                {
+                                    myComment = reader.GetString(0);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    // изменять введенное вручную
+                    if (spl[1] == "m")
+                    {
+
+                        using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                        {
+                            connection.Open();
+                            var command = connection.CreateCommand();
+                            command.CommandText = $"select userguid from buffer_workers where tabnom={myTabnom}";
+
+                            using (var reader = command.ExecuteReader())
+                            {
+
+                                while (reader.Read())
+                                {
+                                    myGUID = reader.GetString(0);
+                                    break;
+                                }
+                            }
+                        }
+
+
+
+                        editGreenEventFIO.Text = myFIO;
+                        editGreenEventGUID.Text = myGUID;
+                        editGreenEventComment.Text = myComment;
+                        comboGreenEventOperation.SelectedValue = int.Parse(spl[2]);
+
+                        labelGreenEventID.Text = spl[0];
+                        editGreenEventCard.Text = myCard;
+                        tabControl1.SelectTab(4);
+                    }
+                    // изменять введенное автоматически, но без персоны
+                    if (spl[1] == "r")
+                    {
+                        editRedEventCard.Text = myCard;
+                        labelRedEventID.Text = spl[0];
+                        tabControl1.SelectTab(3);
+                        labelRedOperation.Text = "";
+                        comboRedEventOperation.SelectedValue = int.Parse(spl[2]);
+
+
+
+                        labelRedOperation.Text = spl[2];
+                        editRedEventComment.Text = myComment;
+
+                        //    comboRedEventOperation.Items.a
+                    }
+                    for (int i = 0; i < listViewHotBuffer.Items.Count; i++)
+                    {
+                        listViewHotBuffer.Items[i].Selected = false;
+                    }
+                }
+                //listViewHotBuffer.Select();
+            }
+        }
+        #region hints handling
+
+        private string getWorkerByHint(string entityName, string entityValue)
+        {
+            string result = "";
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+
+                command.CommandText = $"select card, fio, userguid from buffer_workers where {entityName}='{entityValue}'";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        result = reader.GetString(0) +"@"+ reader.GetString(1).Replace("@", " ")+"@"+ reader.GetString(2);
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+
+        private void RiseMyHint(ListBox hintsListBox, string entityName, string entityTemplate)
+        {
+            string entityValue;
+            hintsListBox.Items.Clear();
+            hintsListBox.Visible = true;
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = $"select {entityName} from buffer_workers where {entityName} LIKE '%{entityTemplate}%'";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        entityValue = reader.GetString(0).Replace("@"," ");
+                        hintsListBox.Items.Add(entityValue);
+                    }
+                }
+            }
+        }
+
+        private void HideMyHint(ListBox hintsListBox)
+        {
+
+            hintsListBox.Items.Clear();
+            hintsListBox.Visible = false;
+        }
+
+        private void editManualEventCard_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                HideMyHint(hintsManualEventCard);
+                return;
+            }
+
+            if (editManualEventCard.Text.Length >= sensibleTextLenght)
+            {
+                RiseMyHint(hintsManualEventCard, "card", editManualEventCard.Text);
+            }
+            else
+            {
+                HideMyHint(hintsManualEventCard);
+            }
+        }
+
+        private void editManualEventFIO_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                HideMyHint(hintsManualEventFIO);
+                return;
+            }
+
+            if (editManualEventFIO.Text.Length >= sensibleTextLenght-3)
+            {
+                RiseMyHint(hintsManualEventFIO, "fio", editManualEventFIO.Text);
+            }
+            else
+            {
+                HideMyHint(hintsManualEventFIO);
+            }
+        }
+
+        private void editManualEventGUID_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                HideMyHint(hintsManualEventGUID);
+                return;
+            }
+
+            if (editManualEventGUID.Text.Length >= sensibleTextLenght)
+            {
+                RiseMyHint(hintsManualEventGUID, "userguid", editManualEventGUID.Text);
+            }
+            else
+            {
+                HideMyHint(hintsManualEventGUID);
+            }
+        }
+
+        private void hintsManualEventCard_MouseClick(object sender, MouseEventArgs e)
+        {
+            string selectString = getWorkerByHint("card", hintsManualEventCard.GetItemText(hintsManualEventCard.SelectedItem));
+            string[] arr2 = selectString.Split('@');
+            editManualEventFIO.Text = arr2[1];
+            editManualEventGUID.Text = arr2[2];
+            editManualEventCard.Text = arr2[0];
+            HideMyHint(hintsManualEventCard);
+        }
+
+        private void hintsManualEventFIO_MouseClick(object sender, MouseEventArgs e)
+        {
+            string selectString = getWorkerByHint("fio", hintsManualEventFIO.GetItemText(hintsManualEventFIO.SelectedItem).Replace(" ","@"));
+            string[] arr2 = selectString.Split('@');
+            editManualEventFIO.Text = arr2[1];
+            editManualEventGUID.Text = arr2[2];
+            editManualEventCard.Text = arr2[0];
+            HideMyHint(hintsManualEventFIO);
+        }
+
+        private void hintsManualEventGUID_MouseClick(object sender, MouseEventArgs e)
+        {
+            string selectString = getWorkerByHint("userguid", hintsManualEventGUID.GetItemText(hintsManualEventGUID.SelectedItem));
+            string[] arr2 = selectString.Split('@');
+            editManualEventFIO.Text = arr2[1];
+            editManualEventGUID.Text = arr2[2];
+            editManualEventCard.Text = arr2[0];
+            HideMyHint(hintsManualEventGUID);
+        }
+
+        private void editManualEventCard_TextChanged(object sender, EventArgs e)
+        {
+            bool writePossible = false;
+            if (editManualEventCard.Text.Length < sensibleTextLenght-1) { return; };
+            if (editManualEventGUID.Text.Length < sensibleTextLenght) { return; };
+            if (comboManualEventOperation.Text=="") { return; };
+            string card = editManualEventCard.Text;
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = $"select tabnom from buffer_workers where card = '{editManualEventCard.Text}'";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        editManualEventTabnom.Value = reader.GetInt64(0);
+                        writePossible = true;
+                        break;
+                    }
+                }
+            }
+
+            buttonOKManualEvent.Enabled = writePossible;
+            buttonOKManualEvent.BackColor = writePossible ? Color.Teal : Color.Gainsboro;
+        }
+        #endregion hints handling
+
+        private void buttonOKManualEvent_Click(object sender, EventArgs e)
+        {
+            Passage p = new Passage();
+            p.isManual = 1;
+            p.card = editManualEventCard.Text;
+            p.tabnom = (int)editManualEventTabnom.Value;
+            p.description = editManualEventComment.Text;
+                //object xxx = comboManualEventOperation.SelectedItem;
+            p.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            p.operCode = ((KeyValuePair<int, string>)comboManualEventOperation.SelectedItem).Key;
+            write2sqlite(p);
+            buttonCancelManualEvent_Click(sender, e);
+            label10_DoubleClick(sender, e);
+
+        }
+
+        private void editRedEventComment_TextChanged(object sender, EventArgs e)
+        {
+            buttonOkRedEvent.Enabled = editRedEventComment.Text.Length > 0;
+            buttonOkRedEvent.Enabled = editRedEventComment.Text.Length > 0;
+            buttonOkRedEvent.BackColor = editRedEventComment.Text.Length > 0 ? Color.Teal : Color.Gainsboro;
+        }
+
+        private void buttonOkRedEvent_Click(object sender, EventArgs e)
+        {
+            
+            string operCode= $"{((KeyValuePair<int, string>)comboRedEventOperation.SelectedItem).Key}";
+
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = $"update buffer_passage set description='{editRedEventComment.Text}', isOut={operCode} where passageID = {labelRedEventID.Text} and isDelivered=0";
+                command.ExecuteNonQuery();
+            }
+            tabControl1.SelectTab(0);
+            editRedEventComment.Text = "";
+            label10_DoubleClick(sender, e);
+        }
+
+        private void buttonDeleteGreenEvent_Click(object sender, EventArgs e)
+        {
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = $"delete from buffer_passage where passageID = {labelGreenEventID.Text} and isDelivered=0";
+                command.ExecuteNonQuery();
+            }
+            buttonCancelGreenEvent_Click(sender, e);
+
+
+            label10_DoubleClick(sender, e);
+        }
+
+        
+
+        private void hintsManualEventCard_MouseHover(object sender, EventArgs e)
+        {
+            preventorManualEventCard = true;
+
+        }
+
+        private void hintsManualEventCard_MouseLeave(object sender, EventArgs e)
+        {
+            preventorManualEventCard = false;
+        }
+
+        private void editManualEventCard_Leave(object sender, EventArgs e)
+        {
+            if (!preventorManualEventCard) { HideMyHint(hintsManualEventCard); };
+            preventorManualEventCard = false;
+        }
+
+        private void hintsManualEventFIO_MouseHover(object sender, EventArgs e)
+        {
+            
+            preventorManualEventFIO = true;
+
+        }
+
+        private void hintsManualEventFIO_MouseLeave(object sender, EventArgs e)
+        {
+            preventorManualEventFIO = false;
+        }
+        
+        private void editManualEventFIO_Leave(object sender, EventArgs e)
+        {
+            if (!preventorManualEventFIO) { HideMyHint(hintsManualEventFIO); };
+            preventorManualEventFIO = false;
+        }
+        private void hintsManualEventGUID_MouseHover(object sender, EventArgs e)
+        {
+
+            preventorManualEventGUID = true;
+
+        }
+
+        private void hintsManualEventGUID_MouseLeave(object sender, EventArgs e)
+        {
+            preventorManualEventFIO = false;
+        }
+
+
+        private void editManualEventGUID_Leave(object sender, EventArgs e)
+        {
+
+            if (!preventorManualEventGUID) { HideMyHint(hintsManualEventGUID); };
+            preventorManualEventGUID = false;
+
+        }
+
+        private void editGreenEventFIO_Leave(object sender, EventArgs e)
+        {
+            if (!preventorGreenEventFIO) { HideMyHint(hintsGreenEventFIO); };
+            preventorGreenEventFIO = false;
+        }
+
+        private void editGreenEventFIO_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                HideMyHint(hintsGreenEventFIO);
+                return;
+            }
+
+            if (editGreenEventFIO.Text.Length >= sensibleTextLenght)
+            {
+                RiseMyHint(hintsGreenEventFIO, "FIO", editGreenEventFIO.Text);
+            }
+            else
+            {
+                HideMyHint(hintsGreenEventFIO);
+            }
+        }
+
+        private void editGreenEventCard_Leave(object sender, EventArgs e)
+        {
+            if (!preventorGreenEventCard) { HideMyHint(hintsGreenEventCard); };
+            preventorGreenEventCard = false;
+        }
+
+        private void editGreenEventCard_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                HideMyHint(hintsGreenEventCard);
+                return;
+            }
+
+            if (editGreenEventCard.Text.Length >= sensibleTextLenght)
+            {
+                RiseMyHint(hintsGreenEventCard, "card", editGreenEventCard.Text);
+            }
+            else
+            {
+                HideMyHint(hintsGreenEventCard);
+            }
+        }
+
+        private void editGreenEventGUID_Leave(object sender, EventArgs e)
+        {
+            if (!preventorGreenEventGUID) { HideMyHint(hintsGreenEventGUID); };
+            preventorGreenEventGUID = false;
+
+        }
+        private void editGreenEventGUID_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                HideMyHint(hintsGreenEventGUID);
+                return;
+            }
+
+            if (editGreenEventCard.Text.Length >= sensibleTextLenght)
+            {
+                RiseMyHint(hintsGreenEventGUID, "userguid", editGreenEventGUID.Text);
+            }
+            else
+            {
+                HideMyHint(hintsGreenEventCard);
+            }
+        }
+
+        private void hintsGreenEventCard_MouseHover(object sender, EventArgs e)
+        {
+            preventorGreenEventCard = true;
+        }
+
+        private void hintsGreenEventCard_MouseLeave(object sender, EventArgs e)
+        {
+            preventorGreenEventCard = false;
+        }
+
+        private void hintsGreenEventFIO_MouseHover(object sender, EventArgs e)
+        {
+            preventorGreenEventFIO = true;
+        }
+
+        private void hintsGreenEventFIO_MouseLeave(object sender, EventArgs e)
+        {
+            preventorGreenEventFIO = false;
+        }
+
+        private void hintsGreenEventGUID_MouseHover(object sender, EventArgs e)
+        {
+            preventorGreenEventGUID = true;
+        }
+
+        private void hintsGreenEventGUID_MouseLeave(object sender, EventArgs e)
+        {
+            preventorGreenEventGUID = false;
+        }
+
+        private void editGreenEventCard_TextChanged(object sender, EventArgs e)
+        {
+            bool writePossible = false;
+            if (editGreenEventCard.Text.Length < sensibleTextLenght - 1) { return; };
+            if (editGreenEventGUID.Text.Length < sensibleTextLenght) { return; };
+            if (comboGreenEventOperation.Text == "") { return; };
+            string card = editGreenEventCard.Text;
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = $"select tabnom from buffer_workers where card = '{editGreenEventCard.Text}'";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        editGreenEventTabnom.Value = reader.GetInt64(0);
+                        writePossible = true;
+                        break;
+                    }
+                }
+            }
+
+            buttonOkGreenEvent.Enabled = writePossible;
+            buttonOkGreenEvent.BackColor = writePossible ? Color.Teal : Color.Gainsboro;
+        }
+
+        private void buttonOkGreenEvent_Click(object sender, EventArgs e)
+        {
+            Passage p = new Passage();
+            p.isManual = 1;
+            p.card = editGreenEventCard.Text;
+            p.tabnom = (int)editGreenEventTabnom.Value;
+            p.description = editGreenEventComment.Text;
+            //object xxx = comboManualEventOperation.SelectedItem;
+            p.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            p.operCode = ((KeyValuePair<int, string>)comboGreenEventOperation.SelectedItem).Key;
+            uodate2sqlite(p,labelGreenEventID.Text);
+            buttonCancelGreenEvent_Click(sender, e);
+            label10_DoubleClick(sender, e);
+        }
+
+        private void hintsGreenEventCard_MouseClick(object sender, MouseEventArgs e)
+        {
+            string selectString = getWorkerByHint("card", hintsGreenEventCard.GetItemText(hintsGreenEventCard.SelectedItem));
+            string[] arr2 = selectString.Split('@');
+            editGreenEventFIO.Text = arr2[1];
+            editGreenEventGUID.Text = arr2[2];
+            editGreenEventCard.Text = arr2[0];
+            HideMyHint(hintsGreenEventCard);
+
+        }
+
+        private void hintsGreenEventFIO_MouseClick(object sender, MouseEventArgs e)
+        {
+            string selectString = getWorkerByHint("fio", hintsGreenEventFIO.GetItemText(hintsGreenEventFIO.SelectedItem));
+            string[] arr2 = selectString.Split('@');
+            editGreenEventFIO.Text = arr2[1];
+            editGreenEventGUID.Text = arr2[2];
+            editGreenEventCard.Text = arr2[0];
+            HideMyHint(hintsGreenEventFIO);
+
+        }
+
+        private void hintsGreenEventGUID_MouseClick(object sender, MouseEventArgs e)
+        {
+            string selectString = getWorkerByHint("userguid", hintsGreenEventGUID.GetItemText(hintsGreenEventGUID.SelectedItem));
+            string[] arr2 = selectString.Split('@');
+            editGreenEventFIO.Text = arr2[1];
+            editGreenEventGUID.Text = arr2[2];
+            editGreenEventCard.Text = arr2[0];
+            HideMyHint(hintsGreenEventGUID);
+
+        }
+
+        private void fillWorkersBy(string entityName, string entityValue, ListView LV)
+        {
+            if (entityValue.Length < 3) return;
+            LV.Visible = false;  
+            while (LV.Items.Count > 0) { LV.Items.RemoveAt(0); };
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+
+                command.CommandText = $"select card, tabnom, userguid, fio  from buffer_workers where {entityName} LIKE '%{entityValue}%'";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ListViewItem lvi = new ListViewItem();
+                        lvi.Text = reader.GetString(0);
+                        lvi.SubItems.Add($"{reader.GetInt64(1)}" );
+                        lvi.SubItems.Add(reader.GetString(2));
+                        lvi.SubItems.Add(reader.GetString(3).Replace("@", " "));
+                        LV.Items.Insert(0, lvi);
+                    }
+                }
+            }
+            LV.Visible = true;
+        }
+
+        private void buttonGreenEventSearchByCard_Click(object sender, EventArgs e)
+        {
+            fillWorkersBy("card", editGreenEventCard.Text, lvGreenEventSearch);
+        }
+
+        private void buttonGreenEventSearchByFIO_Click(object sender, EventArgs e)
+        {
+            fillWorkersBy("fio", editGreenEventFIO.Text, lvGreenEventSearch);
+        }
+
+        private void buttonGreenEventSearchByGUID_Click(object sender, EventArgs e)
+        {
+            fillWorkersBy("userguid", editGreenEventGUID.Text, lvGreenEventSearch);
+        }
+
+
+
+        private void buttonManualEventSearchByCard_Click(object sender, EventArgs e)
+        {
+            fillWorkersBy("card", editManualEventCard.Text, lvManualEventSearch);
+        }
+
+        private void buttonManualEventSearchByGUID_Click(object sender, EventArgs e)
+        {
+            fillWorkersBy("userguid", editManualEventGUID.Text, lvManualEventSearch);
+        }
+
+        private void buttonManualEventSearchByFIO_Click(object sender, EventArgs e)
+        {
+            fillWorkersBy("fio", editManualEventFIO.Text, lvManualEventSearch);
+        }
+
+        private void lvManualEventSearch_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (lvManualEventSearch.SelectedItems.Count > 0)
+            {
+                editManualEventGUID.Text = lvManualEventSearch.SelectedItems[0].SubItems[2].Text;
+                editManualEventFIO.Text = lvManualEventSearch.SelectedItems[0].SubItems[3].Text;
+                editManualEventCard.Text = "";
+                editManualEventCard.Text = lvManualEventSearch.SelectedItems[0].Text;
+                
+            }
+        }
+
+        private void lvGreenEventSearch_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (lvGreenEventSearch.SelectedItems.Count > 0)
+            {
+                editGreenEventGUID.Text = lvGreenEventSearch.SelectedItems[0].SubItems[2].Text;
+                editGreenEventFIO.Text = lvGreenEventSearch.SelectedItems[0].SubItems[3].Text;
+                editGreenEventCard.Text = "";
+                editGreenEventCard.Text = lvGreenEventSearch.SelectedItems[0].Text;
+            }
+
+        }
+
+        private void buttonPOST_Click(object sender, EventArgs e)
+        {
+            Passage1bit bit = new Passage1bit();
+
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+
+                command.CommandText = $"select card, tabnom, isOut, timestampUTC, description from buffer_passage where passageID={labelGreenEventID.Text}";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        bit.bit1_system = "";
+                        bit.bit1_lon = 0.0;
+                        bit.bit1_lat = 0.0;
+                        bit.bit1_id = "0";
+                        bit.bit1_reader_id = 0;
+                        //
+                        bit.bit1_card = reader.GetString(0);
+                        bit.bit1_tabnom = $"{reader.GetInt64(1)}";
+                        bit.bit1_opercode = $"{reader.GetInt64(2)}";
+                        bit.bit1_timestampUTC = reader.GetInt64(3);
+                        bit.bit1_comment = reader.GetString(4);
+                    }
+                }
+            }
+
+
+
         }
     }
 }

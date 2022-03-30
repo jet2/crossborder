@@ -49,11 +49,26 @@ namespace kppApp
         [JsonProperty("passageID")] public long passageID { get; set; }
         [JsonProperty("timestampUTC")] public double timestampUTC { get; set; }
         [JsonProperty("card")] public string card { get; set; }
-        [JsonProperty("isOut")] public int isOut { get; set; }
+        [JsonProperty("isOut")] public int operCode { get; set; }
         [JsonProperty("kppId")] public string kppId { get; set; }
         [JsonProperty("tabnom")] public long tabnom { get; set; }
         [JsonProperty("isManual")] public int isManual { get; set; }
         [JsonProperty("isDelivered")] public int isDelivered { get; set; }
         [JsonProperty("description")] public string description { get; set; }
     }
+
+    internal class Passage1bit
+    {
+        [JsonProperty("id")] public string bit1_id { get; set; }
+        [JsonProperty("system")] public string bit1_system { get; set; }
+        [JsonProperty("timestamp")] public long bit1_timestampUTC { get; set; }
+        [JsonProperty("lat")] public double bit1_lat { get; set; }
+        [JsonProperty("lon")] public double bit1_lon { get; set; }
+        [JsonProperty("card")] public string bit1_card { get; set; }
+        [JsonProperty("reader_id")] public int bit1_reader_id { get; set; }
+        [JsonProperty("reader_id")] public string bit1_comment { get; set; }
+        [JsonProperty("personnel_number")] public string bit1_tabnom { get; set; }
+        [JsonProperty("type")] public string bit1_opercode { get; set; }
+    }
+
 }
