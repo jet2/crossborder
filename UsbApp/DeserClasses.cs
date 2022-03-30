@@ -66,7 +66,7 @@ namespace kppApp
         [JsonProperty("lon")] public double bit1_lon { get; set; }
         [JsonProperty("card")] public string bit1_card { get; set; }
         [JsonProperty("reader_id")] public int bit1_reader_id { get; set; }
-        [JsonProperty("reader_id")] public string bit1_comment { get; set; }
+        [JsonProperty("description")] public string bit1_comment { get; set; }
         [JsonProperty("personnel_number")] public string bit1_tabnom { get; set; }
         [JsonProperty("type")] public string bit1_opercode { get; set; }
     }

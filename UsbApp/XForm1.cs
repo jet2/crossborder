@@ -31,7 +31,7 @@ namespace kppApp
         bool preventorGreenEventGUID = false;
 
         Passage lastPassage = new Passage();
-        
+
         public static Dictionary<string, string> Persons;
         public static Dictionary<string, WorkerPerson> PersonsDictStruct;
         public static Dictionary<int, string> OperationsSelector = new Dictionary<int, string>();
@@ -108,10 +108,11 @@ namespace kppApp
                 List<perimeterOperation> perop = (List<perimeterOperation>)serializer.Deserialize(file, typeof(List<perimeterOperation>));
                 if (perop.Count > 0)
                 {
-                   //xList<string> xList= new List<string>(); 
+                    //xList<string> xList= new List<string>(); 
                     foreach (perimeterOperation oper in perop)
                     {
-                        if (oper.operhide != 1) {
+                        if (oper.operhide != 1)
+                        {
                             //xList.Add($"{oper.operid}-{oper.operdesc}");
                             OperationsSelector.Add(oper.operid, $"{oper.operid}-{oper.operdesc}");
                             OperationsSelector4View.Add($"{oper.operid}", oper.operdesc);
@@ -320,7 +321,7 @@ namespace kppApp
 
 
                 this.BackColor = Color.DimGray;
-                
+
                 if (readerBytes.Length > 0)
                 {
                     lastPassage.card = readerBytes;
@@ -335,7 +336,7 @@ namespace kppApp
                     if (myWorkerPerson.userguid != "")
                     {
                         panelSignal2.BackColor = Color.Transparent;
-                     }
+                    }
                     else
                     {
                         labelEventName.Text = labelTPL.Text;
@@ -349,25 +350,27 @@ namespace kppApp
                     string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToShortTimeString();
                     labelEventDate.Text = timeText;
                     labelEventCard.Text = readerBytes;
-                    string[] arr=new string[0];
-                    if (myWorkerPerson.fio != "") {
-                        arr= myWorkerPerson.fio.Split('@');
+                    string[] arr = new string[0];
+                    if (myWorkerPerson.fio != "")
+                    {
+                        arr = myWorkerPerson.fio.Split('@');
                     };
                     if (myWorkerPerson.userguid != "")
                     {
                         labelEventUserguid.Text = myWorkerPerson.userguid;
                     };
 
-                    if (arr.Length > 0) {
+                    if (arr.Length > 0)
+                    {
                         labelEventName.Text = arr[0];
-                        string s="";
+                        string s = "";
                         if (arr.Length > 1)
                         {
                             s += arr[1];
                         }
                         if (arr.Length > 2)
                         {
-                            s +=" " +  arr[2];
+                            s += " " + arr[2];
                         }
                         labelEventFamOtc.Text = s;
                     }
@@ -414,7 +417,7 @@ namespace kppApp
                         WorkerPerson myWP = new WorkerPerson();
                         myWP.card = reader.GetString(0);
                         myWP.tabnom = reader.GetInt64(1);
-                        myWP.fio = reader.GetString(2).Replace("@"," ");
+                        myWP.fio = reader.GetString(2).Replace("@", " ");
                         myWP.userguid = reader.GetString(3);
                         myWP.isGuardian = 0;
                         if (myWP.card != "")
@@ -428,7 +431,7 @@ namespace kppApp
             {
                 MessageBox.Show("Справочник персонала поврежден!\r\nСервис не позволяет идентифицировать персонал!");
             }
-//            mySnifferForm.UpdatePersons(PersonsDictStruct);
+            //            mySnifferForm.UpdatePersons(PersonsDictStruct);
             // Unix timestamp is seconds past epoch
 
             tsUpdated local_updated = new tsUpdated();
@@ -537,6 +540,7 @@ namespace kppApp
 
         private void updateWorkers(object sender, DoWorkEventArgs e)
         {
+            return;
             restSrvState = false;
             // получаем стамп последнего обновления работников с сервера
             var client = new RestClient($"{restServerAddr}/workers/update_ts");
@@ -544,16 +548,16 @@ namespace kppApp
             var request = new RestRequest(Method.GET);
             var body = @"";
             request.AddParameter("text/plain", body, ParameterType.RequestBody);
-            tsUpdated local_updated = new tsUpdated(); 
+            tsUpdated local_updated = new tsUpdated();
             local_updated.timestampUTC = -1;
-            tsUpdated remote_updated = new tsUpdated(); 
+            tsUpdated remote_updated = new tsUpdated();
             remote_updated.timestampUTC = -2;
             try
             {
                 IRestResponse response = client.Execute(request);
                 remote_updated = JsonConvert.DeserializeObject<tsUpdated>(response.Content);
                 // получаем стамп последнего обновления работников локальный
-                
+
                 restSrvState = true;
             }
             catch { }
@@ -641,7 +645,7 @@ namespace kppApp
             // обновить состояние или не обновлять
             // удаление доставленных - другим методом
             long exID = -2;
-            
+
             Passage firstUndelivered = getFirstUndelivered();
             if (firstUndelivered.passageID > -1)
             {
@@ -664,7 +668,7 @@ namespace kppApp
                             var command = connection.CreateCommand();
                             command.CommandText = qry_update_mark_id_asdelivered;
                             command.ExecuteNonQuery();
-                            
+
                             send_cnt++;
                         }
                     }
@@ -672,19 +676,19 @@ namespace kppApp
                     firstUndelivered = getFirstUndelivered();
                     if (exID == firstUndelivered.passageID)
                     {
-                        
+
                         break;
                     }
                 } while (firstUndelivered.passageID != -1);
             }
-            
+
         }
 
         private void sendPassage_ResultHandler(object sender, RunWorkerCompletedEventArgs e)
         {
             timerPassageSender.Enabled = true;
             //label17.Text = send_cnt.ToString();
-            if (send_cnt>0)
+            if (send_cnt > 0)
             {
                 label10_DoubleClick(this, new EventArgs());
             };
@@ -805,7 +809,7 @@ namespace kppApp
                             };
                             lvi.SubItems.Add($"{myOperation}");
 
-                            string finalManual = ""; 
+                            string finalManual = "";
                             if (first_pass.isManual == 1)
                             {
                                 finalManual += symbol_pencil;
@@ -836,7 +840,9 @@ namespace kppApp
                         }
                     }
                 }
-            }finally{
+            }
+            finally
+            {
                 listViewHotBuffer.Visible = true;
             }
             labelEventCounter.Text = $"{cnt - 1}";
@@ -1003,7 +1009,7 @@ namespace kppApp
 
         private void listView3_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            if (e.Column>=1 && e.Column <= 5)
+            if (e.Column >= 1 && e.Column <= 5)
             {
                 endPickerSelect.Value = DateTime.Now;
                 begPickerSelect.Value = endPickerSelect.Value.AddDays(-31);
@@ -1025,7 +1031,7 @@ namespace kppApp
                         tabSubfilter.SelectTab(2);
                         break;
                     case 4:
-                        
+
                         tabSubfilter.Visible = false;
                         break;
                     case 5:
@@ -1049,7 +1055,7 @@ namespace kppApp
 
         private void buttonHistoryFilterHide_Click(object sender, EventArgs e)
         {
-            tabSubfilter.Visible=false;
+            tabSubfilter.Visible = false;
             panelFilterSelect.Visible = false;
         }
 
@@ -1098,7 +1104,7 @@ namespace kppApp
 
             listViewHistory.Visible = false;
             int cnt = 1;
-            
+
             try
             {
                 while (listViewHistory.Items.Count > 0) { listViewHistory.Items.RemoveAt(0); };
@@ -1131,7 +1137,7 @@ namespace kppApp
 
                             lvi.Text = "      ";
 
-                            
+
                             //lvi.Text = "";
                             lvi.SubItems.Add(history_pass.card);
                             if (PersonsDictStruct.ContainsKey(history_pass.card))
@@ -1181,7 +1187,7 @@ namespace kppApp
                             {
                                 waitSymbol += "⌛";
                             }
-                            
+
                             lvi.SubItems.Add($"{cnt} {waitSymbol}");
                             listViewHistory.Items.Insert(0, lvi);
                             cnt++;
@@ -1225,7 +1231,7 @@ namespace kppApp
         private void listViewHotBuffer_SelectedIndexChanged(object sender, EventArgs e)
         {
 
-            
+
         }
 
         private void buttonMakeManual_Click(object sender, EventArgs e)
@@ -1378,7 +1384,7 @@ namespace kppApp
                 {
                     while (reader.Read())
                     {
-                        result = reader.GetString(0) +"@"+ reader.GetString(1).Replace("@", " ")+"@"+ reader.GetString(2);
+                        result = reader.GetString(0) + "@" + reader.GetString(1).Replace("@", " ") + "@" + reader.GetString(2);
                         break;
                     }
                 }
@@ -1401,7 +1407,7 @@ namespace kppApp
                 {
                     while (reader.Read())
                     {
-                        entityValue = reader.GetString(0).Replace("@"," ");
+                        entityValue = reader.GetString(0).Replace("@", " ");
                         hintsListBox.Items.Add(entityValue);
                     }
                 }
@@ -1441,7 +1447,7 @@ namespace kppApp
                 return;
             }
 
-            if (editManualEventFIO.Text.Length >= sensibleTextLenght-3)
+            if (editManualEventFIO.Text.Length >= sensibleTextLenght - 3)
             {
                 RiseMyHint(hintsManualEventFIO, "fio", editManualEventFIO.Text);
             }
@@ -1481,7 +1487,7 @@ namespace kppApp
 
         private void hintsManualEventFIO_MouseClick(object sender, MouseEventArgs e)
         {
-            string selectString = getWorkerByHint("fio", hintsManualEventFIO.GetItemText(hintsManualEventFIO.SelectedItem).Replace(" ","@"));
+            string selectString = getWorkerByHint("fio", hintsManualEventFIO.GetItemText(hintsManualEventFIO.SelectedItem).Replace(" ", "@"));
             string[] arr2 = selectString.Split('@');
             editManualEventFIO.Text = arr2[1];
             editManualEventGUID.Text = arr2[2];
@@ -1502,9 +1508,9 @@ namespace kppApp
         private void editManualEventCard_TextChanged(object sender, EventArgs e)
         {
             bool writePossible = false;
-            if (editManualEventCard.Text.Length < sensibleTextLenght-1) { return; };
+            if (editManualEventCard.Text.Length < sensibleTextLenght - 1) { return; };
             if (editManualEventGUID.Text.Length < sensibleTextLenght) { return; };
-            if (comboManualEventOperation.Text=="") { return; };
+            if (comboManualEventOperation.Text == "") { return; };
             string card = editManualEventCard.Text;
             using (var connection = new SQLiteConnection(sqlite_connectionstring))
             {
@@ -1535,7 +1541,7 @@ namespace kppApp
             p.card = editManualEventCard.Text;
             p.tabnom = (int)editManualEventTabnom.Value;
             p.description = editManualEventComment.Text;
-                //object xxx = comboManualEventOperation.SelectedItem;
+            //object xxx = comboManualEventOperation.SelectedItem;
             p.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             p.operCode = ((KeyValuePair<int, string>)comboManualEventOperation.SelectedItem).Key;
             write2sqlite(p);
@@ -1553,8 +1559,8 @@ namespace kppApp
 
         private void buttonOkRedEvent_Click(object sender, EventArgs e)
         {
-            
-            string operCode= $"{((KeyValuePair<int, string>)comboRedEventOperation.SelectedItem).Key}";
+
+            string operCode = $"{((KeyValuePair<int, string>)comboRedEventOperation.SelectedItem).Key}";
 
             using (var connection = new SQLiteConnection(sqlite_connectionstring))
             {
@@ -1583,7 +1589,7 @@ namespace kppApp
             label10_DoubleClick(sender, e);
         }
 
-        
+
 
         private void hintsManualEventCard_MouseHover(object sender, EventArgs e)
         {
@@ -1604,7 +1610,7 @@ namespace kppApp
 
         private void hintsManualEventFIO_MouseHover(object sender, EventArgs e)
         {
-            
+
             preventorManualEventFIO = true;
 
         }
@@ -1613,7 +1619,7 @@ namespace kppApp
         {
             preventorManualEventFIO = false;
         }
-        
+
         private void editManualEventFIO_Leave(object sender, EventArgs e)
         {
             if (!preventorManualEventFIO) { HideMyHint(hintsManualEventFIO); };
@@ -1780,7 +1786,7 @@ namespace kppApp
             //object xxx = comboManualEventOperation.SelectedItem;
             p.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             p.operCode = ((KeyValuePair<int, string>)comboGreenEventOperation.SelectedItem).Key;
-            uodate2sqlite(p,labelGreenEventID.Text);
+            uodate2sqlite(p, labelGreenEventID.Text);
             buttonCancelGreenEvent_Click(sender, e);
             label10_DoubleClick(sender, e);
         }
@@ -1798,7 +1804,7 @@ namespace kppApp
 
         private void hintsGreenEventFIO_MouseClick(object sender, MouseEventArgs e)
         {
-            string selectString = getWorkerByHint("fio", hintsGreenEventFIO.GetItemText(hintsGreenEventFIO.SelectedItem));
+            string selectString = getWorkerByHint("fio", hintsGreenEventFIO.GetItemText(hintsGreenEventFIO.SelectedItem).Replace(" ","@"));
             string[] arr2 = selectString.Split('@');
             editGreenEventFIO.Text = arr2[1];
             editGreenEventGUID.Text = arr2[2];
@@ -1821,7 +1827,7 @@ namespace kppApp
         private void fillWorkersBy(string entityName, string entityValue, ListView LV)
         {
             if (entityValue.Length < 3) return;
-            LV.Visible = false;  
+            LV.Visible = false;
             while (LV.Items.Count > 0) { LV.Items.RemoveAt(0); };
             using (var connection = new SQLiteConnection(sqlite_connectionstring))
             {
@@ -1836,7 +1842,7 @@ namespace kppApp
                     {
                         ListViewItem lvi = new ListViewItem();
                         lvi.Text = reader.GetString(0);
-                        lvi.SubItems.Add($"{reader.GetInt64(1)}" );
+                        lvi.SubItems.Add($"{reader.GetInt64(1)}");
                         lvi.SubItems.Add(reader.GetString(2));
                         lvi.SubItems.Add(reader.GetString(3).Replace("@", " "));
                         LV.Items.Insert(0, lvi);
@@ -1886,7 +1892,7 @@ namespace kppApp
                 editManualEventFIO.Text = lvManualEventSearch.SelectedItems[0].SubItems[3].Text;
                 editManualEventCard.Text = "";
                 editManualEventCard.Text = lvManualEventSearch.SelectedItems[0].Text;
-                
+
             }
         }
 
@@ -1926,9 +1932,50 @@ namespace kppApp
                         bit.bit1_card = reader.GetString(0);
                         bit.bit1_tabnom = $"{reader.GetInt64(1)}";
                         bit.bit1_opercode = $"{reader.GetInt64(2)}";
-                        bit.bit1_timestampUTC = reader.GetInt64(3);
+                        
+                        bit.bit1_timestampUTC = (int)reader.GetDouble(3);
                         bit.bit1_comment = reader.GetString(4);
+                        break;
                     }
+                }
+            }
+
+
+            // restsharp
+            // выбираем первый неотправленный passage и если массив непустой - отправляем через rest
+            // если успешно отправлось - помечаем passageID отправленным и обновляем главную таблицу
+            // получить наименьший локальный проход
+            // отправить 
+            // оценить результат
+            // обновить состояние или не обновлять
+            // удаление доставленных - другим методом
+
+
+            var client = new RestClient($"{restServerAddr}/reading-event/");
+            client.Timeout = 5000;
+            var request = new RestRequest(Method.POST);
+
+//            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
+
+  //          request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+    //        request.AddHeader("Accept", "application/json");
+
+            //request.AddHeader("Content-Type", "application/json");
+            var body = JsonConvert.SerializeObject(bit);
+            request.AddParameter("application/json", body, ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+            if (response.IsSuccessful)
+            {
+                string qry_update_mark_id_asdelivered = @"update buffer_passage set isDelivered=1
+                            where isDelivered=0 and passageID=" + $"{labelGreenEventID.Text}";
+                using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = qry_update_mark_id_asdelivered;
+                    command.ExecuteNonQuery();
+
+                    send_cnt++;
                 }
             }
 
