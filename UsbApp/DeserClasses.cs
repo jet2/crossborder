@@ -25,6 +25,7 @@ namespace kppApp
         [JsonProperty("u")] public string userguid { get; set; }
         [JsonProperty("k")] public string card { get; set; }
         [JsonProperty("g")] public int isGuardian { get; set; }
+        [JsonProperty("j")] public string jobDescription { get; set; }
     }
 
     public class perimeterOperation
@@ -55,6 +56,7 @@ namespace kppApp
         [JsonProperty("isManual")] public int isManual { get; set; }
         [JsonProperty("isDelivered")] public int isDelivered { get; set; }
         [JsonProperty("description")] public string description { get; set; }
+        [JsonProperty("toDelete")] public int toDelete { get; set; }
     }
 
     internal class Passage1bit

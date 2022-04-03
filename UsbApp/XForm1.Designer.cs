@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("История считываний", 1);
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("История считываний", 1);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(XForm1));
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "", System.Drawing.SystemColors.WindowText, System.Drawing.SystemColors.Window, new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "111-111"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "#12356"),
@@ -42,7 +42,7 @@
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "🖉   💬", System.Drawing.Color.Teal, System.Drawing.Color.White, new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "55555"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "123")}, 0);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "      💡", System.Drawing.Color.Red, System.Drawing.SystemColors.Window, new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "111-111"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "#12356"),
@@ -52,7 +52,7 @@
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "🖉   💬", System.Drawing.Color.Teal, System.Drawing.Color.White, new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "55555"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "123")}, -1);
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "2",
             "3",
@@ -88,13 +88,14 @@
             this.label9 = new System.Windows.Forms.Label();
             this.panel15 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.buttonMarkToDelete = new System.Windows.Forms.Button();
             this.labelEventCounter = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.panelSignal2 = new System.Windows.Forms.Panel();
-            this.panelSignal0 = new System.Windows.Forms.Panel();
             this.LayPanel = new System.Windows.Forms.TableLayoutPanel();
             this.labelEventCard = new System.Windows.Forms.Label();
+            this.labelEventJobDescription = new System.Windows.Forms.Label();
             this.labelEventName = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.labelEventUserguid = new System.Windows.Forms.Label();
@@ -128,6 +129,9 @@
             this.label33 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panelFilterSelect = new System.Windows.Forms.Panel();
+            this.label14 = new System.Windows.Forms.Label();
+            this.numericHours = new System.Windows.Forms.NumericUpDown();
+            this.button2 = new System.Windows.Forms.Button();
             this.buttonHistoryFilterHide = new System.Windows.Forms.Button();
             this.buttonHistoryReload = new System.Windows.Forms.Button();
             this.tabSubfilter = new System.Windows.Forms.TabControl();
@@ -143,9 +147,10 @@
             this.tabOperation = new System.Windows.Forms.TabPage();
             this.label40 = new System.Windows.Forms.Label();
             this.comboBoxHistoryOperations = new System.Windows.Forms.ComboBox();
-            this.label14 = new System.Windows.Forms.Label();
+            this.tabDelivery = new System.Windows.Forms.TabPage();
+            this.radioWait = new System.Windows.Forms.RadioButton();
+            this.radioDelivered = new System.Windows.Forms.RadioButton();
             this.label13 = new System.Windows.Forms.Label();
-            this.endPickerSelect = new System.Windows.Forms.DateTimePicker();
             this.begPickerSelect = new System.Windows.Forms.DateTimePicker();
             this.labelSelectedEventsCount = new System.Windows.Forms.Label();
             this.label36 = new System.Windows.Forms.Label();
@@ -155,14 +160,15 @@
             this.label37 = new System.Windows.Forms.Label();
             this.panel18 = new System.Windows.Forms.Panel();
             this.listViewHistory = new System.Windows.Forms.ListView();
-            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnIndex = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnFailure = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnCard = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnTabnom = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnFIO = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnOperation = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnManual = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnDelivery = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList3 = new System.Windows.Forms.ImageList(this.components);
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.label31 = new System.Windows.Forms.Label();
@@ -256,6 +262,7 @@
             this.timerWorkersUpdate = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.timerPassageSender = new System.Windows.Forms.Timer(this.components);
+            this.columnToDelete = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.usb = new UsbLibrary.UsbHidPort(this.components);
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -270,7 +277,6 @@
             this.panel15.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panelSignal2.SuspendLayout();
-            this.panelSignal0.SuspendLayout();
             this.LayPanel.SuspendLayout();
             this.panelSignal.SuspendLayout();
             this.panel10.SuspendLayout();
@@ -279,11 +285,13 @@
             this.panel11.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.panelFilterSelect.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericHours)).BeginInit();
             this.tabSubfilter.SuspendLayout();
             this.tabCard.SuspendLayout();
             this.tabTabnom.SuspendLayout();
             this.tabFIO.SuspendLayout();
             this.tabOperation.SuspendLayout();
+            this.tabDelivery.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel18.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -316,7 +324,7 @@
             this.toolStripStatusLabel10,
             this.restapi_path_label,
             this.labelHostAccess});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 964);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 974);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
             this.statusStrip1.Size = new System.Drawing.Size(1898, 30);
@@ -428,7 +436,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
-            this.splitContainer1.Size = new System.Drawing.Size(1898, 964);
+            this.splitContainer1.Size = new System.Drawing.Size(1898, 974);
             this.splitContainer1.SplitterDistance = 315;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 2;
@@ -479,11 +487,11 @@
             this.listView1.FullRowSelect = true;
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listView1.HideSelection = false;
-            listViewItem4.IndentCount = 5;
-            listViewItem5.IndentCount = 5;
+            listViewItem3.IndentCount = 5;
+            listViewItem7.IndentCount = 5;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem4,
-            listViewItem5});
+            listViewItem3,
+            listViewItem7});
             this.listView1.LabelWrap = false;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(28, 227);
@@ -492,7 +500,7 @@
             this.listView1.Name = "listView1";
             this.listView1.Scrollable = false;
             this.listView1.ShowGroups = false;
-            this.listView1.Size = new System.Drawing.Size(281, 102);
+            this.listView1.Size = new System.Drawing.Size(281, 112);
             this.listView1.SmallImageList = this.imageList1;
             this.listView1.TabIndex = 3;
             this.listView1.UseCompatibleStateImageBehavior = false;
@@ -531,14 +539,14 @@
             this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.ItemSize = new System.Drawing.Size(1, 1);
+            this.tabControl1.ItemSize = new System.Drawing.Size(100, 100);
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1580, 964);
+            this.tabControl1.Size = new System.Drawing.Size(1580, 974);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
-            this.tabControl1.TabIndex = 1;
+            this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
             // 
@@ -550,7 +558,7 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(1572, 856);
+            this.tabPage1.Size = new System.Drawing.Size(1572, 866);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Главное";
             // 
@@ -563,7 +571,7 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(96, 56);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(5);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1389, 201);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1389, 232);
             this.flowLayoutPanel1.TabIndex = 14;
             this.flowLayoutPanel1.WrapContents = false;
             // 
@@ -576,7 +584,7 @@
             this.panel14.Location = new System.Drawing.Point(5, 5);
             this.panel14.Margin = new System.Windows.Forms.Padding(0);
             this.panel14.Name = "panel14";
-            this.panel14.Size = new System.Drawing.Size(460, 190);
+            this.panel14.Size = new System.Drawing.Size(460, 227);
             this.panel14.TabIndex = 5;
             // 
             // buttonMakeManual
@@ -634,7 +642,7 @@
             this.panel15.Location = new System.Drawing.Point(465, 5);
             this.panel15.Margin = new System.Windows.Forms.Padding(0);
             this.panel15.Name = "panel15";
-            this.panel15.Size = new System.Drawing.Size(460, 190);
+            this.panel15.Size = new System.Drawing.Size(460, 227);
             this.panel15.TabIndex = 6;
             // 
             // panel3
@@ -642,14 +650,35 @@
             this.panel3.BackColor = System.Drawing.Color.Transparent;
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel3.Controls.Add(this.labelEventCounter);
+            this.panel3.Controls.Add(this.buttonMarkToDelete);
             this.panel3.Controls.Add(this.button1);
             this.panel3.Controls.Add(this.label10);
             this.panel3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.panel3.Location = new System.Drawing.Point(5, 3);
+            this.panel3.Location = new System.Drawing.Point(5, 5);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(450, 185);
+            this.panel3.Size = new System.Drawing.Size(450, 211);
             this.panel3.TabIndex = 11;
+            // 
+            // buttonMarkToDelete
+            // 
+            this.buttonMarkToDelete.BackColor = System.Drawing.Color.White;
+            this.buttonMarkToDelete.FlatAppearance.BorderColor = System.Drawing.Color.DarkRed;
+            this.buttonMarkToDelete.FlatAppearance.BorderSize = 0;
+            this.buttonMarkToDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.buttonMarkToDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
+            this.buttonMarkToDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonMarkToDelete.Font = new System.Drawing.Font("Roboto", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.buttonMarkToDelete.ForeColor = System.Drawing.Color.DarkRed;
+            this.buttonMarkToDelete.Location = new System.Drawing.Point(263, 113);
+            this.buttonMarkToDelete.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonMarkToDelete.Name = "buttonMarkToDelete";
+            this.buttonMarkToDelete.Size = new System.Drawing.Size(140, 50);
+            this.buttonMarkToDelete.TabIndex = 14;
+            this.buttonMarkToDelete.Text = "К удалению";
+            this.buttonMarkToDelete.UseVisualStyleBackColor = false;
+            this.buttonMarkToDelete.Visible = false;
+            this.buttonMarkToDelete.Click += new System.EventHandler(this.buttonMarkToDelete_Click);
             // 
             // labelEventCounter
             // 
@@ -673,10 +702,10 @@
             this.button1.ForeColor = System.Drawing.Color.Teal;
             this.button1.Image = global::kppApp.Properties.Resources.rarrows;
             this.button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button1.Location = new System.Drawing.Point(38, 110);
+            this.button1.Location = new System.Drawing.Point(38, 114);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(216, 49);
+            this.button1.Size = new System.Drawing.Size(154, 49);
             this.button1.TabIndex = 5;
             this.button1.Text = "Сбросить";
             this.button1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -701,64 +730,70 @@
             // panelSignal2
             // 
             this.panelSignal2.BackColor = System.Drawing.Color.Transparent;
-            this.panelSignal2.Controls.Add(this.panelSignal0);
+            this.panelSignal2.Controls.Add(this.LayPanel);
             this.panelSignal2.Location = new System.Drawing.Point(925, 5);
             this.panelSignal2.Margin = new System.Windows.Forms.Padding(0);
             this.panelSignal2.Name = "panelSignal2";
             this.panelSignal2.Padding = new System.Windows.Forms.Padding(5);
-            this.panelSignal2.Size = new System.Drawing.Size(460, 190);
+            this.panelSignal2.Size = new System.Drawing.Size(460, 221);
             this.panelSignal2.TabIndex = 7;
-            // 
-            // panelSignal0
-            // 
-            this.panelSignal0.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panelSignal0.Controls.Add(this.LayPanel);
-            this.panelSignal0.Location = new System.Drawing.Point(2, 3);
-            this.panelSignal0.Margin = new System.Windows.Forms.Padding(2);
-            this.panelSignal0.Name = "panelSignal0";
-            this.panelSignal0.Size = new System.Drawing.Size(456, 185);
-            this.panelSignal0.TabIndex = 1;
             // 
             // LayPanel
             // 
             this.LayPanel.BackColor = System.Drawing.Color.White;
             this.LayPanel.ColumnCount = 2;
-            this.LayPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.LayPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.LayPanel.Controls.Add(this.labelEventCard, 0, 3);
+            this.LayPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.44444F));
+            this.LayPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.55556F));
+            this.LayPanel.Controls.Add(this.labelEventCard, 0, 4);
+            this.LayPanel.Controls.Add(this.labelEventJobDescription, 0, 2);
             this.LayPanel.Controls.Add(this.labelEventName, 0, 0);
-            this.LayPanel.Controls.Add(this.label6, 1, 2);
-            this.LayPanel.Controls.Add(this.labelEventUserguid, 1, 3);
-            this.LayPanel.Controls.Add(this.label8, 0, 2);
+            this.LayPanel.Controls.Add(this.label6, 1, 3);
+            this.LayPanel.Controls.Add(this.labelEventUserguid, 1, 4);
+            this.LayPanel.Controls.Add(this.label8, 0, 3);
             this.LayPanel.Controls.Add(this.labelEventFamOtc, 0, 1);
             this.LayPanel.Controls.Add(this.labelEventDate, 1, 0);
             this.LayPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LayPanel.ForeColor = System.Drawing.Color.Black;
-            this.LayPanel.Location = new System.Drawing.Point(0, 0);
+            this.LayPanel.Location = new System.Drawing.Point(5, 5);
             this.LayPanel.Margin = new System.Windows.Forms.Padding(5);
             this.LayPanel.Name = "LayPanel";
-            this.LayPanel.RowCount = 4;
-            this.LayPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.LayPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.LayPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.LayPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.LayPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 16F));
-            this.LayPanel.Size = new System.Drawing.Size(456, 185);
-            this.LayPanel.TabIndex = 0;
+            this.LayPanel.RowCount = 5;
+            this.LayPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.22222F));
+            this.LayPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.22222F));
+            this.LayPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.22222F));
+            this.LayPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.LayPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.22222F));
+            this.LayPanel.Size = new System.Drawing.Size(450, 211);
+            this.LayPanel.TabIndex = 1;
             // 
             // labelEventCard
             // 
             this.labelEventCard.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelEventCard.Font = new System.Drawing.Font("Roboto", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.labelEventCard.ForeColor = System.Drawing.Color.Black;
-            this.labelEventCard.Location = new System.Drawing.Point(2, 138);
+            this.labelEventCard.Location = new System.Drawing.Point(2, 161);
             this.labelEventCard.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelEventCard.Name = "labelEventCard";
             this.labelEventCard.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
-            this.labelEventCard.Size = new System.Drawing.Size(224, 47);
-            this.labelEventCard.TabIndex = 13;
+            this.labelEventCard.Size = new System.Drawing.Size(195, 50);
+            this.labelEventCard.TabIndex = 15;
             this.labelEventCard.Text = "-";
             this.labelEventCard.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelEventJobDescription
+            // 
+            this.LayPanel.SetColumnSpan(this.labelEventJobDescription, 2);
+            this.labelEventJobDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelEventJobDescription.Font = new System.Drawing.Font("Roboto", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelEventJobDescription.ForeColor = System.Drawing.Color.Black;
+            this.labelEventJobDescription.Location = new System.Drawing.Point(2, 92);
+            this.labelEventJobDescription.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelEventJobDescription.Name = "labelEventJobDescription";
+            this.labelEventJobDescription.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
+            this.labelEventJobDescription.Size = new System.Drawing.Size(446, 46);
+            this.labelEventJobDescription.TabIndex = 14;
+            this.labelEventJobDescription.Text = "-";
+            this.labelEventJobDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelEventName
             // 
@@ -769,7 +804,7 @@
             this.labelEventName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelEventName.Name = "labelEventName";
             this.labelEventName.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
-            this.labelEventName.Size = new System.Drawing.Size(224, 46);
+            this.labelEventName.Size = new System.Drawing.Size(195, 46);
             this.labelEventName.TabIndex = 12;
             this.labelEventName.Text = "-";
             this.labelEventName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -779,11 +814,11 @@
             this.label6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label6.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label6.ForeColor = System.Drawing.Color.Gray;
-            this.label6.Location = new System.Drawing.Point(230, 92);
+            this.label6.Location = new System.Drawing.Point(201, 138);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
-            this.label6.Size = new System.Drawing.Size(224, 46);
+            this.label6.Size = new System.Drawing.Size(247, 23);
             this.label6.TabIndex = 10;
             this.label6.Text = "Уникальный ИД";
             this.label6.TextAlign = System.Drawing.ContentAlignment.BottomRight;
@@ -793,11 +828,11 @@
             this.labelEventUserguid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelEventUserguid.Font = new System.Drawing.Font("Roboto", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.labelEventUserguid.ForeColor = System.Drawing.Color.Black;
-            this.labelEventUserguid.Location = new System.Drawing.Point(230, 138);
+            this.labelEventUserguid.Location = new System.Drawing.Point(201, 161);
             this.labelEventUserguid.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelEventUserguid.Name = "labelEventUserguid";
             this.labelEventUserguid.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
-            this.labelEventUserguid.Size = new System.Drawing.Size(224, 47);
+            this.labelEventUserguid.Size = new System.Drawing.Size(247, 50);
             this.labelEventUserguid.TabIndex = 9;
             this.labelEventUserguid.Text = "-";
             this.labelEventUserguid.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -807,11 +842,11 @@
             this.label8.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label8.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label8.ForeColor = System.Drawing.Color.Gray;
-            this.label8.Location = new System.Drawing.Point(2, 92);
+            this.label8.Location = new System.Drawing.Point(2, 138);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
-            this.label8.Size = new System.Drawing.Size(224, 46);
+            this.label8.Size = new System.Drawing.Size(195, 23);
             this.label8.TabIndex = 6;
             this.label8.Text = "Номер карты";
             this.label8.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -825,7 +860,7 @@
             this.labelEventFamOtc.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelEventFamOtc.Name = "labelEventFamOtc";
             this.labelEventFamOtc.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
-            this.labelEventFamOtc.Size = new System.Drawing.Size(452, 46);
+            this.labelEventFamOtc.Size = new System.Drawing.Size(446, 46);
             this.labelEventFamOtc.TabIndex = 2;
             this.labelEventFamOtc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -833,11 +868,11 @@
             // 
             this.labelEventDate.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelEventDate.Font = new System.Drawing.Font("Roboto", 25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.labelEventDate.Location = new System.Drawing.Point(228, 4);
+            this.labelEventDate.Location = new System.Drawing.Point(199, 4);
             this.labelEventDate.Margin = new System.Windows.Forms.Padding(0, 4, 3, 0);
             this.labelEventDate.Name = "labelEventDate";
             this.labelEventDate.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
-            this.labelEventDate.Size = new System.Drawing.Size(225, 42);
+            this.labelEventDate.Size = new System.Drawing.Size(248, 42);
             this.labelEventDate.TabIndex = 1;
             this.labelEventDate.Text = "-";
             this.labelEventDate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -901,10 +936,10 @@
             this.panel10.Controls.Add(this.splitter1);
             this.panel10.Controls.Add(this.panel12);
             this.panel10.Controls.Add(this.panel11);
-            this.panel10.Location = new System.Drawing.Point(24, 269);
+            this.panel10.Location = new System.Drawing.Point(24, 293);
             this.panel10.Margin = new System.Windows.Forms.Padding(2);
             this.panel10.Name = "panel10";
-            this.panel10.Size = new System.Drawing.Size(1534, 625);
+            this.panel10.Size = new System.Drawing.Size(1534, 657);
             this.panel10.TabIndex = 12;
             // 
             // panel13
@@ -914,7 +949,7 @@
             this.panel13.Location = new System.Drawing.Point(0, 54);
             this.panel13.Margin = new System.Windows.Forms.Padding(2);
             this.panel13.Name = "panel13";
-            this.panel13.Size = new System.Drawing.Size(1534, 541);
+            this.panel13.Size = new System.Drawing.Size(1534, 573);
             this.panel13.TabIndex = 6;
             // 
             // listViewHotBuffer
@@ -930,7 +965,8 @@
             this.columnHeader5,
             this.columnHeader6,
             this.columnHeader7,
-            this.columnEventID});
+            this.columnEventID,
+            this.columnToDelete});
             this.listViewHotBuffer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewHotBuffer.Font = new System.Drawing.Font("Roboto", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.listViewHotBuffer.ForeColor = System.Drawing.Color.Gray;
@@ -938,16 +974,16 @@
             this.listViewHotBuffer.GridLines = true;
             this.listViewHotBuffer.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewHotBuffer.HideSelection = false;
-            listViewItem1.Checked = true;
-            listViewItem1.StateImageIndex = 1;
+            listViewItem4.Checked = true;
+            listViewItem4.StateImageIndex = 1;
             this.listViewHotBuffer.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
+            listViewItem4});
             this.listViewHotBuffer.Location = new System.Drawing.Point(0, 0);
             this.listViewHotBuffer.Margin = new System.Windows.Forms.Padding(2);
             this.listViewHotBuffer.MultiSelect = false;
             this.listViewHotBuffer.Name = "listViewHotBuffer";
             this.listViewHotBuffer.ShowGroups = false;
-            this.listViewHotBuffer.Size = new System.Drawing.Size(1534, 541);
+            this.listViewHotBuffer.Size = new System.Drawing.Size(1534, 573);
             this.listViewHotBuffer.SmallImageList = this.imageList2;
             this.listViewHotBuffer.TabIndex = 3;
             this.listViewHotBuffer.UseCompatibleStateImageBehavior = false;
@@ -979,7 +1015,7 @@
             this.columnHeader4.DisplayIndex = 2;
             this.columnHeader4.Text = "ФИО";
             this.columnHeader4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader4.Width = 421;
+            this.columnHeader4.Width = 384;
             // 
             // columnHeader5
             // 
@@ -1032,7 +1068,7 @@
             this.panel12.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.panel12.Controls.Add(this.label32);
             this.panel12.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel12.Location = new System.Drawing.Point(0, 595);
+            this.panel12.Location = new System.Drawing.Point(0, 627);
             this.panel12.Margin = new System.Windows.Forms.Padding(2);
             this.panel12.Name = "panel12";
             this.panel12.Size = new System.Drawing.Size(1534, 30);
@@ -1072,7 +1108,6 @@
             this.labelShomItem.Size = new System.Drawing.Size(60, 20);
             this.labelShomItem.TabIndex = 9;
             this.labelShomItem.Text = "label31";
-            this.labelShomItem.Visible = false;
             // 
             // startBtnSelect
             // 
@@ -1083,7 +1118,6 @@
             this.startBtnSelect.Text = "Select";
             this.startBtnSelect.UseVisualStyleBackColor = true;
             this.startBtnSelect.Visible = false;
-            this.startBtnSelect.Click += new System.EventHandler(this.startBtnSelect_Click);
             // 
             // radioButtonDaily
             // 
@@ -1138,27 +1172,77 @@
             this.tabPage2.Controls.Add(this.label36);
             this.tabPage2.Controls.Add(this.panel1);
             this.tabPage2.Controls.Add(this.panel18);
-            this.tabPage2.Location = new System.Drawing.Point(4, 5);
+            this.tabPage2.Location = new System.Drawing.Point(4, 104);
             this.tabPage2.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage2.Size = new System.Drawing.Size(1572, 955);
+            this.tabPage2.Size = new System.Drawing.Size(1572, 866);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "История";
             // 
             // panelFilterSelect
             // 
+            this.panelFilterSelect.Controls.Add(this.label14);
+            this.panelFilterSelect.Controls.Add(this.tabSubfilter);
+            this.panelFilterSelect.Controls.Add(this.numericHours);
+            this.panelFilterSelect.Controls.Add(this.button2);
             this.panelFilterSelect.Controls.Add(this.buttonHistoryFilterHide);
             this.panelFilterSelect.Controls.Add(this.buttonHistoryReload);
-            this.panelFilterSelect.Controls.Add(this.tabSubfilter);
-            this.panelFilterSelect.Controls.Add(this.label14);
             this.panelFilterSelect.Controls.Add(this.label13);
-            this.panelFilterSelect.Controls.Add(this.endPickerSelect);
             this.panelFilterSelect.Controls.Add(this.begPickerSelect);
             this.panelFilterSelect.Location = new System.Drawing.Point(2, 72);
             this.panelFilterSelect.Name = "panelFilterSelect";
-            this.panelFilterSelect.Size = new System.Drawing.Size(1572, 55);
+            this.panelFilterSelect.Size = new System.Drawing.Size(1572, 89);
             this.panelFilterSelect.TabIndex = 4;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.label14.Location = new System.Drawing.Point(758, 20);
+            this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(44, 19);
+            this.label14.TabIndex = 24;
+            this.label14.Text = "часа";
+            // 
+            // numericHours
+            // 
+            this.numericHours.Location = new System.Drawing.Point(687, 17);
+            this.numericHours.Maximum = new decimal(new int[] {
+            72,
+            0,
+            0,
+            0});
+            this.numericHours.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericHours.Name = "numericHours";
+            this.numericHours.Size = new System.Drawing.Size(66, 26);
+            this.numericHours.TabIndex = 23;
+            this.numericHours.Value = new decimal(new int[] {
+            72,
+            0,
+            0,
+            0});
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.Color.White;
+            this.button2.FlatAppearance.BorderSize = 0;
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.button2.ForeColor = System.Drawing.Color.Black;
+            this.button2.Location = new System.Drawing.Point(277, 15);
+            this.button2.Margin = new System.Windows.Forms.Padding(2);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(105, 28);
+            this.button2.TabIndex = 22;
+            this.button2.Text = "Сброс";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // buttonHistoryFilterHide
             // 
@@ -1167,7 +1251,7 @@
             this.buttonHistoryFilterHide.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonHistoryFilterHide.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.buttonHistoryFilterHide.ForeColor = System.Drawing.Color.Black;
-            this.buttonHistoryFilterHide.Location = new System.Drawing.Point(152, 15);
+            this.buttonHistoryFilterHide.Location = new System.Drawing.Point(150, 15);
             this.buttonHistoryFilterHide.Margin = new System.Windows.Forms.Padding(2);
             this.buttonHistoryFilterHide.Name = "buttonHistoryFilterHide";
             this.buttonHistoryFilterHide.Size = new System.Drawing.Size(105, 28);
@@ -1199,14 +1283,15 @@
             this.tabSubfilter.Controls.Add(this.tabTabnom);
             this.tabSubfilter.Controls.Add(this.tabFIO);
             this.tabSubfilter.Controls.Add(this.tabOperation);
+            this.tabSubfilter.Controls.Add(this.tabDelivery);
             this.tabSubfilter.ItemSize = new System.Drawing.Size(100, 10);
-            this.tabSubfilter.Location = new System.Drawing.Point(795, -14);
+            this.tabSubfilter.Location = new System.Drawing.Point(804, -13);
             this.tabSubfilter.Margin = new System.Windows.Forms.Padding(0);
             this.tabSubfilter.Multiline = true;
             this.tabSubfilter.Name = "tabSubfilter";
             this.tabSubfilter.Padding = new System.Drawing.Point(0, 0);
             this.tabSubfilter.SelectedIndex = 0;
-            this.tabSubfilter.Size = new System.Drawing.Size(592, 65);
+            this.tabSubfilter.Size = new System.Drawing.Size(631, 73);
             this.tabSubfilter.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabSubfilter.TabIndex = 19;
             this.tabSubfilter.Visible = false;
@@ -1220,7 +1305,7 @@
             this.tabCard.Location = new System.Drawing.Point(4, 14);
             this.tabCard.Name = "tabCard";
             this.tabCard.Padding = new System.Windows.Forms.Padding(3);
-            this.tabCard.Size = new System.Drawing.Size(584, 47);
+            this.tabCard.Size = new System.Drawing.Size(623, 55);
             this.tabCard.TabIndex = 0;
             // 
             // label15
@@ -1251,7 +1336,7 @@
             this.tabTabnom.Location = new System.Drawing.Point(4, 14);
             this.tabTabnom.Name = "tabTabnom";
             this.tabTabnom.Padding = new System.Windows.Forms.Padding(3);
-            this.tabTabnom.Size = new System.Drawing.Size(584, 47);
+            this.tabTabnom.Size = new System.Drawing.Size(623, 55);
             this.tabTabnom.TabIndex = 1;
             // 
             // label38
@@ -1282,7 +1367,7 @@
             this.tabFIO.Location = new System.Drawing.Point(4, 14);
             this.tabFIO.Name = "tabFIO";
             this.tabFIO.Padding = new System.Windows.Forms.Padding(3);
-            this.tabFIO.Size = new System.Drawing.Size(584, 47);
+            this.tabFIO.Size = new System.Drawing.Size(623, 55);
             this.tabFIO.TabIndex = 2;
             // 
             // label39
@@ -1313,7 +1398,7 @@
             this.tabOperation.Location = new System.Drawing.Point(4, 14);
             this.tabOperation.Name = "tabOperation";
             this.tabOperation.Padding = new System.Windows.Forms.Padding(3);
-            this.tabOperation.Size = new System.Drawing.Size(584, 47);
+            this.tabOperation.Size = new System.Drawing.Size(623, 55);
             this.tabOperation.TabIndex = 3;
             // 
             // label40
@@ -1343,45 +1428,62 @@
             this.comboBoxHistoryOperations.TabIndex = 13;
             this.comboBoxHistoryOperations.TabStop = false;
             // 
-            // label14
+            // tabDelivery
             // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label14.Location = new System.Drawing.Point(521, 18);
-            this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(91, 19);
-            this.label14.TabIndex = 16;
-            this.label14.Text = "Окончание";
+            this.tabDelivery.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(238)))), ((int)(((byte)(233)))));
+            this.tabDelivery.Controls.Add(this.radioWait);
+            this.tabDelivery.Controls.Add(this.radioDelivered);
+            this.tabDelivery.Location = new System.Drawing.Point(4, 14);
+            this.tabDelivery.Name = "tabDelivery";
+            this.tabDelivery.Padding = new System.Windows.Forms.Padding(3);
+            this.tabDelivery.Size = new System.Drawing.Size(623, 55);
+            this.tabDelivery.TabIndex = 4;
+            // 
+            // radioWait
+            // 
+            this.radioWait.AutoSize = true;
+            this.radioWait.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.radioWait.Location = new System.Drawing.Point(154, 16);
+            this.radioWait.Margin = new System.Windows.Forms.Padding(2);
+            this.radioWait.Name = "radioWait";
+            this.radioWait.Size = new System.Drawing.Size(129, 23);
+            this.radioWait.TabIndex = 9;
+            this.radioWait.Text = "Ожидающие";
+            this.radioWait.UseVisualStyleBackColor = true;
+            // 
+            // radioDelivered
+            // 
+            this.radioDelivered.AutoSize = true;
+            this.radioDelivered.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.radioDelivered.Checked = true;
+            this.radioDelivered.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.radioDelivered.Location = new System.Drawing.Point(5, 16);
+            this.radioDelivered.Margin = new System.Windows.Forms.Padding(2);
+            this.radioDelivered.Name = "radioDelivered";
+            this.radioDelivered.Size = new System.Drawing.Size(145, 23);
+            this.radioDelivered.TabIndex = 8;
+            this.radioDelivered.TabStop = true;
+            this.radioDelivered.Text = "Доставленные";
+            this.radioDelivered.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.radioDelivered.UseVisualStyleBackColor = true;
             // 
             // label13
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label13.Location = new System.Drawing.Point(271, 19);
+            this.label13.Location = new System.Drawing.Point(444, 20);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(65, 19);
             this.label13.TabIndex = 17;
             this.label13.Text = "Начало";
             // 
-            // endPickerSelect
-            // 
-            this.endPickerSelect.CustomFormat = "dd.MM.yy HH:mm";
-            this.endPickerSelect.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.endPickerSelect.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.endPickerSelect.Location = new System.Drawing.Point(617, 15);
-            this.endPickerSelect.Margin = new System.Windows.Forms.Padding(2);
-            this.endPickerSelect.Name = "endPickerSelect";
-            this.endPickerSelect.Size = new System.Drawing.Size(166, 27);
-            this.endPickerSelect.TabIndex = 15;
-            // 
             // begPickerSelect
             // 
             this.begPickerSelect.CustomFormat = "dd.MM.yy HH:mm";
             this.begPickerSelect.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.begPickerSelect.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.begPickerSelect.Location = new System.Drawing.Point(337, 15);
+            this.begPickerSelect.Location = new System.Drawing.Point(510, 16);
             this.begPickerSelect.Margin = new System.Windows.Forms.Padding(2);
             this.begPickerSelect.Name = "begPickerSelect";
             this.begPickerSelect.Size = new System.Drawing.Size(168, 27);
@@ -1391,7 +1493,7 @@
             // 
             this.labelSelectedEventsCount.AutoSize = true;
             this.labelSelectedEventsCount.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.labelSelectedEventsCount.Location = new System.Drawing.Point(134, 881);
+            this.labelSelectedEventsCount.Location = new System.Drawing.Point(134, 939);
             this.labelSelectedEventsCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelSelectedEventsCount.Name = "labelSelectedEventsCount";
             this.labelSelectedEventsCount.Size = new System.Drawing.Size(18, 19);
@@ -1403,7 +1505,7 @@
             // 
             this.label36.AutoSize = true;
             this.label36.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.label36.Location = new System.Drawing.Point(10, 881);
+            this.label36.Location = new System.Drawing.Point(10, 939);
             this.label36.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(120, 19);
@@ -1470,7 +1572,7 @@
             this.panel18.Location = new System.Drawing.Point(14, 44);
             this.panel18.Margin = new System.Windows.Forms.Padding(2);
             this.panel18.Name = "panel18";
-            this.panel18.Size = new System.Drawing.Size(1532, 835);
+            this.panel18.Size = new System.Drawing.Size(1543, 881);
             this.panel18.TabIndex = 18;
             // 
             // listViewHistory
@@ -1478,87 +1580,95 @@
             this.listViewHistory.BackColor = System.Drawing.Color.White;
             this.listViewHistory.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.listViewHistory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader8,
-            this.columnHeader9,
-            this.columnHeader10,
-            this.columnHeader11,
-            this.columnHeader12,
-            this.columnHeader13,
-            this.columnHeader14,
-            this.columnIndex});
+            this.columnFailure,
+            this.columnCard,
+            this.columnTabnom,
+            this.columnFIO,
+            this.columnDate,
+            this.columnOperation,
+            this.columnManual,
+            this.columnID,
+            this.columnDelivery});
             this.listViewHistory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewHistory.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.listViewHistory.GridLines = true;
             this.listViewHistory.HideSelection = false;
-            listViewItem2.StateImageIndex = 0;
-            listViewItem2.UseItemStyleForSubItems = false;
+            listViewItem5.StateImageIndex = 0;
+            listViewItem5.UseItemStyleForSubItems = false;
             this.listViewHistory.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem2});
+            listViewItem5});
             this.listViewHistory.Location = new System.Drawing.Point(0, 0);
             this.listViewHistory.Margin = new System.Windows.Forms.Padding(2);
             this.listViewHistory.MultiSelect = false;
             this.listViewHistory.Name = "listViewHistory";
             this.listViewHistory.ShowGroups = false;
-            this.listViewHistory.Size = new System.Drawing.Size(1532, 835);
+            this.listViewHistory.Size = new System.Drawing.Size(1543, 881);
             this.listViewHistory.SmallImageList = this.imageList3;
             this.listViewHistory.TabIndex = 3;
             this.listViewHistory.UseCompatibleStateImageBehavior = false;
             this.listViewHistory.View = System.Windows.Forms.View.Details;
             this.listViewHistory.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView3_ColumnClick);
             // 
-            // columnHeader8
+            // columnFailure
             // 
-            this.columnHeader8.DisplayIndex = 7;
-            this.columnHeader8.Text = "Не найдена";
-            this.columnHeader8.Width = 110;
+            this.columnFailure.DisplayIndex = 7;
+            this.columnFailure.Text = "Не найдена";
+            this.columnFailure.Width = 99;
             // 
-            // columnHeader9
+            // columnCard
             // 
-            this.columnHeader9.Text = "Номер карты";
-            this.columnHeader9.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader9.Width = 156;
+            this.columnCard.Text = "Номер карты";
+            this.columnCard.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnCard.Width = 145;
             // 
-            // columnHeader10
+            // columnTabnom
             // 
-            this.columnHeader10.Text = "Таб.номер";
-            this.columnHeader10.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader10.Width = 141;
+            this.columnTabnom.Text = "Таб.номер";
+            this.columnTabnom.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnTabnom.Width = 127;
             // 
-            // columnHeader11
+            // columnFIO
             // 
-            this.columnHeader11.Text = "ФИО";
-            this.columnHeader11.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader11.Width = 379;
+            this.columnFIO.Text = "ФИО";
+            this.columnFIO.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnFIO.Width = 357;
             // 
-            // columnHeader12
+            // columnDate
             // 
-            this.columnHeader12.Text = "Дата регистрации";
-            this.columnHeader12.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader12.Width = 198;
+            this.columnDate.Text = "Дата регистрации";
+            this.columnDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnDate.Width = 183;
             // 
-            // columnHeader13
+            // columnOperation
             // 
-            this.columnHeader13.Text = "Событие";
-            this.columnHeader13.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader13.Width = 360;
+            this.columnOperation.Text = "Событие";
+            this.columnOperation.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnOperation.Width = 366;
             // 
-            // columnHeader14
+            // columnManual
             // 
-            this.columnHeader14.Text = "Вручную";
-            this.columnHeader14.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader14.Width = 93;
+            this.columnManual.Text = "Вручную";
+            this.columnManual.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnManual.Width = 80;
             // 
-            // columnIndex
+            // columnID
             // 
-            this.columnIndex.DisplayIndex = 0;
-            this.columnIndex.Text = "ID";
-            this.columnIndex.Width = 66;
+            this.columnID.DisplayIndex = 0;
+            this.columnID.Text = "ID";
+            this.columnID.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // columnDelivery
+            // 
+            this.columnDelivery.Text = "Ожид.";
+            this.columnDelivery.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnDelivery.Width = 91;
             // 
             // imageList3
             // 
             this.imageList3.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList3.ImageStream")));
             this.imageList3.TransparentColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.imageList3.Images.SetKeyName(0, "filter.png");
+            this.imageList3.Images.SetKeyName(1, "filter1.png");
             // 
             // tabPage3
             // 
@@ -1570,7 +1680,7 @@
             this.tabPage3.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage3.Size = new System.Drawing.Size(1572, 955);
+            this.tabPage3.Size = new System.Drawing.Size(1572, 965);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Создание";
             // 
@@ -2043,7 +2153,7 @@
             this.tabPage5.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage5.Size = new System.Drawing.Size(1572, 955);
+            this.tabPage5.Size = new System.Drawing.Size(1572, 965);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Красная";
             // 
@@ -2303,7 +2413,7 @@
             this.tabPage4.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage4.Size = new System.Drawing.Size(1572, 955);
+            this.tabPage4.Size = new System.Drawing.Size(1572, 965);
             this.tabPage4.TabIndex = 5;
             this.tabPage4.Text = "Зеленая";
             // 
@@ -2402,7 +2512,6 @@
             this.buttonPOST.TabIndex = 88;
             this.buttonPOST.Text = "POST";
             this.buttonPOST.UseVisualStyleBackColor = true;
-            this.buttonPOST.Visible = false;
             this.buttonPOST.Click += new System.EventHandler(this.buttonPOST_Click);
             // 
             // editGreenEventTabnom
@@ -2709,7 +2818,7 @@
             this.lvGreenEventSearch.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lvGreenEventSearch.HideSelection = false;
             this.lvGreenEventSearch.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem6});
+            listViewItem1});
             this.lvGreenEventSearch.Location = new System.Drawing.Point(470, 33);
             this.lvGreenEventSearch.Margin = new System.Windows.Forms.Padding(2);
             this.lvGreenEventSearch.MultiSelect = false;
@@ -2771,6 +2880,12 @@
             this.timerPassageSender.Interval = 2500;
             this.timerPassageSender.Tick += new System.EventHandler(this.timerPassageSender_Tick);
             // 
+            // columnToDelete
+            // 
+            this.columnToDelete.Text = "⌫";
+            this.columnToDelete.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnToDelete.Width = 41;
+            // 
             // usb
             // 
             this.usb.ProductId = 0;
@@ -2785,7 +2900,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1898, 994);
+            this.ClientSize = new System.Drawing.Size(1898, 1004);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -2811,7 +2926,6 @@
             this.panel15.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panelSignal2.ResumeLayout(false);
-            this.panelSignal0.ResumeLayout(false);
             this.LayPanel.ResumeLayout(false);
             this.panelSignal.ResumeLayout(false);
             this.panel10.ResumeLayout(false);
@@ -2823,6 +2937,7 @@
             this.tabPage2.PerformLayout();
             this.panelFilterSelect.ResumeLayout(false);
             this.panelFilterSelect.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericHours)).EndInit();
             this.tabSubfilter.ResumeLayout(false);
             this.tabCard.ResumeLayout(false);
             this.tabCard.PerformLayout();
@@ -2832,6 +2947,8 @@
             this.tabFIO.PerformLayout();
             this.tabOperation.ResumeLayout(false);
             this.tabOperation.PerformLayout();
+            this.tabDelivery.ResumeLayout(false);
+            this.tabDelivery.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel18.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
@@ -2937,16 +3054,6 @@
         private System.Windows.Forms.Label labelEventCounter;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Panel panelSignal2;
-        private System.Windows.Forms.Panel panelSignal0;
-        private System.Windows.Forms.TableLayoutPanel LayPanel;
-        private System.Windows.Forms.Label labelEventCard;
-        private System.Windows.Forms.Label labelEventName;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label labelEventUserguid;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label labelEventFamOtc;
-        private System.Windows.Forms.Label labelEventDate;
         private System.Windows.Forms.Label label34;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
@@ -2957,9 +3064,7 @@
         private System.Windows.Forms.Label label36;
         private System.Windows.Forms.Panel panelFilterSelect;
         private System.Windows.Forms.Button buttonHistoryReload;
-        private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.DateTimePicker endPickerSelect;
         private System.Windows.Forms.DateTimePicker begPickerSelect;
         private System.Windows.Forms.Button buttonHistoryFilterHide;
         private System.Windows.Forms.Button startBtnSelect;
@@ -2978,13 +3083,13 @@
         private System.Windows.Forms.ComboBox comboBoxHistoryOperations;
         private System.Windows.Forms.Panel panel18;
         private System.Windows.Forms.ListView listViewHistory;
-        private System.Windows.Forms.ColumnHeader columnHeader8;
-        private System.Windows.Forms.ColumnHeader columnHeader9;
-        private System.Windows.Forms.ColumnHeader columnHeader10;
-        private System.Windows.Forms.ColumnHeader columnHeader11;
-        private System.Windows.Forms.ColumnHeader columnHeader12;
-        private System.Windows.Forms.ColumnHeader columnHeader13;
-        private System.Windows.Forms.ColumnHeader columnHeader14;
+        private System.Windows.Forms.ColumnHeader columnFailure;
+        private System.Windows.Forms.ColumnHeader columnCard;
+        private System.Windows.Forms.ColumnHeader columnTabnom;
+        private System.Windows.Forms.ColumnHeader columnFIO;
+        private System.Windows.Forms.ColumnHeader columnDate;
+        private System.Windows.Forms.ColumnHeader columnOperation;
+        private System.Windows.Forms.ColumnHeader columnManual;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label16;
@@ -3042,7 +3147,7 @@
         private System.Windows.Forms.ListBox hintsGreenEventCard;
         private System.Windows.Forms.ListBox hintsGreenEventFIO;
         private System.Windows.Forms.ListBox hintsGreenEventGUID;
-        private System.Windows.Forms.ColumnHeader columnIndex;
+        private System.Windows.Forms.ColumnHeader columnID;
         private System.Windows.Forms.Label labelManualEventOperation;
         private System.Windows.Forms.Label labelManualEventCard;
         private System.Windows.Forms.Label labelRedOperation;
@@ -3056,5 +3161,24 @@
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.NumericUpDown editGreenEventTabnom;
         private System.Windows.Forms.Button buttonPOST;
+        private System.Windows.Forms.Panel panelSignal2;
+        private System.Windows.Forms.TableLayoutPanel LayPanel;
+        private System.Windows.Forms.Label labelEventCard;
+        private System.Windows.Forms.Label labelEventJobDescription;
+        private System.Windows.Forms.Label labelEventName;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label labelEventUserguid;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label labelEventFamOtc;
+        private System.Windows.Forms.Label labelEventDate;
+        private System.Windows.Forms.Button buttonMarkToDelete;
+        private System.Windows.Forms.TabPage tabDelivery;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.RadioButton radioWait;
+        private System.Windows.Forms.RadioButton radioDelivered;
+        private System.Windows.Forms.ColumnHeader columnDelivery;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.NumericUpDown numericHours;
+        private System.Windows.Forms.ColumnHeader columnToDelete;
     }
 }
