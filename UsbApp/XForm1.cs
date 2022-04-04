@@ -318,7 +318,8 @@ namespace kppApp
                 if (readerBytes.Length < 1) return;
                 lastPassage.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                 this.BackColor = Color.DimGray;
-
+                bool bered_flag = false;
+                panelSignal2.BackColor = Color.Transparent;
                 if (readerBytes.Length > 0)
                 {
                     lastPassage.card = readerBytes;
@@ -342,6 +343,8 @@ namespace kppApp
                         labelEventUserguid.Text = labelTPL.Text;
                         labelEventUserguid.ForeColor = Color.Coral;
                         panelSignal2.BackColor = Color.Red;
+                        bered_flag = true;
+
                     }
 
                     System.DateTime dtDateTime = DateTime.Now;
@@ -384,6 +387,10 @@ namespace kppApp
                         object xxx = comboBoxOperationsMain.SelectedItem;
                         lastPassage.operCode = ((KeyValuePair<int, string>)xxx).Key;
                         write2sqlite(lastPassage);
+                        if (bered_flag)
+                        {
+                            buttonBeRed_Click(sender, args);
+                        }
                     }
                 }
 
@@ -1069,6 +1076,13 @@ namespace kppApp
         private void buttonHistorySelect_Click(object sender, EventArgs e)
         {
 
+            listViewHistory.Columns[1].ImageIndex = 0;
+            listViewHistory.Columns[2].ImageIndex = 0;
+            listViewHistory.Columns[3].ImageIndex = 0;
+            listViewHistory.Columns[4].ImageIndex = 0;
+            listViewHistory.Columns[5].ImageIndex = 0;
+            columnDelivery.ImageIndex = 0;
+
             bool withFilter = tabSubfilter.Visible;
             tabSubfilter.Visible = false;
             panelFilterSelect.Visible = false;
@@ -1398,16 +1412,19 @@ namespace kppApp
                         comboRedEventOperation.SelectedValue = int.Parse(spl[2]);
                         comboRedEventOperation.Enabled = true;
                         bool switchable = true;
-                        if (spl[1] == "a" & toDelete == symbol_deleteMark)
+                        // автоматическая и хорошая, но помеченная к удалению выбирается для редактирования
+                        if (spl[1] == "a")
                         {
-                            comboRedEventOperation.Enabled = false;
-                            editRedEventFIO.Text = myFIO;
-                            //editRedEventGUID.Text = myGUID;
-                            editRedEventComment.Text = myComment;
-
-
-                        }
-                        else { switchable = false; };
+                            switchable = false;
+                            if (toDelete == symbol_deleteMark) { 
+                                comboRedEventOperation.Enabled = false;
+                                editRedEventFIO.Text = myFIO;
+                                //editRedEventGUID.Text = myGUID;
+                                editRedEventComment.Text = myComment;
+                                switchable = true;
+                            }
+                        };
+                        
                         if (switchable)
                         {
                             tabControl1.SelectTab(3);
@@ -1595,6 +1612,7 @@ namespace kppApp
 
         private void buttonOKManualEvent_Click(object sender, EventArgs e)
         {
+            panelSignal2.BackColor = Color.Transparent;
             Passage p = new Passage();
             p.isManual = 1;
             p.card = editManualEventCard.Text;
@@ -1603,7 +1621,6 @@ namespace kppApp
             //object xxx = comboManualEventOperation.SelectedItem;
             p.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             p.operCode = ((KeyValuePair<int, string>)comboManualEventOperation.SelectedItem).Key;
-            panelSignal2.BackColor = Color.Green;
             write2sqlite(p);
 
 
@@ -1635,7 +1652,7 @@ namespace kppApp
             labelEventDate.Text = dtDateTime.ToShortDateString() + " " + dtDateTime.ToShortTimeString();
             buttonCancelManualEvent_Click(sender, e);
             MainTableReload(sender, e);
-            panelSignal2.BackColor = Color.Transparent;
+            buttonBeGreen_Click(sender, e);
         }
 
         private void editRedEventComment_TextChanged(object sender, EventArgs e)
@@ -2076,6 +2093,8 @@ namespace kppApp
         {
             numericHours.Value = 72;
             begPickerSelect.Value = DateTime.Now.AddHours(-(long)numericHours.Value);
+            tabSubfilter.Visible = false;
+            buttonHistorySelect_Click(sender, e);
         }
 
         private void buttonMarkToDelete_Click(object sender, EventArgs e)
@@ -2089,6 +2108,46 @@ namespace kppApp
                 command.ExecuteNonQuery();
             }
             MainTableReload(sender, e);
+        }
+
+
+        private void PaintByColor(Color col)
+        {
+
+            LayPanel.BackColor = col;
+            if (listViewHotBuffer.Items.Count > 0)
+            {
+                listViewHotBuffer.Items[0].BackColor = col;
+                for (int i = 0; i < listViewHotBuffer.Items[0].SubItems.Count - 1; i++)
+                {
+                    listViewHotBuffer.Items[0].SubItems[i].BackColor = col;
+                }
+            }
+
+        }
+
+
+        private void buttonBeRed_Click(object sender, EventArgs e)
+        {
+            timerCol.Enabled = true;
+            PaintByColor(buttonBeRed.BackColor);
+        }
+
+        private void buttonBeGreen_Click(object sender, EventArgs e)
+        {
+            timerCol.Enabled = true;
+            PaintByColor(buttonBeGreen.BackColor); 
+        }
+
+        private void buttonBeWhite_Click(object sender, EventArgs e)
+        {
+            PaintByColor(buttonBeWhite.BackColor); 
+        }
+
+        private void timerCol_Tick(object sender, EventArgs e)
+        {
+            timerCol.Enabled = false;
+            PaintByColor(Color.White);
         }
     }
 }
