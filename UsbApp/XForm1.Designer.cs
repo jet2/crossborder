@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("История считываний", 1);
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("История считываний", 1);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(XForm1));
             System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "123", System.Drawing.SystemColors.WindowText, System.Drawing.Color.Gainsboro, new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(204)))),
@@ -97,6 +97,9 @@
             this.label10 = new System.Windows.Forms.Label();
             this.panelSignal2 = new System.Windows.Forms.Panel();
             this.LayPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.labelEventDate = new System.Windows.Forms.Label();
+            this.labelEventName = new System.Windows.Forms.Label();
             this.labelEventCard = new System.Windows.Forms.Label();
             this.labelEventJobDescription = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -266,9 +269,6 @@
             this.timerPassageSender = new System.Windows.Forms.Timer(this.components);
             this.timerCol = new System.Windows.Forms.Timer(this.components);
             this.usb = new UsbLibrary.UsbHidPort(this.components);
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.labelEventName = new System.Windows.Forms.Label();
-            this.labelEventDate = new System.Windows.Forms.Label();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -283,6 +283,7 @@
             this.panel3.SuspendLayout();
             this.panelSignal2.SuspendLayout();
             this.LayPanel.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.panelSignal.SuspendLayout();
             this.panel10.SuspendLayout();
             this.panel13.SuspendLayout();
@@ -310,7 +311,6 @@
             this.panel7.SuspendLayout();
             this.panel6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.editGreenEventTabnom)).BeginInit();
-            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -532,11 +532,11 @@
             this.listView1.FullRowSelect = true;
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listView1.HideSelection = false;
+            listViewItem1.IndentCount = 5;
             listViewItem2.IndentCount = 5;
-            listViewItem6.IndentCount = 5;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem2,
-            listViewItem6});
+            listViewItem1,
+            listViewItem2});
             this.listView1.LabelWrap = false;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(28, 227);
@@ -584,7 +584,7 @@
             this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.ItemSize = new System.Drawing.Size(1, 1);
+            this.tabControl1.ItemSize = new System.Drawing.Size(100, 100);
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
@@ -599,11 +599,11 @@
             this.tabPage1.Controls.Add(this.flowLayoutPanel1);
             this.tabPage1.Controls.Add(this.panelSignal);
             this.tabPage1.Controls.Add(this.panel10);
-            this.tabPage1.Location = new System.Drawing.Point(4, 5);
+            this.tabPage1.Location = new System.Drawing.Point(4, 104);
             this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(1572, 965);
+            this.tabPage1.Size = new System.Drawing.Size(1572, 866);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Главное";
             // 
@@ -810,6 +810,46 @@
             this.LayPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.LayPanel.Size = new System.Drawing.Size(450, 211);
             this.LayPanel.TabIndex = 1;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.Transparent;
+            this.LayPanel.SetColumnSpan(this.panel2, 2);
+            this.panel2.Controls.Add(this.labelEventDate);
+            this.panel2.Controls.Add(this.labelEventName);
+            this.panel2.Location = new System.Drawing.Point(3, 3);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(444, 36);
+            this.panel2.TabIndex = 16;
+            // 
+            // labelEventDate
+            // 
+            this.labelEventDate.BackColor = System.Drawing.Color.Transparent;
+            this.labelEventDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.labelEventDate.Font = new System.Drawing.Font("Roboto", 25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.labelEventDate.Location = new System.Drawing.Point(227, 0);
+            this.labelEventDate.Margin = new System.Windows.Forms.Padding(0, 4, 3, 0);
+            this.labelEventDate.Name = "labelEventDate";
+            this.labelEventDate.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
+            this.labelEventDate.Size = new System.Drawing.Size(217, 36);
+            this.labelEventDate.TabIndex = 13;
+            this.labelEventDate.Text = "-";
+            this.labelEventDate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelEventName
+            // 
+            this.labelEventName.BackColor = System.Drawing.Color.Transparent;
+            this.labelEventName.Dock = System.Windows.Forms.DockStyle.Left;
+            this.labelEventName.Font = new System.Drawing.Font("Roboto", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.labelEventName.ForeColor = System.Drawing.Color.Black;
+            this.labelEventName.Location = new System.Drawing.Point(0, 0);
+            this.labelEventName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelEventName.Name = "labelEventName";
+            this.labelEventName.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
+            this.labelEventName.Size = new System.Drawing.Size(401, 36);
+            this.labelEventName.TabIndex = 14;
+            this.labelEventName.Text = "-";
+            this.labelEventName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelEventCard
             // 
@@ -1219,9 +1259,9 @@
             this.panelFilterSelect.Controls.Add(this.buttonHistoryReload);
             this.panelFilterSelect.Controls.Add(this.label13);
             this.panelFilterSelect.Controls.Add(this.begPickerSelect);
-            this.panelFilterSelect.Location = new System.Drawing.Point(2, 72);
+            this.panelFilterSelect.Location = new System.Drawing.Point(2, 41);
             this.panelFilterSelect.Name = "panelFilterSelect";
-            this.panelFilterSelect.Size = new System.Drawing.Size(1572, 89);
+            this.panelFilterSelect.Size = new System.Drawing.Size(1572, 58);
             this.panelFilterSelect.TabIndex = 4;
             // 
             // label14
@@ -1598,10 +1638,10 @@
             // panel18
             // 
             this.panel18.Controls.Add(this.listViewHistory);
-            this.panel18.Location = new System.Drawing.Point(14, 44);
+            this.panel18.Location = new System.Drawing.Point(14, 103);
             this.panel18.Margin = new System.Windows.Forms.Padding(2);
             this.panel18.Name = "panel18";
-            this.panel18.Size = new System.Drawing.Size(1543, 881);
+            this.panel18.Size = new System.Drawing.Size(1543, 822);
             this.panel18.TabIndex = 18;
             // 
             // listViewHistory
@@ -1631,7 +1671,7 @@
             this.listViewHistory.MultiSelect = false;
             this.listViewHistory.Name = "listViewHistory";
             this.listViewHistory.ShowGroups = false;
-            this.listViewHistory.Size = new System.Drawing.Size(1543, 881);
+            this.listViewHistory.Size = new System.Drawing.Size(1543, 822);
             this.listViewHistory.SmallImageList = this.imageList3;
             this.listViewHistory.TabIndex = 3;
             this.listViewHistory.UseCompatibleStateImageBehavior = false;
@@ -1705,11 +1745,11 @@
             this.tabPage3.Controls.Add(this.label31);
             this.tabPage3.Controls.Add(this.panel4);
             this.tabPage3.Controls.Add(this.panel5);
-            this.tabPage3.Location = new System.Drawing.Point(4, 104);
+            this.tabPage3.Location = new System.Drawing.Point(4, 5);
             this.tabPage3.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage3.Size = new System.Drawing.Size(1572, 866);
+            this.tabPage3.Size = new System.Drawing.Size(1572, 965);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Создание";
             // 
@@ -2179,11 +2219,11 @@
             this.tabPage5.Controls.Add(this.panel9);
             this.tabPage5.Controls.Add(this.labelRedEventID);
             this.tabPage5.Controls.Add(this.panel8);
-            this.tabPage5.Location = new System.Drawing.Point(4, 104);
+            this.tabPage5.Location = new System.Drawing.Point(4, 5);
             this.tabPage5.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage5.Size = new System.Drawing.Size(1572, 866);
+            this.tabPage5.Size = new System.Drawing.Size(1572, 965);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Красная";
             // 
@@ -2439,11 +2479,11 @@
             this.tabPage4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(238)))), ((int)(((byte)(233)))));
             this.tabPage4.Controls.Add(this.panel7);
             this.tabPage4.Controls.Add(this.panel6);
-            this.tabPage4.Location = new System.Drawing.Point(4, 104);
+            this.tabPage4.Location = new System.Drawing.Point(4, 5);
             this.tabPage4.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage4.Size = new System.Drawing.Size(1572, 866);
+            this.tabPage4.Size = new System.Drawing.Size(1572, 965);
             this.tabPage4.TabIndex = 5;
             this.tabPage4.Text = "Зеленая";
             // 
@@ -2925,46 +2965,6 @@
             this.usb.OnDeviceRemoved += new System.EventHandler(this.usb_OnDeviceRemoved);
             this.usb.OnDataRecieved += new UsbLibrary.DataRecievedEventHandler(this.usb_OnDataRecieved);
             // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.Transparent;
-            this.LayPanel.SetColumnSpan(this.panel2, 2);
-            this.panel2.Controls.Add(this.labelEventDate);
-            this.panel2.Controls.Add(this.labelEventName);
-            this.panel2.Location = new System.Drawing.Point(3, 3);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(444, 36);
-            this.panel2.TabIndex = 16;
-            // 
-            // labelEventName
-            // 
-            this.labelEventName.BackColor = System.Drawing.Color.Transparent;
-            this.labelEventName.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelEventName.Font = new System.Drawing.Font("Roboto", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.labelEventName.ForeColor = System.Drawing.Color.Black;
-            this.labelEventName.Location = new System.Drawing.Point(0, 0);
-            this.labelEventName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelEventName.Name = "labelEventName";
-            this.labelEventName.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
-            this.labelEventName.Size = new System.Drawing.Size(401, 36);
-            this.labelEventName.TabIndex = 14;
-            this.labelEventName.Text = "-";
-            this.labelEventName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelEventDate
-            // 
-            this.labelEventDate.BackColor = System.Drawing.Color.Transparent;
-            this.labelEventDate.Dock = System.Windows.Forms.DockStyle.Right;
-            this.labelEventDate.Font = new System.Drawing.Font("Roboto", 25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.labelEventDate.Location = new System.Drawing.Point(227, 0);
-            this.labelEventDate.Margin = new System.Windows.Forms.Padding(0, 4, 3, 0);
-            this.labelEventDate.Name = "labelEventDate";
-            this.labelEventDate.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
-            this.labelEventDate.Size = new System.Drawing.Size(217, 36);
-            this.labelEventDate.TabIndex = 13;
-            this.labelEventDate.Text = "-";
-            this.labelEventDate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // XForm1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -2996,6 +2996,7 @@
             this.panel3.ResumeLayout(false);
             this.panelSignal2.ResumeLayout(false);
             this.LayPanel.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
             this.panelSignal.ResumeLayout(false);
             this.panel10.ResumeLayout(false);
             this.panel13.ResumeLayout(false);
@@ -3036,7 +3037,6 @@
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.editGreenEventTabnom)).EndInit();
-            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

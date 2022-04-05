@@ -47,6 +47,7 @@ namespace kppApp
     */
     internal class Passage
     {
+        [JsonProperty("rowID")] public string rowID { get; set; }   
         [JsonProperty("passageID")] public long passageID { get; set; }
         [JsonProperty("timestampUTC")] public double timestampUTC { get; set; }
         [JsonProperty("card")] public string card { get; set; }
@@ -67,7 +68,7 @@ namespace kppApp
         [JsonProperty("lat")] public double bit1_lat { get; set; }
         [JsonProperty("lon")] public double bit1_lon { get; set; }
         [JsonProperty("card")] public string bit1_card { get; set; }
-        [JsonProperty("reader_id")] public int bit1_reader_id { get; set; }
+        [JsonProperty("reader_id")] public string bit1_reader_id { get; set; }
         [JsonProperty("description")] public string bit1_comment { get; set; }
         [JsonProperty("personnel_number")] public string bit1_tabnom { get; set; }
         [JsonProperty("type")] public string bit1_opercode { get; set; }

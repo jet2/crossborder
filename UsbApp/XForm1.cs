@@ -23,6 +23,7 @@ namespace kppApp
         private string symbol_deleteMark = "X";
         private int prevScan = 0;
         //public static Sniffer mySnifferForm;
+        string runningInstanceGuid = Guid.NewGuid().ToString();
         private bool restSrvState = false;
         bool preventorManualEventCard = false;
         bool preventorManualEventFIO = false;
@@ -469,6 +470,7 @@ namespace kppApp
         {
             //listView2.DrawColumnHeader += listView2_DrawColumnHeader;
             //listView2.DrawItem += listView2_DrawItem;
+            
             try
             {
                 this.usb.ProductId = Int32.Parse(this.tb_product.Text, System.Globalization.NumberStyles.HexNumber);
@@ -654,7 +656,10 @@ namespace kppApp
             // удаление доставленных - другим методом
             long exID = -2;
 
+            // Первый бит формируем тело
             Passage firstUndelivered = getFirstUndelivered();
+            Passage1bit firstUndelivered1bit = bit1PassageByPassage(firstUndelivered);
+
             if (firstUndelivered.passageID > -1)
             {
                 var client = new RestClient($"{restServerAddr}/passages/");
@@ -663,7 +668,7 @@ namespace kppApp
                 request.AddHeader("Content-Type", "application/json");
                 do
                 {
-                    var body = JsonConvert.SerializeObject(firstUndelivered);
+                    var body = JsonConvert.SerializeObject(firstUndelivered1bit);
                     request.AddParameter("application/json", body, ParameterType.RequestBody);
                     IRestResponse response = client.Execute(request);
                     if (response.IsSuccessful)
@@ -682,6 +687,8 @@ namespace kppApp
                     }
                     exID = firstUndelivered.passageID;
                     firstUndelivered = getFirstUndelivered();
+                    firstUndelivered1bit = bit1PassageByPassage(firstUndelivered);
+
                     if (exID == firstUndelivered.passageID)
                     {
 
@@ -709,6 +716,22 @@ namespace kppApp
             threadPassageSender.RunWorkerAsync();
         }
 
+        private Passage1bit bit1PassageByPassage(Passage firstUndelivered) {
+            Passage1bit firstUndelivered1bit = new Passage1bit();
+            firstUndelivered1bit.bit1_id = firstUndelivered.rowID;
+            firstUndelivered1bit.bit1_reader_id = firstUndelivered.kppId;
+            firstUndelivered1bit.bit1_comment = firstUndelivered.description;
+            firstUndelivered1bit.bit1_card = firstUndelivered.card;
+            firstUndelivered1bit.bit1_timestampUTC = (long)firstUndelivered.timestampUTC;
+            firstUndelivered1bit.bit1_system = "desktop_app";
+            firstUndelivered1bit.bit1_tabnom = firstUndelivered.tabnom.ToString();
+            firstUndelivered1bit.bit1_opercode = firstUndelivered.operCode.ToString();
+            firstUndelivered1bit.bit1_lat = 0;
+            firstUndelivered1bit.bit1_lon = 0;
+            return firstUndelivered1bit;
+        }
+
+
         private Passage getFirstUndelivered()
         {
             string qry_select_first_undelivered = @"SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual,description
@@ -730,6 +753,7 @@ namespace kppApp
                     while (reader.Read())
                     {
                         first_pass.passageID = reader.GetInt64(0);
+                        first_pass.rowID = runningInstanceGuid +"::"+ first_pass.passageID.ToString();
                         first_pass.timestampUTC = reader.GetDouble(1);
                         first_pass.card = reader.GetString(2);
                         first_pass.operCode = reader.GetInt16(3);
