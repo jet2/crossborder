@@ -22,6 +22,8 @@ namespace kppApp
         private string symbol_comment = "💬";
         private string symbol_deleteMark = "X";
         private int prevScan = 0;
+        private int InacceptebleInterval = 60;
+        private int delaySendSecods = 45;
         //public static Sniffer mySnifferForm;
         string runningInstanceGuid = Guid.NewGuid().ToString();
         private bool restSrvState = false;
@@ -313,10 +315,12 @@ namespace kppApp
                 byte[] bdata = new byte[100];
                 //args.data.CopyTo(bdata, 2);
                 Array.Copy(args.data, 1, bdata, 0, 100);
-
+                // читаем карту
                 string readerBytes = BytesToString(bdata);
                 readerBytes = readerBytes.TrimEnd('\0');
+                // номер короток
                 if (readerBytes.Length < 1) return;
+                // получаем УНИВЕРСАЛЬНОЕ время
                 lastPassage.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                 this.BackColor = Color.DimGray;
                 bool bered_flag = false;
@@ -331,7 +335,18 @@ namespace kppApp
                     labelEventFamOtc.ForeColor = Color.Black;
                     labelEventUserguid.ForeColor = Color.Black;
                     labelEventJobDescription.Text = "";
-                    WorkerPerson myWorkerPerson = getWorkerByCard(readerBytes);
+
+                    long goodRest = restToGoodRepeat(lastPassage.card);
+                    WorkerPerson  myWorkerPerson = getWorkerByCard(readerBytes);
+                    string savedGUID = myWorkerPerson.userguid;
+                    if (goodRest != 0){
+                        myWorkerPerson.userguid = "";
+                        myWorkerPerson.jobDescription = $"Ожидайте {InacceptebleInterval - goodRest} сек";
+                    }
+
+                    //WorkerPerson myWorkerPerson = getWorkerByCard(readerBytes);
+                    // тревога по отсутствию userguid
+                    // тревога повтора использует тот же механизм. но гуид сохраняется и показывается
                     if (myWorkerPerson.userguid != "")
                     {
                         panelSignal2.BackColor = Color.Transparent;
@@ -339,10 +354,19 @@ namespace kppApp
                     else
                     {
                         labelEventName.Text = labelTPL.Text;
-                        labelEventName.ForeColor = Color.Coral;
-                        labelEventFamOtc.Text = "";
-                        labelEventUserguid.Text = labelTPL.Text;
-                        labelEventUserguid.ForeColor = Color.Coral;
+                        
+                        if (goodRest == 0 || savedGUID == "") {
+                            labelEventFamOtc.Text = "";
+                            labelEventName.ForeColor = Color.Coral;
+                            labelEventUserguid.Text = labelTPL.Text;
+                            labelEventUserguid.ForeColor = Color.Coral;
+                        }
+                        else {
+                                labelEventName.ForeColor = Color.Black;
+                                labelEventUserguid.ForeColor = Color.Black;
+                                labelEventUserguid.Text = savedGUID;
+                        };
+
                         panelSignal2.BackColor = Color.Red;
                         bered_flag = true;
 
@@ -387,7 +411,11 @@ namespace kppApp
                         //string value = ((KeyValuePair<string, string>)comboBox1.SelectedItem).Value;
                         object xxx = comboBoxOperationsMain.SelectedItem;
                         lastPassage.operCode = ((KeyValuePair<int, string>)xxx).Key;
-                        write2sqlite(lastPassage);
+                        // в базу пишем только не повторные считывания
+                        if (goodRest == 0)
+                        {
+                            write2sqlite(lastPassage);
+                        }
                         if (bered_flag)
                         {
                             buttonBeRed_Click(sender, args);
@@ -398,6 +426,35 @@ namespace kppApp
             }
         }
 
+        private long restToGoodRepeat(string card)
+        {
+            long Result = 0;
+            double tsUTC = 0;
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText =$"SELECT timestampUTC FROM buffer_passage where card='{card}' order by passageID desc LIMIT 1";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        tsUTC = reader.GetDouble(0);
+                    }
+                }
+            }
+            // скан нашелся
+            if (tsUTC > 0)
+            {
+                double tmp = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds - tsUTC * 1000;
+                if (tmp > 0)
+                {
+                    Result = (long)Math.Ceiling(tmp/1000);  
+                }
+            }
+            return (Result>=InacceptebleInterval) ? 0 : Result;
+        }
 
         private void dictionaryWorkersUpdater()
         {
@@ -734,11 +791,12 @@ namespace kppApp
 
         private Passage getFirstUndelivered()
         {
+            long tsUTC = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+            // для отправки выбирается только первая запись старше 45 секунд
             string qry_select_first_undelivered = @"SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual,description
-                FROM buffer_passage
-                where isDelivered=0
-                order by passageID 
-                limit 1";
+                FROM buffer_passage " +
+                $" where isDelivered=0 and {tsUTC}-timestampUTC>={delaySendSecods} " +
+                " order by passageID limit 1";
 
             Passage first_pass = new Passage();
             first_pass.passageID = -1;
@@ -2052,11 +2110,11 @@ namespace kppApp
                 {
                     while (reader.Read())
                     {
-                        bit.bit1_system = "1";
+                        bit.bit1_system = "desktop_app";
                         bit.bit1_lon = 14.0;
                         bit.bit1_lat = 14.0;
                         bit.bit1_id = "0";
-                        bit.bit1_reader_id = 77117711;
+                        bit.bit1_reader_id = Environment.MachineName;
                         //
                         bit.bit1_card = reader.GetString(0);
                         bit.bit1_tabnom = $"{reader.GetInt64(1)}";
@@ -2172,6 +2230,23 @@ namespace kppApp
         {
             timerCol.Enabled = false;
             PaintByColor(Color.White);
+        }
+
+        private void timerEraser_Tick(object sender, EventArgs e)
+        {
+            long myNowUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = $"delete from buffer_passage where {myNowUTC}-timestampUTC > {60*60*24*30} and isDelivered=1";
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private void label11_DoubleClick(object sender, EventArgs e)
+        {
+            timerEraser_Tick(sender, e);
         }
     }
 }
