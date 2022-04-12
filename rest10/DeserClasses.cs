@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace kppApp
+namespace rest10
 {
     /*
     class Passage
@@ -36,7 +36,7 @@ namespace kppApp
     }
 
 
-    
+
     /*
     timestampUTC REAL NOT NULL,
     card TEXT NOT NULL,
@@ -45,9 +45,9 @@ namespace kppApp
     tabnom INTEGER DEFAULT 0 NOT NULL,
     isManual INTEGER DEFAULT 0 NOT NULL,
     */
-    internal class Passage
+    public class Passage
     {
-        [JsonProperty("rowID")] public string rowID { get; set; }   
+        [JsonProperty("rowID")] public string rowID { get; set; }
         [JsonProperty("passageID")] public long passageID { get; set; }
         [JsonProperty("timestampUTC")] public double timestampUTC { get; set; }
         [JsonProperty("card")] public string card { get; set; }
@@ -61,11 +61,10 @@ namespace kppApp
         [JsonProperty("toDelete")] public int toDelete { get; set; }
     }
 
-    internal class PassageFIO : Passage
+    public class PassageFIO : Passage
     {
         [JsonProperty("fio")] public string fio { get; set; }
     }
-
     internal class Passage1bit
     {
         [JsonProperty("id")] public string bit1_id { get; set; }

@@ -1,22 +1,30 @@
-﻿using RestSharp;
+﻿using Newtonsoft.Json;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SQLite;
 using System.Drawing;
-using System.Windows.Forms;
-using Newtonsoft.Json;
 using System.IO;
-using System.Reflection;
-using UsbLibrary;
 using System.Text;
-using Newtonsoft.Json.Linq;
+using System.Windows.Forms;
+using UsbLibrary;
 
 namespace kppApp
 {
 
     public partial class XForm1 : Form
     {
+        internal Dictionary<string, int> ParamsIndexes = new Dictionary<string, int>
+        {
+            { "card", 0 },
+            { "tabnom", 1 },
+            { "fio", 2 },
+            { "operation", 3 },
+            { "delivered", 4 },
+        };
+
+
         int sensibleTextLenght = 6;
         private string symbol_pencil = "🖉";
         private string symbol_comment = "💬";
@@ -35,7 +43,7 @@ namespace kppApp
         bool preventorGreenEventGUID = false;
 
         Passage lastPassage = new Passage();
-
+        LocalRESTManager ManRest;
         public static Dictionary<string, string> Persons;
         public static Dictionary<string, WorkerPerson> PersonsDictStruct;
         public static Dictionary<int, string> OperationsSelector = new Dictionary<int, string>();
@@ -51,6 +59,7 @@ namespace kppApp
         string[] operSource;
         //WcfServer srv;
 
+        public bool useRest = false;
         public XForm1()
         {
 
@@ -59,13 +68,15 @@ namespace kppApp
             {
                 MessageBox.Show("Не удалось прочитать настройки из config.ini");
             };
-
+            //ManRest = new LocalRESTManager(sqlite_connectionstring);
+            ManRest = new LocalRESTManager(sqlite_connectionstring, useRest);
             listViewHistory.Columns[1].ImageIndex = 0;
             listViewHistory.Columns[2].ImageIndex = 0;
             listViewHistory.Columns[3].ImageIndex = 0;
-            listViewHistory.Columns[4].ImageIndex = 0;
+            //listViewHistory.Columns[4].ImageIndex = 0;
             listViewHistory.Columns[5].ImageIndex = 0;
             columnDelivery.ImageIndex = 0;
+   
         }
 
         private bool settings_read()
@@ -102,6 +113,7 @@ namespace kppApp
                 restapi_path_label.Text = "Неизвестно";
                 result = false;
             }
+            
             // read JSON directly from a file
             //            string mypath = AppDomain.CurrentDomain.BaseDirectory  + @"operations.json";
 
@@ -193,15 +205,7 @@ namespace kppApp
         private void usb_OnSpecifiedDeviceArrived(object sender, EventArgs e)
         {
             this.setRFIDFound();
-            //this.lb_message.Items.Add("My device was found");
 
-            ////setting string form for sending data
-            //string text = "";
-            //for (int i = 0; i < this.usb.SpecifiedDevice.OutputReportLength - 1; i++)
-            //{
-            //    text += "000 ";
-            //}
-            //this.tb_send.Text = text;
         }
 
         protected override void OnHandleCreated(EventArgs e)
@@ -230,68 +234,40 @@ namespace kppApp
             }
         }
 
+        private WorkerPerson getWorkerByGUID(string userguid)
+        {
+            WorkerPerson myWP = new WorkerPerson();
+            myWP.userguid = "";
+            myWP.fio = "";
+            ManRest.getGUIDOwnerWorker(userguid,ref myWP);
+            return myWP;
+        }
+
         private WorkerPerson getWorkerByCard(string card)
         {
             WorkerPerson myWP = new WorkerPerson();
             myWP.userguid = "";
             myWP.fio = "";
             myWP.card = card;
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText =
-                $"SELECT w.userguid, w.fio, w.tabnom, j.jobDescription FROM buffer_workers w left join buffer_jobs j on w.jobID =j.jobID  where card='{card}' LIMIT 1";
-                //                command.Parameters.AddWithValue("$card", "74 4669");
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-
-                        myWP.userguid = reader.GetString(0);
-                        myWP.fio = reader.GetString(1);
-                        myWP.tabnom = reader.GetInt64(2);
-                        myWP.jobDescription = reader.GetString(3);
-                        myWP.isGuardian = 0;
-                        break;
-                    }
-                }
-            }
+            ManRest.getCardOwnerWorker(card, ref myWP);
             return myWP;
         }
 
         private void uodate2sqlite(Passage p, string old_id)
         {
-            using (SQLiteConnection Connect = new SQLiteConnection(sqlite_connectionstring))
-            {
-                string commandText = $"update buffer_passage set  card='{p.card}', IsOUT={p.operCode}, tabnom={p.tabnom}, description='{p.description}' where passageId={old_id} and isDelivered=0";
-                SQLiteCommand Command = new SQLiteCommand(commandText, Connect);
-                Connect.Open();
-                Command.ExecuteNonQuery();
-                Connect.Close();
-            }
+            ManRest.updatePassageById(p, old_id);
             MainTableReload(this, new EventArgs());
         }
 
         private void write2sqlite(Passage myPassage)
         {
             // записываем информацию в базу данных
-            using (SQLiteConnection Connect = new SQLiteConnection(sqlite_connectionstring))
+            if (useRest)
             {
-                string commandText = @"INSERT INTO buffer_passage ([timestampUTC], [card], [IsOUT], [KPPID], [tabnom],[isManual],[description],[isСhecked]) 
-                                       VALUES(@timestampUTC, @card, @IsOUT, @KPPID, @tabnom,@isManual,@description, 0)";
-                SQLiteCommand Command = new SQLiteCommand(commandText, Connect);
-                Command.Parameters.AddWithValue("@timestampUTC", myPassage.timestampUTC);
-                Command.Parameters.AddWithValue("@card", myPassage.card);
-                Command.Parameters.AddWithValue("@tabnom", myPassage.tabnom);
-                Command.Parameters.AddWithValue("@IsOut", myPassage.operCode);
-                Command.Parameters.AddWithValue("@KPPID", Environment.MachineName);
-                Command.Parameters.AddWithValue("@isManual", myPassage.isManual);
-                Command.Parameters.AddWithValue("@description", myPassage.description);
-                Connect.Open();
-                Command.ExecuteNonQuery();
-                Connect.Close();
-                // MessageBox.Show("Проход записан в базу данных");
+                ManRest.insertPassage_REST(myPassage);
+            }
+            else { 
+                ManRest.insertPassageDB(myPassage); 
             }
             MainTableReload(this, new EventArgs());
         }
@@ -328,6 +304,8 @@ namespace kppApp
                 if (readerBytes.Length > 0)
                 {
                     lastPassage.card = readerBytes;
+                    clearDetectionView();
+                    /*
                     labelEventName.Text = "";
                     labelEventFamOtc.Text = "";
                     labelEventUserguid.Text = "";
@@ -335,7 +313,7 @@ namespace kppApp
                     labelEventFamOtc.ForeColor = Color.Black;
                     labelEventUserguid.ForeColor = Color.Black;
                     labelEventJobDescription.Text = "";
-
+                    */
                     long goodRest = restToGoodRepeat(lastPassage.card);
                     WorkerPerson  myWorkerPerson = getWorkerByCard(readerBytes);
                     string savedGUID = myWorkerPerson.userguid;
@@ -387,7 +365,7 @@ namespace kppApp
                         labelEventUserguid.Text = myWorkerPerson.userguid;
                     };
 
-                    buttonMarkToDelete.Visible = labelEventUserguid.Text.Length > 3;
+                    //buttonMarkToDelete.Visible = labelEventUserguid.Text.Length > 3;
                     labelEventJobDescription.Text = myWorkerPerson.jobDescription;
                     if (arr.Length > 0)
                     {
@@ -403,8 +381,9 @@ namespace kppApp
                         }
                         labelEventFamOtc.Text = s;
                     }
-                    lastPassage.tabnom = myWorkerPerson.tabnom;
+                    lastPassage.userguid = myWorkerPerson.userguid;
                     lastPassage.card = myWorkerPerson.card;
+                    lastPassage.rowID = "";
                     if (comboBoxOperationsMain.SelectedIndex != -1)
                     {
                         //string key = ((KeyValuePair<int, string>)comboBox1.SelectedItem).Key;
@@ -429,21 +408,7 @@ namespace kppApp
         private long restToGoodRepeat(string card)
         {
             long Result = 0;
-            double tsUTC = 0;
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText =$"SELECT timestampUTC FROM buffer_passage where card='{card}' order by passageID desc LIMIT 1";
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        tsUTC = reader.GetDouble(0);
-                    }
-                }
-            }
+            double tsUTC = ManRest.getLastPassageByCard(card);
             // скан нашелся
             if (tsUTC > 0)
             {
@@ -458,41 +423,20 @@ namespace kppApp
 
         private void dictionaryWorkersUpdater()
         {
-
+            List<WorkerPerson> wplist = new List<WorkerPerson>();
             Persons = new Dictionary<string, string>();
             Persons.Clear();
 
             PersonsDictStruct = new Dictionary<string, WorkerPerson>();
             PersonsDictStruct.Clear();
 
+            wplist.AddRange(ManRest.getNewWorkersList());
 
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            for (int i = 0; i < wplist.Count; i++)
             {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                    SELECT card, tabnom, fio, userguid, isGuardian FROM buffer_workers
-                ";
-                //                command.Parameters.AddWithValue("$card", "74 4669");
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        WorkerPerson myWP = new WorkerPerson();
-                        myWP.card = reader.GetString(0);
-                        myWP.tabnom = reader.GetInt64(1);
-                        myWP.fio = reader.GetString(2).Replace("@", " ");
-                        myWP.userguid = reader.GetString(3);
-                        myWP.isGuardian = 0;
-                        if (myWP.card != "")
-                        {
-                            PersonsDictStruct.Add($"{myWP.card}", myWP);
-                        }
-                    }
-                }
+                PersonsDictStruct.Add($"{wplist[i].card}", wplist[i]);
             }
+            
             if (PersonsDictStruct.Count == 0)
             {
                 MessageBox.Show("Справочник персонала поврежден!\r\nСервис не позволяет идентифицировать персонал!");
@@ -501,23 +445,7 @@ namespace kppApp
             // Unix timestamp is seconds past epoch
 
             tsUpdated local_updated = new tsUpdated();
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                    SELECT timestampUTC FROM workers_lastupdate LIMIT 1
-                ";
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        local_updated.timestampUTC = reader.GetDouble(0);
-                    }
-                }
-
-            }
+            local_updated.timestampUTC = ManRest.getLastWorkersUpdateTimestamp();
             System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(local_updated.timestampUTC).ToLocalTime();
             this.toolStripStatusLabel6.Text = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
@@ -547,21 +475,26 @@ namespace kppApp
                     srv.Start();
                     srv.Received += OnWCFReceived;
                 }
+                if (arguments.Length > 2)
+                {
+                    if (arguments[2] == "-useRest")
+                    {
+                        useRest = true;
+                    }
+                }
             }
-
-            //mySnifferForm = new Sniffer(this);
-            //mySnifferForm.Left = this.Width - mySnifferForm.Width;
-            //mySnifferForm.Top = this.Height - mySnifferForm.Height;
-            //mySnifferForm.Show();
-            //mySnifferForm.Hide();
-            dictionaryWorkersUpdater();
+            
+            // ПЕРЕМЕСТИТЬ в сервис!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //dictionaryWorkersUpdater();
             MainTableReload(this, e);
+            /*
             threadWorkersUpdater.DoWork += updateWorkers;
             threadWorkersUpdater.RunWorkerCompleted += updateWorkers_ResultHandler;
             threadPassageSender.DoWork += sendPassage;
             threadPassageSender.RunWorkerCompleted += sendPassage_ResultHandler;
-            timerWorkersUpdate_Tick(this, e);
-            timerPassageSender_Tick(this, e);
+            */
+            //timerWorkersUpdate_Tick(this, e);
+            //timerPassageSender_Tick(this, e);
 
         }
 
@@ -605,94 +538,7 @@ namespace kppApp
             threadWorkersUpdater.RunWorkerAsync();
         }
 
-        private void updateWorkers(object sender, DoWorkEventArgs e)
-        {
-            return;
-            restSrvState = false;
-            // получаем стамп последнего обновления работников с сервера
-            var client = new RestClient($"{restServerAddr}/workers/update_ts");
-            client.Timeout = 5000;
-            var request = new RestRequest(Method.GET);
-            var body = @"";
-            request.AddParameter("text/plain", body, ParameterType.RequestBody);
-            tsUpdated local_updated = new tsUpdated();
-            local_updated.timestampUTC = -1;
-            tsUpdated remote_updated = new tsUpdated();
-            remote_updated.timestampUTC = -2;
-            try
-            {
-                IRestResponse response = client.Execute(request);
-                remote_updated = JsonConvert.DeserializeObject<tsUpdated>(response.Content);
-                // получаем стамп последнего обновления работников локальный
-
-                restSrvState = true;
-            }
-            catch { }
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                    SELECT timestampUTC FROM workers_lastupdate LIMIT 1
-                ";
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        local_updated.timestampUTC = reader.GetDouble(0);
-                    }
-                }
-                // если даты отличаются - скачиваем и обновляем локальный персонал
-                if (remote_updated != null)
-                {
-                    if (remote_updated.timestampUTC != local_updated.timestampUTC)
-                    {
-                        // скачиваем персонал
-                        var client2 = new RestClient($"{restServerAddr}/workers/");
-                        client2.Timeout = 5000;
-                        var request2 = new RestRequest(Method.GET);
-                        var body2 = @"";
-                        request2.AddParameter("text/plain", body2, ParameterType.RequestBody);
-                        // получем json array
-                        IRestResponse response2 = client2.Execute(request);
-                        // заполняем список записей
-                        List<WorkerPerson> remote_workers = JsonConvert.DeserializeObject<List<WorkerPerson>>(response2.Content);
-
-                        // очищаем приемную таблицу
-                        var command3 = connection.CreateCommand();
-                        command3.CommandText = $"delete from buffer_workers_input";
-                        command3.ExecuteNonQuery();
-
-                        if (remote_workers.Count > 0)
-                        {
-                            // каждую персону из списка вливаем в приемную таблицу
-                            foreach (WorkerPerson wp in remote_workers)
-                            {
-                                if (wp.card != "" & wp.fio != "" & wp.tabnom != 0)
-                                {
-                                    command3.CommandText = $"insert into buffer_workers_input(card,fio,tabnom,userguid,isGuardian) values('{wp.card}','{wp.fio}',{wp.tabnom},'{wp.userguid}',0)";
-                                    command3.ExecuteNonQuery();
-                                }
-                            }
-
-                            // очищаем локальную таблицу работников
-                            command3.CommandText = $"delete from buffer_workers";
-                            command3.ExecuteNonQuery();
-
-                            // мгновенно переливаем скачанный персонал в таблицу работников
-                            command3.CommandText = $"insert into buffer_workers select * from buffer_workers_input";
-                            command3.ExecuteNonQuery();
-
-                            // обновляем локальный стамп персон
-                            command3.CommandText = $"update workers_lastupdate set timestampUTC={remote_updated.timestampUTC}";
-                            command3.ExecuteNonQuery();
-                        }
-                    }
-                }
-            }
-        }
-
+  
         private void updateWorkers_ResultHandler(object sender, RunWorkerCompletedEventArgs e)
         {
             labelHostAccess.Text = restSrvState ? "Доступен" : "Недоступен";
@@ -701,60 +547,7 @@ namespace kppApp
             timerWorkersUpdate.Enabled = true;
         }
 
-        private void sendPassage(object sender, DoWorkEventArgs e)
-        {
-            // restsharp
-            // выбираем первый неотправленный passage и если массив непустой - отправляем через rest
-            // если успешно отправлось - помечаем passageID отправленным и обновляем главную таблицу
-            // получить наименьший локальный проход
-            // отправить 
-            // оценить результат
-            // обновить состояние или не обновлять
-            // удаление доставленных - другим методом
-            long exID = -2;
 
-            // Первый бит формируем тело
-            Passage firstUndelivered = getFirstUndelivered();
-            Passage1bit firstUndelivered1bit = bit1PassageByPassage(firstUndelivered);
-
-            if (firstUndelivered.passageID > -1)
-            {
-                var client = new RestClient($"{restServerAddr}/passages/");
-                client.Timeout = 5000;
-                var request = new RestRequest(Method.POST);
-                request.AddHeader("Content-Type", "application/json");
-                do
-                {
-                    var body = JsonConvert.SerializeObject(firstUndelivered1bit);
-                    request.AddParameter("application/json", body, ParameterType.RequestBody);
-                    IRestResponse response = client.Execute(request);
-                    if (response.IsSuccessful)
-                    {
-                        string qry_update_mark_id_asdelivered = @"update buffer_passage set isDelivered=1
-                            where isDelivered=0 and passageID=" + $"{firstUndelivered.passageID}";
-                        using (var connection = new SQLiteConnection(sqlite_connectionstring))
-                        {
-                            connection.Open();
-                            var command = connection.CreateCommand();
-                            command.CommandText = qry_update_mark_id_asdelivered;
-                            command.ExecuteNonQuery();
-
-                            send_cnt++;
-                        }
-                    }
-                    exID = firstUndelivered.passageID;
-                    firstUndelivered = getFirstUndelivered();
-                    firstUndelivered1bit = bit1PassageByPassage(firstUndelivered);
-
-                    if (exID == firstUndelivered.passageID)
-                    {
-
-                        break;
-                    }
-                } while (firstUndelivered.passageID != -1);
-            }
-
-        }
 
         private void sendPassage_ResultHandler(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -789,175 +582,125 @@ namespace kppApp
         }
 
 
-        private Passage getFirstUndelivered()
-        {
-            long tsUTC = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-            // для отправки выбирается только первая запись старше 45 секунд
-            string qry_select_first_undelivered = @"SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual,description
-                FROM buffer_passage " +
-                $" where isDelivered=0 and {tsUTC}-timestampUTC>={delaySendSecods} " +
-                " order by passageID limit 1";
 
-            Passage first_pass = new Passage();
-            first_pass.passageID = -1;
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = qry_select_first_undelivered;
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        first_pass.passageID = reader.GetInt64(0);
-                        first_pass.rowID = runningInstanceGuid +"::"+ first_pass.passageID.ToString();
-                        first_pass.timestampUTC = reader.GetDouble(1);
-                        first_pass.card = reader.GetString(2);
-                        first_pass.operCode = reader.GetInt16(3);
-                        first_pass.kppId = reader.GetString(4);
-                        first_pass.tabnom = reader.GetInt32(5);
-                        first_pass.isManual = reader.GetInt16(6);
-                        first_pass.description += reader.IsDBNull(7) ? String.Empty : reader.GetString(7);
-                    }
-                }
-            }
-            return first_pass;
-        }
 
 
         public void MainTableReload(object sender, EventArgs e)
         {
+            List<PassageFIO> hotlist = new List<PassageFIO>();
             listViewHotBuffer.Visible = false;
-            int cnt = 1;
-            string where_clause = "where isСhecked = 0";
-            if (radioButtonDaily.Checked)
+            int cnt = 0;
+
+            int isDaily = radioButtonDaily.Checked ? 1 : 0;
+
+            if (useRest)
             {
-                long timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-                where_clause = $"where {timestampUTC}-timestampUTC <= 60*60*24 ";
+                hotlist.AddRange(ManRest.getHotPassagesFIO_REST(isDaily));
             }
-            try
+            else
             {
+                hotlist.AddRange(ManRest.getHotPassagesFIODB(isDaily));
+            }
+
+            try { 
+                // очистка таблицы
                 while (listViewHotBuffer.Items.Count > 0) { listViewHotBuffer.Items.RemoveAt(0); };
-                string qry_select_first_undelivered = "SELECT passageID, timestampUTC, card, isOut, kppId, tabnom, isManual, isDelivered, description, isСhecked, toDelete" +
-                $" FROM buffer_passage {where_clause} order by timestampUTC";
-
-                using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                // заполнение таблицы
+                foreach (PassageFIO first_pass in hotlist)
                 {
-                    connection.Open();
-                    var command = connection.CreateCommand();
-                    command.CommandText = qry_select_first_undelivered;
 
-                    using (var reader = command.ExecuteReader())
+                    ListViewItem lvi = new ListViewItem();
+                    int zIdx = 0;
+                    if (first_pass.isDelivered == 1)
                     {
-
-                        while (reader.Read())
-                        {
-                            Passage first_pass = new Passage();
-                            first_pass.passageID = reader.GetInt64(0);
-                            first_pass.timestampUTC = reader.GetDouble(1);
-                            first_pass.card = reader.GetString(2);
-                            first_pass.operCode = reader.GetInt16(3);
-                            first_pass.kppId = reader.GetString(4);
-                            first_pass.tabnom = reader.GetInt64(5);
-                            first_pass.isManual = reader.GetInt16(6);
-                            first_pass.isDelivered = reader.GetInt16(7);
-                            first_pass.description += reader.IsDBNull(8) ? String.Empty : reader.GetString(8);
-                            first_pass.toDelete = reader.GetInt16(10);
-                            ListViewItem lvi = new ListViewItem();
-                            int zIdx = 0;
-                            if (first_pass.isDelivered == 1)
-                            {
-                                zIdx = 1;
-                            }
-
-                            //lvi.Text = $"{cnt}";
-                            lvi.Text = "";
-                            lvi.SubItems.Add(first_pass.card);
-                            if (PersonsDictStruct.ContainsKey(first_pass.card))
-                            {
-                                lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].tabnom}");
-                                lvi.SubItems.Add($"{PersonsDictStruct[first_pass.card].fio}");
-                            }
-                            else
-                            {
-                                lvi.SubItems.Add("-");
-                                lvi.SubItems.Add("-");
-                                zIdx = 2;
-                            }
-                            lvi.ImageIndex = zIdx;
-
-                            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-                            dtDateTime = dtDateTime.AddSeconds(first_pass.timestampUTC).ToLocalTime();
-                            string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
-                            lvi.SubItems.Add(timeText);
-
-                            string myOperation = "?";
-                            if (OperationsSelector4View.ContainsKey($"{first_pass.operCode}"))
-                            {
-                                myOperation = OperationsSelector4View[$"{first_pass.operCode}"];
-                            };
-                            lvi.SubItems.Add($"{myOperation}");
-
-                            string finalManual = "";
-                            if (first_pass.isManual == 1)
-                            {
-                                finalManual += symbol_pencil;
-                            }
-
-                            if (first_pass.description != "")
-                            {
-                                if (finalManual != "")
-                                {
-                                    finalManual += " ";
-                                }
-                                finalManual += symbol_comment;
-                            }
-
-                            lvi.SubItems.Add($"{finalManual}");
-                            string eventType = "a";
-                            if (first_pass.isManual == 1)
-                            {
-                                eventType = "m";
-                            }
-                            if (first_pass.tabnom == 0)
-                            {
-                                eventType = "r";
-                            }
-                            lvi.SubItems.Add($"{first_pass.passageID}-{eventType}-{first_pass.operCode}");
-                            if (first_pass.toDelete == 1)
-                            {
-                                lvi.SubItems.Add(symbol_deleteMark);
-                            }
-                            
-                            listViewHotBuffer.Items.Insert(0, lvi);
-                            if (first_pass.tabnom >0) cnt++;
-                        }
+                        zIdx = 1;
                     }
+
+                    //lvi.Text = $"{cnt}";
+                    lvi.Text = "";
+                    if (first_pass.card != "")
+                    {
+                        lvi.SubItems.Add(first_pass.card);
+                    }
+                    else {
+                        lvi.SubItems.Add("-");
+                    }
+                    if (first_pass.fio != "")
+                    {
+                        if (first_pass.tabnom != 0) { lvi.SubItems.Add($"{first_pass.tabnom}"); }
+                        else { lvi.SubItems.Add($"-"); }
+
+                        lvi.SubItems.Add($"{first_pass.fio}");
+                    }
+                    else
+                    {
+                        lvi.SubItems.Add("-");
+                        lvi.SubItems.Add("-");
+                        zIdx = 2;
+                    }
+                    lvi.ImageIndex = zIdx;
+
+                    System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+                    dtDateTime = dtDateTime.AddSeconds(first_pass.timestampUTC).ToLocalTime();
+                    string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
+                    lvi.SubItems.Add(timeText);
+
+                    string myOperation = "?";
+                    if (OperationsSelector4View.ContainsKey($"{first_pass.operCode}"))
+                    {
+                        myOperation = OperationsSelector4View[$"{first_pass.operCode}"];
+                    };
+                    lvi.SubItems.Add($"{myOperation}");
+
+                    string finalManual = "";
+                    if (first_pass.isManual == 1)
+                    {
+                        finalManual += symbol_pencil;
+                    }
+
+                    if (first_pass.description != "")
+                    {
+                        if (finalManual != "")
+                        {
+                            finalManual += " ";
+                        }
+                        finalManual += symbol_comment;
+                    }
+
+                    string eventType = "a";
+                    if (first_pass.isManual == 1)
+                    {
+                        eventType = "m";
+                    }
+                    if (first_pass.fio == "")
+                    {
+                        eventType = "r";
+                    }
+                    if (eventType == "a") { cnt++; if (first_pass.toDelete == 1) { cnt--; }; };
+                    if (eventType == "m") { cnt++; if (first_pass.toDelete == 1) { cnt--; }; };
+                    
+
+                    lvi.SubItems.Add($"{finalManual}");
+
+                    lvi.SubItems.Add($"{first_pass.passageID}-{eventType}-{first_pass.operCode}");
+                    if (first_pass.toDelete == 1)
+                    {
+                        lvi.SubItems.Add(symbol_deleteMark);
+                    }
+
+
+                    listViewHotBuffer.Items.Insert(0, lvi);
+
                 }
             }
             finally
             {
                 listViewHotBuffer.Visible = true;
             }
-            labelEventCounter.Text = $"{cnt - 1}";
+            labelEventCounter.Text = $"{cnt}";
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            string qry_clean_delivered = @"delete 
-                FROM buffer_passage
-                where isDelivered=1";
 
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = qry_clean_delivered;
-                command.ExecuteNonQuery();
-            }
-            MainTableReload(sender, e);
-        }
 
         /*
         private void startBtnSelect_Click(object sender, EventArgs e)
@@ -1157,47 +900,60 @@ namespace kppApp
 
         private void buttonHistorySelect_Click(object sender, EventArgs e)
         {
-
+            List<PassageFIO> passages = new List<PassageFIO>();
             listViewHistory.Columns[1].ImageIndex = 0;
             listViewHistory.Columns[2].ImageIndex = 0;
             listViewHistory.Columns[3].ImageIndex = 0;
-            listViewHistory.Columns[4].ImageIndex = 0;
+           // listViewHistory.Columns[4].ImageIndex = 0;
             listViewHistory.Columns[5].ImageIndex = 0;
             columnDelivery.ImageIndex = 0;
 
+            string filterName = "";
+            string filterValue = "";
+
+
             bool withFilter = tabSubfilter.Visible;
             tabSubfilter.Visible = false;
-            panelFilterSelect.Visible = false;
+           // panelFilterSelect.Visible = false;
 
             #region history view update
+            /*
             string from_clause = " FROM buffer_passage p ";
             // готовим фильтрацию
             long tsUTCbeg = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             long tsUTCend = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds + (long)numericHours.Value*3600;
             string where_clause = $" where p.timestampUTC >= {tsUTCbeg} and p.timestampUTC <= {tsUTCend} ";
-
+            */
             if (withFilter)
             {
                 listViewHistory.Columns[1].ImageIndex = 0;
                 listViewHistory.Columns[2].ImageIndex = 0;
                 listViewHistory.Columns[3].ImageIndex = 0;
-                listViewHistory.Columns[4].ImageIndex = 0;
+                //listViewHistory.Columns[4].ImageIndex = 0;
                 listViewHistory.Columns[5].ImageIndex = 0;
                 columnDelivery.ImageIndex = 0;
+                columnDate.ImageIndex = -1;
                 switch (tabSubfilter.SelectedIndex)
                 {
                     case 0:
                         columnCard.ImageIndex = 1;
-                        where_clause += $" and p.card='{cardTextSelect.Text}' ";
+                        filterName = "card";
+                        filterValue = cardTextSelect.Text;
+                        //where_clause += $" and p.card='{cardTextSelect.Text}' ";
                         break;
                     case 1:
                         columnTabnom.ImageIndex = 1;
-                        where_clause += $" and p.tabnom={tabnomTextSelect.Text} ";
+                        filterName = "tabnom";
+                        filterValue = tabnomTextSelect.Text;
+                        //                        where_clause += $" and p.tabnom={tabnomTextSelect.Text} ";
                         break;
                     case 2:
                         columnFIO.ImageIndex = 1;
-                        from_clause = " FROM buffer_passage p, buffer_workers w ";
-                        where_clause += $" and p.tabnom=w.tabnom and w.fio is not null and w.fio LIKE '%{fioTextSelect.Text}%' ";
+                        filterName = "fio";
+                        filterValue = fioTextSelect.Text;
+
+                        //from_clause = " FROM buffer_passage p, buffer_workers w ";
+                        //where_clause += $" and p.tabnom=w.tabnom and w.fio is not null and w.fio LIKE '%{fioTextSelect.Text}%' ";
                         break;
                     case 3:
                         columnOperation.ImageIndex = 1;
@@ -1209,11 +965,18 @@ namespace kppApp
                             string[] arr2 = new string[0];
                             */
                             int ch = ((KeyValuePair<int, string>)xxx).Key;
-                            where_clause += $" and isOut={ch} ";
+
+                            filterName = "operation";
+                            filterValue = $"{ch}";
+
+                            //where_clause += $" and isOut={ch} ";
                         };
                         break;
                     case 4:
                         columnDelivery.ImageIndex = 1;
+                        filterName = "delivered";
+                        filterValue = $"{(radioDelivered.Checked ? 1 : 0)}";
+                        /*
                         if (radioDelivered.Checked)
                         {
                             where_clause += $" and isDelivered=1";
@@ -1222,105 +985,94 @@ namespace kppApp
                         {
                             where_clause += $" and isDelivered=0";
                         }
-
+                        */
                         break;
                 }
             }
-
+            long timestampUTC = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            //long timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             listViewHistory.Visible = false;
             int cnt = 1;
+            // очистка
+            while (listViewHistory.Items.Count > 0) { listViewHistory.Items.RemoveAt(0); };
+            // заполнение
+            try { 
+                
 
-            try
-            {
-                while (listViewHistory.Items.Count > 0) { listViewHistory.Items.RemoveAt(0); };
-                string qry_select = "SELECT p.passageID, p.timestampUTC, p.card, p.isOut, p.kppId, p.tabnom, p.isManual, p.isDelivered, p.description, p.isСhecked" +
-                $" {from_clause} {where_clause} order by p.timestampUTC";
-
-                using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                if (useRest)
                 {
-                    connection.Open();
-                    var command = connection.CreateCommand();
-                    command.CommandText = qry_select;
-
-                    using (var reader = command.ExecuteReader())
-                    {
-
-                        while (reader.Read())
-                        {
-                            Passage history_pass = new Passage();
-                            history_pass.passageID = reader.GetInt64(0);
-                            history_pass.timestampUTC = reader.GetDouble(1);
-                            history_pass.card = reader.GetString(2);
-                            history_pass.operCode = reader.GetInt16(3);
-                            history_pass.kppId = reader.GetString(4);
-                            history_pass.tabnom = reader.GetInt64(5);
-                            history_pass.isManual = reader.GetInt16(6);
-                            history_pass.isDelivered = reader.GetInt16(7);
-                            history_pass.description += reader.IsDBNull(8) ? String.Empty : reader.GetString(8);
-
-                            ListViewItem lvi = new ListViewItem();
-
-                            lvi.Text = "      ";
-
-
-                            //lvi.Text = "";
-                            lvi.SubItems.Add(history_pass.card);
-                            if (PersonsDictStruct.ContainsKey(history_pass.card))
-                            {
-                                lvi.SubItems.Add($"{PersonsDictStruct[history_pass.card].tabnom}");
-                                lvi.SubItems.Add($"{PersonsDictStruct[history_pass.card].fio}");
-                            }
-                            else
-                            {
-                                lvi.SubItems.Add("-");
-                                lvi.SubItems.Add("-");
-                                lvi.ForeColor = Color.Red;
-                                lvi.UseItemStyleForSubItems = false;
-                                lvi.Text += "💡";
-                            }
-
-                            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-                            dtDateTime = dtDateTime.AddSeconds(history_pass.timestampUTC).ToLocalTime();
-                            string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
-                            lvi.SubItems.Add(timeText);
-
-                            string myOperation = "?";
-                            if (OperationsSelector4View.ContainsKey($"{history_pass.operCode}"))
-                            {
-                                myOperation = OperationsSelector4View[$"{history_pass.operCode}"];
-                            };
-                            lvi.SubItems.Add($"{myOperation}");
-
-                            string finalManual = "";
-                            if (history_pass.isManual == 1)
-                            {
-                                finalManual += symbol_pencil;
-                            }
-
-                            if (history_pass.description != "")
-                            {
-                                if (finalManual != "")
-                                {
-                                    finalManual += " ";
-                                }
-                                finalManual += symbol_comment;
-                            }
-
-                            lvi.SubItems.Add($"{finalManual}");
-
-                            lvi.SubItems.Add($"{cnt}");
-
-                            if (history_pass.isDelivered == 0)
-                            {
-                                lvi.SubItems.Add("⌛");
-                            }
-
-                            
-                            listViewHistory.Items.Insert(0, lvi);
-                            cnt++;
-                        }
-                    }
+                    passages.AddRange(ManRest.getFilteredPassagesFIO_REST(filterName, filterValue, timestampUTC, (int)numericHours.Value));
                 }
+                else
+                {
+                    passages.AddRange(ManRest.getFilteredPassagesFIODB(filterName, filterValue, timestampUTC, (int)numericHours.Value));
+                }
+
+                foreach (var history_pass in passages)
+                {
+                    ListViewItem lvi = new ListViewItem();
+
+                    lvi.Text = "      ";
+
+                    //lvi.Text = "";
+                    lvi.SubItems.Add(history_pass.card);
+
+                    if (history_pass.fio != "")
+                    {
+                        if (history_pass.tabnom!=0) {lvi.SubItems.Add($"{history_pass.tabnom}");}
+                        else { lvi.SubItems.Add($""); }
+                        lvi.SubItems.Add($"{history_pass.fio}");
+                    }
+                    else
+                    {
+                        lvi.SubItems.Add("-");
+                        lvi.SubItems.Add("-");
+                        lvi.ForeColor = Color.Red;
+                        lvi.UseItemStyleForSubItems = false;
+                        lvi.Text += "💡";
+                    }
+
+                    System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+                    dtDateTime = dtDateTime.AddSeconds(history_pass.timestampUTC).ToLocalTime();
+                    string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
+                    lvi.SubItems.Add(timeText);
+
+                    string myOperation = "?";
+                    if (OperationsSelector4View.ContainsKey($"{history_pass.operCode}"))
+                    {
+                        myOperation = OperationsSelector4View[$"{history_pass.operCode}"];
+                    };
+                    lvi.SubItems.Add($"{myOperation}");
+
+                    string finalManual = "";
+                    if (history_pass.isManual == 1)
+                    {
+                        finalManual += symbol_pencil;
+                    }
+
+                    if (history_pass.description != "")
+                    {
+                        if (finalManual != "")
+                        {
+                            finalManual += " ";
+                        }
+                        finalManual += symbol_comment;
+                    }
+
+                    lvi.SubItems.Add($"{finalManual}");
+
+                    lvi.SubItems.Add($"{cnt}");
+
+                    if (history_pass.isDelivered == 0)
+                    {
+                        lvi.SubItems.Add("⌛");
+                    }
+
+
+                    listViewHistory.Items.Insert(0, lvi);
+                    cnt++;
+                }
+
             }
             finally
             {
@@ -1332,7 +1084,7 @@ namespace kppApp
 
         }
 
-        private void makeCheck(object sender, EventArgs e)
+        private void clearDetectionView()
         {
             labelEventName.Text = "-";
             labelEventName.ForeColor = Color.Black;
@@ -1344,14 +1096,12 @@ namespace kppApp
             labelEventUserguid.ForeColor = Color.Black;
             labelEventDate.Text = "-";
             panelSignal2.BackColor = Color.Transparent;
-            string qry_check = @"update buffer_passage set isСhecked=1 where isСhecked=0";
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = qry_check;
-                command.ExecuteNonQuery();
-            }
+        }
+
+        private void makeCheck(object sender, EventArgs e)
+        {
+            clearDetectionView();
+            ManRest.updatePassagesByCheck();
             MainTableReload(sender, e);
         }
 
@@ -1385,7 +1135,7 @@ namespace kppApp
         private void buttonCancelManualEvent_Click(object sender, EventArgs e)
         {
             tabControl1.SelectTab(0);
-            editManualEventTabnom.Value = 0;
+            //editManualEventTabnom.Value = 0;
             editManualEventGUID.Text = "";
             editManualEventFIO.Text = "";
             editManualEventCard.Text = "";
@@ -1410,127 +1160,22 @@ namespace kppApp
             while (lvGreenEventSearch.Items.Count > 0) { lvGreenEventSearch.Items.RemoveAt(0); };
         }
 
-        private void listViewHotBuffer_MouseUp(object sender, MouseEventArgs e)
-        {
-            // 134123-a полностью автоматическое событие
-            // 134123-m полностью ручное событие
-            // 134123-r красное событие
-            if (listViewHotBuffer.SelectedItems.Count < 1) return;
-            labelShomItem.Text = listViewHotBuffer.SelectedItems[0].SubItems[7].Text;
-            string toDelete = "";
-            if (listViewHotBuffer.SelectedItems[0].SubItems.Count > 8) { 
-                toDelete = listViewHotBuffer.SelectedItems[0].SubItems[8].Text;
-            }
-            string myCard = listViewHotBuffer.SelectedItems[0].SubItems[1].Text;
-            string myTabnom = listViewHotBuffer.SelectedItems[0].SubItems[2].Text;
-            string myFIO = listViewHotBuffer.SelectedItems[0].SubItems[3].Text;
-            string myGUID = "";
-            string myComment = "";
-            if (listViewHotBuffer.SelectedItems.Count > 0)
-            {
-                string[] spl = labelShomItem.Text.Split('-');
-                // редакторы для красных на странице Красные
-                // редакторы для ручных на странице Зеленые
-                if (spl.Length > 1)
-                {
-                    using (var connection = new SQLiteConnection(sqlite_connectionstring))
-                    {
-                        connection.Open();
-                        var command = connection.CreateCommand();
-                        command.CommandText = $"select description from buffer_passage where passageID={spl[0]}";
 
-                        using (var reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                if (!reader.IsDBNull(0))
-                                {
-                                    myComment = reader.GetString(0);
-                                    //myGUID = reader.GetString(1);   
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    // изменять введенное вручную
-                    if (spl[1] == "m")
-                    {
-                        using (var connection = new SQLiteConnection(sqlite_connectionstring))
-                        {
-                            connection.Open();
-                            var command = connection.CreateCommand();
-                            command.CommandText = $"select userguid from buffer_workers where tabnom={myTabnom}";
-
-                            using (var reader = command.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    myGUID = reader.GetString(0);
-                                    break;
-                                }
-                            }
-                        }
-
-                        editGreenEventFIO.Text = myFIO;
-                        editGreenEventGUID.Text = myGUID;
-                        editGreenEventComment.Text = myComment;
-                        comboGreenEventOperation.SelectedValue = int.Parse(spl[2]);
-
-                        labelGreenEventID.Text = spl[0];
-                        editGreenEventCard.Text = myCard;
-                        tabControl1.SelectTab(4);
-                    }
-                    // изменять введенное автоматически, но без персоны
-                    if (spl[1] == "r" | spl[1] == "a")
-                    {
-                        editRedEventCard.Text = myCard;
-                        editRedEventFIO.Text = "";
-                        editRedEventGUID.Text = "";
-                        editRedEventComment.Text = "";
-
-                        labelRedEventID.Text = spl[0];
-                        
-                        labelRedOperation.Text = "";
-                        comboRedEventOperation.SelectedValue = int.Parse(spl[2]);
-                        comboRedEventOperation.Enabled = true;
-                        bool switchable = true;
-                        // автоматическая и хорошая, но помеченная к удалению выбирается для редактирования
-                        if (spl[1] == "a")
-                        {
-                            switchable = false;
-                            if (toDelete == symbol_deleteMark) { 
-                                comboRedEventOperation.Enabled = false;
-                                editRedEventFIO.Text = myFIO;
-                                //editRedEventGUID.Text = myGUID;
-                                editRedEventComment.Text = myComment;
-                                switchable = true;
-                            }
-                        };
-                        
-                        if (switchable)
-                        {
-                            tabControl1.SelectTab(3);
-                        }
-                        labelRedOperation.Text = spl[2];
-                        editRedEventComment.Text = myComment;
-
-                        //    comboRedEventOperation.Items.a
-                    }
-
-
-                    for (int i = 0; i < listViewHotBuffer.Items.Count; i++)
-                    {
-                        listViewHotBuffer.Items[i].Selected = false;
-                    }
-                }
-                //listViewHotBuffer.Select();
-            }
-        }
         #region hints handling
 
         private string getWorkerByHint(string entityName, string entityValue)
         {
+
+            List<WorkerPerson> workerPersons = new List<WorkerPerson>();
+            workerPersons.AddRange(ManRest.getFilteredWorkersByEntityDB(entityName, entityValue));
+
             string result = "";
+            if (workerPersons.Count > 0)
+            {
+                result = workerPersons[0].card + "@" + workerPersons[0].fio.Replace("@", " ") + "@" + workerPersons[0].userguid;
+            }
+
+/*            
             using (var connection = new SQLiteConnection(sqlite_connectionstring))
             {
                 connection.Open();
@@ -1547,27 +1192,34 @@ namespace kppApp
                     }
                 }
             }
+*/
             return result;
         }
 
-        private void RiseMyHint(ListBox hintsListBox, string entityName, string entityTemplate)
+        private void RiseMyHint(ref ListBox hintsListBox, string entityName, string entityTemplate)
         {
             string entityValue;
             hintsListBox.Items.Clear();
             hintsListBox.Visible = true;
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = $"select {entityName} from buffer_workers where {entityName} LIKE '%{entityTemplate}%'";
+            List<WorkerPerson> workerPersons = new List<WorkerPerson>();
+            workerPersons.AddRange(ManRest.getFilteredWorkersByEntityDB(entityName, entityTemplate));
 
-                using (var reader = command.ExecuteReader())
+            foreach (WorkerPerson worker in workerPersons)
+            {
+                if (entityName == "fio")
                 {
-                    while (reader.Read())
-                    {
-                        entityValue = reader.GetString(0).Replace("@", " ");
-                        hintsListBox.Items.Add(entityValue);
-                    }
+                    entityValue = worker.fio.Replace("@", " ");
+                    hintsListBox.Items.Add(entityValue);
+                }
+                if (entityName == "card")
+                {
+                    entityValue = worker.card;
+                    hintsListBox.Items.Add(entityValue);
+                }
+                if (entityName == "userguid")
+                {
+                    entityValue = $"{worker.userguid}";
+                    hintsListBox.Items.Add(entityValue);
                 }
             }
         }
@@ -1589,7 +1241,7 @@ namespace kppApp
 
             if (editManualEventCard.Text.Length >= sensibleTextLenght)
             {
-                RiseMyHint(hintsManualEventCard, "card", editManualEventCard.Text);
+                RiseMyHint(ref hintsManualEventCard, "card", editManualEventCard.Text);
             }
             else
             {
@@ -1607,7 +1259,7 @@ namespace kppApp
 
             if (editManualEventFIO.Text.Length >= sensibleTextLenght - 3)
             {
-                RiseMyHint(hintsManualEventFIO, "fio", editManualEventFIO.Text);
+                RiseMyHint(ref hintsManualEventFIO, "fio", editManualEventFIO.Text);
             }
             else
             {
@@ -1625,7 +1277,7 @@ namespace kppApp
 
             if (editManualEventGUID.Text.Length >= sensibleTextLenght)
             {
-                RiseMyHint(hintsManualEventGUID, "userguid", editManualEventGUID.Text);
+                RiseMyHint(ref hintsManualEventGUID, "userguid", editManualEventGUID.Text);
             }
             else
             {
@@ -1665,30 +1317,6 @@ namespace kppApp
 
         private void editManualEventCard_TextChanged(object sender, EventArgs e)
         {
-            bool writePossible = false;
-            if (editManualEventCard.Text.Length < sensibleTextLenght - 1) { return; };
-            if (editManualEventGUID.Text.Length < sensibleTextLenght) { return; };
-            if (comboManualEventOperation.Text == "") { return; };
-            string card = editManualEventCard.Text;
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = $"select tabnom from buffer_workers where card = '{editManualEventCard.Text}'";
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        editManualEventTabnom.Value = reader.GetInt64(0);
-                        writePossible = true;
-                        break;
-                    }
-                }
-            }
-
-            buttonOKManualEvent.Enabled = writePossible;
-            buttonOKManualEvent.BackColor = writePossible ? Color.Teal : Color.Gainsboro;
         }
         #endregion hints handling
 
@@ -1698,19 +1326,17 @@ namespace kppApp
             Passage p = new Passage();
             p.isManual = 1;
             p.card = editManualEventCard.Text;
-            p.tabnom = (int)editManualEventTabnom.Value;
+            //p.tabnom = (int)editManualEventTabnom.Value;
+            p.userguid = editManualEventGUID.Text;
             p.description = editManualEventComment.Text;
             //object xxx = comboManualEventOperation.SelectedItem;
             p.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             p.operCode = ((KeyValuePair<int, string>)comboManualEventOperation.SelectedItem).Key;
+            p.kppId = Environment.MachineName;
+            p.rowID = "";
             write2sqlite(p);
-
-
-            WorkerPerson wp = getWorkerByCard(p.card);
-
-            labelEventCard.ForeColor = Color.Black;
-            labelEventUserguid.ForeColor = Color.Black;
-            labelEventName.ForeColor = Color.Black;
+            clearDetectionView();
+            WorkerPerson wp = getWorkerByGUID(p.userguid);
 
             string[] stmp = wp.fio.Split('@');
             if (stmp.Length > 0) {
@@ -1723,9 +1349,7 @@ namespace kppApp
                 {
                     labelEventFamOtc.Text = stmp[1] + " " + stmp[2];
                 }
-
             }
-
 
             labelEventCard.Text = wp.card;
             labelEventJobDescription.Text = wp.jobDescription;
@@ -1749,13 +1373,8 @@ namespace kppApp
 
             string operCode = $"{((KeyValuePair<int, string>)comboRedEventOperation.SelectedItem).Key}";
 
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = $"update buffer_passage set description='{editRedEventComment.Text}', isOut={operCode} where passageID = {labelRedEventID.Text} and isDelivered=0";
-                command.ExecuteNonQuery();
-            }
+            ManRest.updateRedPassageById(editRedEventComment.Text, operCode, labelRedEventID.Text);
+
             tabControl1.SelectTab(0);
             editRedEventComment.Text = "";
             MainTableReload(sender, e);
@@ -1763,6 +1382,10 @@ namespace kppApp
 
         private void buttonDeleteGreenEvent_Click(object sender, EventArgs e)
         {
+
+            ManRest.deleteManualPassageByID(labelGreenEventID.Text);
+            clearDetectionView();
+            /*
             using (var connection = new SQLiteConnection(sqlite_connectionstring))
             {
                 connection.Open();
@@ -1770,6 +1393,7 @@ namespace kppApp
                 command.CommandText = $"delete from buffer_passage where passageID = {labelGreenEventID.Text} and isDelivered=0";
                 command.ExecuteNonQuery();
             }
+            */
             buttonCancelGreenEvent_Click(sender, e);
 
 
@@ -1849,7 +1473,7 @@ namespace kppApp
 
             if (editGreenEventFIO.Text.Length >= sensibleTextLenght)
             {
-                RiseMyHint(hintsGreenEventFIO, "FIO", editGreenEventFIO.Text);
+                RiseMyHint(ref hintsGreenEventFIO, "fio", editGreenEventFIO.Text);
             }
             else
             {
@@ -1873,7 +1497,7 @@ namespace kppApp
 
             if (editGreenEventCard.Text.Length >= sensibleTextLenght)
             {
-                RiseMyHint(hintsGreenEventCard, "card", editGreenEventCard.Text);
+                RiseMyHint(ref hintsGreenEventCard, "card", editGreenEventCard.Text);
             }
             else
             {
@@ -1897,7 +1521,7 @@ namespace kppApp
 
             if (editGreenEventCard.Text.Length >= sensibleTextLenght)
             {
-                RiseMyHint(hintsGreenEventGUID, "userguid", editGreenEventGUID.Text);
+                RiseMyHint(ref hintsGreenEventGUID, "userguid", editGreenEventGUID.Text);
             }
             else
             {
@@ -1937,30 +1561,7 @@ namespace kppApp
 
         private void editGreenEventCard_TextChanged(object sender, EventArgs e)
         {
-            bool writePossible = false;
-            if (editGreenEventCard.Text.Length < sensibleTextLenght - 1) { return; };
-            if (editGreenEventGUID.Text.Length < sensibleTextLenght) { return; };
-            if (comboGreenEventOperation.Text == "") { return; };
-            string card = editGreenEventCard.Text;
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = $"select tabnom from buffer_workers where card = '{editGreenEventCard.Text}'";
 
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        editGreenEventTabnom.Value = reader.GetInt64(0);
-                        writePossible = true;
-                        break;
-                    }
-                }
-            }
-
-            buttonOkGreenEvent.Enabled = writePossible;
-            buttonOkGreenEvent.BackColor = writePossible ? Color.Teal : Color.Gainsboro;
         }
 
         private void buttonOkGreenEvent_Click(object sender, EventArgs e)
@@ -1968,7 +1569,8 @@ namespace kppApp
             Passage p = new Passage();
             p.isManual = 1;
             p.card = editGreenEventCard.Text;
-            p.tabnom = (int)editGreenEventTabnom.Value;
+            //p.tabnom = (int)editGreenEventTabnom.Value;
+            p.userguid = editGreenEventGUID.Text;
             p.description = editGreenEventComment.Text;
             //object xxx = comboManualEventOperation.SelectedItem;
             p.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
@@ -2013,29 +1615,26 @@ namespace kppApp
 
         private void fillWorkersBy(string entityName, string entityValue, ListView LV)
         {
+            List<WorkerPerson> workers = new List<WorkerPerson>();
+
             if (entityValue.Length < 3) return;
             LV.Visible = false;
+            // очистка
             while (LV.Items.Count > 0) { LV.Items.RemoveAt(0); };
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            // заполнение
+            workers.AddRange(ManRest.getFilteredWorkersByEntityDB(entityName, entityValue));
+
+            foreach (WorkerPerson worker in workers)
             {
-                connection.Open();
-                var command = connection.CreateCommand();
+                ListViewItem lvi = new ListViewItem();
+                lvi.Text = worker.card;
+                lvi.SubItems.Add($"{worker.tabnom}");
+                lvi.SubItems.Add(worker.userguid);
+                lvi.SubItems.Add(worker.fio.Replace("@", " "));
+                LV.Items.Insert(0, lvi);
 
-                command.CommandText = $"select card, tabnom, userguid, fio  from buffer_workers where {entityName} LIKE '%{entityValue}%'";
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        ListViewItem lvi = new ListViewItem();
-                        lvi.Text = reader.GetString(0);
-                        lvi.SubItems.Add($"{reader.GetInt64(1)}");
-                        lvi.SubItems.Add(reader.GetString(2));
-                        lvi.SubItems.Add(reader.GetString(3).Replace("@", " "));
-                        LV.Items.Insert(0, lvi);
-                    }
-                }
             }
+
             LV.Visible = true;
         }
 
@@ -2095,83 +1694,9 @@ namespace kppApp
 
         }
 
-        private void buttonPOST_Click(object sender, EventArgs e)
-        {
-            Passage1bit bit = new Passage1bit();
-
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-
-                command.CommandText = $"select card, tabnom, isOut, timestampUTC, description from buffer_passage where passageID={labelGreenEventID.Text}";
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        bit.bit1_system = "desktop_app";
-                        bit.bit1_lon = 14.0;
-                        bit.bit1_lat = 14.0;
-                        bit.bit1_id = "0";
-                        bit.bit1_reader_id = Environment.MachineName;
-                        //
-                        bit.bit1_card = reader.GetString(0);
-                        bit.bit1_tabnom = $"{reader.GetInt64(1)}";
-                        bit.bit1_opercode = $"{reader.GetInt64(2)}";
-                        
-                        bit.bit1_timestampUTC = (int)reader.GetDouble(3);
-                        bit.bit1_comment = reader.GetString(4);
-                        break;
-                    }
-                }
-            }
 
 
-            // restsharp
-            // выбираем первый неотправленный passage и если массив непустой - отправляем через rest
-            // если успешно отправлось - помечаем passageID отправленным и обновляем главную таблицу
-            // получить наименьший локальный проход
-            // отправить 
-            // оценить результат
-            // обновить состояние или не обновлять
-            // удаление доставленных - другим методом
-
-
-            var client = new RestClient($"{restServerAddr}/reading-event/");
-            client.Timeout = 5000;
-            var request = new RestRequest(Method.POST);
-
-//            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
-
-  //          request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-            request.AddHeader("Accept", "*/*");
-            request.AddHeader("Accept-Encoding", "gzip, deflate, br");
-            
-            request.AddHeader("Content-Type", "application/json");
-            var body = JsonConvert.SerializeObject(bit);
-            request.AddParameter("application/json", body, ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            if (response.IsSuccessful)
-            {
-                string qry_update_mark_id_asdelivered = @"update buffer_passage set isDelivered=1
-                            where isDelivered=0 and passageID=" + $"{labelGreenEventID.Text}";
-                using (var connection = new SQLiteConnection(sqlite_connectionstring))
-                {
-                    connection.Open();
-                    var command = connection.CreateCommand();
-                    command.CommandText = qry_update_mark_id_asdelivered;
-                    command.ExecuteNonQuery();
-
-                    send_cnt++;
-                }
-            }
-
-
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonResetFilter_Click(object sender, EventArgs e)
         {
             numericHours.Value = 72;
             begPickerSelect.Value = DateTime.Now.AddHours(-(long)numericHours.Value);
@@ -2181,17 +1706,16 @@ namespace kppApp
 
         private void buttonMarkToDelete_Click(object sender, EventArgs e)
         {
-            string qry = @"update buffer_passage set toDelete=1 where passageID = (select passageID from buffer_passage order by passageID desc)";
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            if (listViewHotBuffer.SelectedItems.Count > 0)
             {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = qry;
-                command.ExecuteNonQuery();
+                string[] spl = labelShomItem.Text.Split('-');
+                if (spl.Length > 1)
+                {
+                    ManRest.updatePassageToDeleteByPassageID(spl[0]);
+                    MainTableReload(sender, e);
+                }
             }
-            MainTableReload(sender, e);
         }
-
 
         private void PaintByColor(Color col)
         {
@@ -2232,21 +1756,253 @@ namespace kppApp
             PaintByColor(Color.White);
         }
 
-        private void timerEraser_Tick(object sender, EventArgs e)
+
+
+        private void label11_DoubleClick(object sender, EventArgs e)
         {
-            long myNowUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            //timerEraser_Tick(sender, e);
+        }
+
+        private void listViewHotBuffer_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            // 134123-a полностью автоматическое событие
+            // 134123-m полностью ручное событие
+            // 134123-r красное событие
+            if (listViewHotBuffer.SelectedItems.Count < 1) return;
+            labelShomItem.Text = listViewHotBuffer.SelectedItems[0].SubItems[7].Text;
+            string toDelete = "";
+            if (listViewHotBuffer.SelectedItems[0].SubItems.Count > 8)
+            {
+                toDelete = listViewHotBuffer.SelectedItems[0].SubItems[8].Text;
+            }
+            string myCard = listViewHotBuffer.SelectedItems[0].SubItems[1].Text;
+            string myTabnom = listViewHotBuffer.SelectedItems[0].SubItems[2].Text;
+            string myFIO = listViewHotBuffer.SelectedItems[0].SubItems[3].Text;
+            string myGUID = "";
+            string myComment = "";
+            if (listViewHotBuffer.SelectedItems.Count > 0)
+            {
+                string[] spl = labelShomItem.Text.Split('-');
+                // редакторы для красных на странице Красные
+                // редакторы для ручных на странице Зеленые
+                if (spl.Length > 1)
+                {
+
+                    myComment += ManRest.getCommentByPassageID(spl[0]);
+                    myGUID = ManRest.getGUIDByPassageID(spl[0]);
+                    // изменять введенное вручную
+                    if (spl[1] == "m")
+                    {
+                        
+
+                        editGreenEventFIO.Text = myFIO;
+                        editGreenEventGUID.Text = myGUID;
+                        editGreenEventComment.Text = myComment;
+                        comboGreenEventOperation.SelectedValue = int.Parse(spl[2]);
+
+                        labelGreenEventID.Text = spl[0];
+                        editGreenEventCard.Text = myCard;
+                        tabControl1.SelectTab(4);
+                    }
+                    // изменять введенное автоматически, но без персоны
+                    if (spl[1] == "r" | spl[1] == "a")
+                    {
+                        editRedEventCard.Text = myCard;
+                        editRedEventFIO.Text = "";
+                        editRedEventGUID.Text = "";
+                        editRedEventComment.Text = "";
+
+                        labelRedEventID.Text = spl[0];
+
+                        labelRedOperation.Text = "";
+                        comboRedEventOperation.SelectedValue = int.Parse(spl[2]);
+                        comboRedEventOperation.Enabled = true;
+                        bool switchable = true;
+                        // автоматическая и хорошая, но помеченная к удалению выбирается для редактирования
+                        if (spl[1] == "a")
+                        {
+                            //switchable = false;
+                            //if (toDelete == symbol_deleteMark)
+                            //{
+                                comboRedEventOperation.Enabled = false;
+                                editRedEventFIO.Text = myFIO;
+                                editRedEventGUID.Text = myGUID;
+                                editRedEventComment.Text = myComment;
+                                switchable = true;
+                            //}
+                        };
+
+                        if (switchable)
+                        {
+                            tabControl1.SelectTab(3);
+                        }
+                        labelRedOperation.Text = spl[2];
+                        editRedEventComment.Text = myComment;
+
+                        //    comboRedEventOperation.Items.a
+                    }
+
+                    /*
+                    for (int i = 0; i < listViewHotBuffer.Items.Count; i++)
+                    {
+                        listViewHotBuffer.Items[i].Selected = false;
+                    }
+                    */
+                }
+                //listViewHotBuffer.Select();
+            }
+
+        }
+
+        private void listViewHotBuffer_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (listViewHotBuffer.SelectedItems.Count > 0)
+            {
+                labelShomItem.Text = listViewHotBuffer.SelectedItems[0].SubItems[7].Text;
+                string[] spl = labelShomItem.Text.Split('-');
+                if (spl.Length <2 )
+                {
+                    labelShomItem.Text = "";
+                }
+            }
+            else
+            {
+                labelShomItem.Text = "";
+            }
+            
+        }
+
+        private void tabPage2_Enter(object sender, EventArgs e)
+        {
+            buttonResetFilter_Click(sender, e);
+        }
+
+        private void editManualEventGUID_TextChanged(object sender, EventArgs e)
+        {
+            bool writePossible = false;
+            //if (editManualEventCard.Text.Length < sensibleTextLenght - 1) { return; };
+            if (editManualEventGUID.Text.Length < sensibleTextLenght) { return; };
+            if (comboManualEventOperation.Text == "") { return; };
+            string userguid = editManualEventGUID.Text;
+            WorkerPerson workerPerson = new WorkerPerson();
+            workerPerson.userguid = "";
+            workerPerson.fio = "";
+            workerPerson = getWorkerByGUID(userguid);  
+            if (workerPerson.fio != "")
+            {
+                //editManualEventTabnom.Value = workerPerson.tabnom;
+                writePossible = true;
+            }
+            buttonOKManualEvent.Enabled = writePossible;
+            buttonOKManualEvent.BackColor = writePossible ? Color.Teal : Color.Gainsboro;
+        }
+
+        private void editGreenEventGUID_TextChanged(object sender, EventArgs e)
+        {
+            bool writePossible = false;
+            //if (editManualEventCard.Text.Length < sensibleTextLenght - 1) { return; };
+            if (editGreenEventGUID.Text.Length < sensibleTextLenght) { return; };
+            if (comboGreenEventOperation.Text == "") { return; };
+            string userguid = editGreenEventGUID.Text;
+            WorkerPerson workerPerson = new WorkerPerson();
+            workerPerson.userguid = "";
+            workerPerson.fio = "";
+            workerPerson = getWorkerByGUID(userguid);
+            if (workerPerson.fio != "")
+            {
+                //editManualEventTabnom.Value = workerPerson.tabnom;
+                writePossible = true;
+            }
+            buttonOkGreenEvent.Enabled = writePossible;
+            buttonOkGreenEvent.BackColor = writePossible ? Color.Teal : Color.Gainsboro;
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonPOST_Click(object sender, EventArgs e)
+        {
+            Passage1bit bit = new Passage1bit();
+
             using (var connection = new SQLiteConnection(sqlite_connectionstring))
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = $"delete from buffer_passage where {myNowUTC}-timestampUTC > {60*60*24*30} and isDelivered=1";
-                command.ExecuteNonQuery();
+
+                command.CommandText = $"select w.card, w.tabnom, p.isOut, p.timestampUTC, p.description from buffer_passage p left join buffer_workers w on p.userguid=w.userguid  where p.passageID={labelGreenEventID.Text}";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        bit.bit1_system = "desktop_app";
+                        bit.bit1_lon = 0;
+                        bit.bit1_lat = 0;
+                        
+                        bit.bit1_reader_id = "77777";
+                        //
+                        bit.bit1_card = reader.GetString(0);
+                        bit.bit1_tabnom = $"{reader.GetInt64(1)}";
+                        bit.bit1_opercode = $"{reader.GetInt64(2)}";
+
+                        bit.bit1_timestampUTC = (int)reader.GetDouble(3);
+                        bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
+                        bit.bit1_comment = $"[{reader.GetString(4)}]";
+                        break;
+                    }
+                }
+            }
+
+
+            // restsharp
+            // выбираем первый неотправленный passage и если массив непустой - отправляем через rest
+            // если успешно отправлось - помечаем passageID отправленным и обновляем главную таблицу
+            // получить наименьший локальный проход
+            // отправить 
+            // оценить результат
+            // обновить состояние или не обновлять
+            // удаление доставленных - другим методом
+
+
+            var client = new RestClient($"{restServerAddr}/reading-event/");
+            client.Timeout = 5000;
+            var request = new RestRequest(Method.POST);
+
+            //            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
+
+            //          request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.AddHeader("Accept", "*" + "/" + "*");
+            request.AddHeader("Accept-Encoding", "gzip, deflate, br");
+
+            request.AddHeader("Content-Type", "application/json");
+            var body = JsonConvert.SerializeObject(bit);
+            request.AddParameter("application/json", body, ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+            if (response.IsSuccessful)
+            {
+
+                string qry_update_mark_id_asdelivered = @"update buffer_passage set isDelivered=1
+                            where isDelivered=0 and passageID=" + $"{labelGreenEventID.Text}";
+                using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = qry_update_mark_id_asdelivered;
+                    command.ExecuteNonQuery();
+
+                    send_cnt++;
+                }
+                MessageBox.Show("Доставлено успешно!");
+            }
+            else
+            {
+                MessageBox.Show("Не доставлено!\nСм. Error.txt");
+                File.WriteAllText("Error.txt", body+"\n"+response.Content.ToString());
             }
         }
-
-        private void label11_DoubleClick(object sender, EventArgs e)
-        {
-            timerEraser_Tick(sender, e);
-        }
+    
     }
+
 }

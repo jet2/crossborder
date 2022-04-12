@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rest10", "rest10.csproj", "{707D0621-C6B0-427F-84AA-20E0AD8AAFAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kppApp", "..\..\usb hid\UsbApp\kppApp.csproj", "{8A576B45-04F3-4811-9BEE-09860C05F2EF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{707D0621-C6B0-427F-84AA-20E0AD8AAFAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{707D0621-C6B0-427F-84AA-20E0AD8AAFAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{707D0621-C6B0-427F-84AA-20E0AD8AAFAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{707D0621-C6B0-427F-84AA-20E0AD8AAFAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A576B45-04F3-4811-9BEE-09860C05F2EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A576B45-04F3-4811-9BEE-09860C05F2EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A576B45-04F3-4811-9BEE-09860C05F2EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A576B45-04F3-4811-9BEE-09860C05F2EF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {60E42B66-6DF8-4F3A-898C-B2CFF19B6095}
+	EndGlobalSection
+EndGlobal

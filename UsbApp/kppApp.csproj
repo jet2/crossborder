@@ -93,6 +93,7 @@
     <Compile Include="ipcsrv.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="LocalRESTManager.cs" />
     <Compile Include="XForm1.cs">
       <SubType>Form</SubType>
     </Compile>
