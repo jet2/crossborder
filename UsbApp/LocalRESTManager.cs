@@ -29,6 +29,18 @@ namespace kppApp
         }
 
         #region passage insert update table.db 
+
+        public void insertPassage(Passage myPassage, bool useRest)
+        {
+            if (useRest)
+            {
+                insertPassage_REST(myPassage);
+            }
+            else
+            {
+                insertPassageDB(myPassage);
+            }
+        }
         public void insertPassage_REST(Passage myPassage)
         {
             var client = new RestClient($"{restServerAddr}api/Passage/");
@@ -64,47 +76,89 @@ namespace kppApp
             }
 
         }
-        public void updateRedPassageById(string comment, string operCode, string passageID)
-        {
-            using (var connection = new SQLiteConnection(CString))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = $"update buffer_passage set description='{comment}', isOut={operCode} where passageID = {passageID} and isDelivered=0";
-                command.ExecuteNonQuery();
-                command.CommandText = $"update buffer_passage set description='{comment}', isOut={operCode}, isDelivered=2 where passageID = {passageID} and isDelivered>0";
-                command.ExecuteNonQuery();
 
+        public void updatePassage_REST(string mode, Passage p)
+        {
+            var client = new RestClient($"{restServerAddr}api/Passage/{mode}");
+            client.Timeout = 200;
+            var request = new RestRequest(Method.PUT);
+            request.AddHeader("Content-Type", "application/json");
+            var body = JsonConvert.SerializeObject(p);
+            request.AddParameter("application/json", body, ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+            if (response.IsSuccessful)
+            {
+                Console.WriteLine(response.StatusCode.ToString());
+            }
+        }
+
+        public void updatePassage(string mode, Passage p, bool useRest)
+        {
+            if (useRest)
+            {
+                updatePassage_REST("markdelete", p);
+            }
+            else
+            {
+                updatePassageDB("markdelete", p);
             }
 
         }
-        public void updatePassageById(Passage p, string old_id)
+        public void updatePassageDB(string mode, Passage p)
         {
-            using (SQLiteConnection Connect = new SQLiteConnection(CString))
+            if (mode == "red")
             {
-                // ожидающие isDelivery=0 доставляются через POST
-                string commandText = $"update buffer_passage set card='{p.card}', IsOUT={p.operCode}, userguid='{p.userguid}', description='{p.description}' where passageId={old_id} and isDelivered=0";
-                SQLiteCommand Command = new SQLiteCommand(commandText, Connect);
-                Connect.Open();
-                Command.ExecuteNonQuery();
-                Connect.Close();
-                // доставленные isDelivery=1 обновляются через PUT
-                commandText = $"update buffer_passage set card='{p.card}', IsOUT={p.operCode}, userguid='{p.userguid}', description='{p.description}', isDelivered=2 where passageId={old_id} and isDelivered>0";
-                Command = new SQLiteCommand(commandText, Connect);
-                Connect.Open();
-                Command.ExecuteNonQuery();
-                Connect.Close();
+                using (SQLiteConnection Connect = new SQLiteConnection(CString))
+                {
+                    // ожидающие isDelivery=0 доставляются через POST
+                    string commandText = $"update buffer_passage set card='{p.card}', IsOUT={p.operCode}, userguid='{p.userguid}', description='{p.description}' where passageId={p.passageID} and isDelivered=0";
+                    SQLiteCommand Command = new SQLiteCommand(commandText, Connect);
+                    Connect.Open();
+                    Command.ExecuteNonQuery();
+                    // доставленные isDelivery=1 обновляются через PUT
+                    commandText = $"update buffer_passage set card='{p.card}', IsOUT={p.operCode}, userguid='{p.userguid}', description='{p.description}', isDelivered=2 where passageId={p.passageID} and isDelivered>0";
+                    Command = new SQLiteCommand(commandText, Connect);
+                    Command.ExecuteNonQuery();
+                }
             }
-        }
-        public void updatePassagesByCheck()
-        {
-            string qry_check = @"update buffer_passage set isСhecked=1 where isСhecked=0";
-            using (var connection = new SQLiteConnection(CString))
+            if (mode == "good")
             {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = qry_check;
-                command.ExecuteNonQuery();
+                using (var connection = new SQLiteConnection(CString))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = $"update buffer_passage set description='{p.description}', isOut={p.operCode} where passageID = {p.passageID} and isDelivered=0";
+                    command.ExecuteNonQuery();
+                    command.CommandText = $"update buffer_passage set description='{p.description}', isOut={p.operCode}, isDelivered=2 where passageID = {p.passageID} and isDelivered>0";
+                    command.ExecuteNonQuery();
+                }
+
+            }
+            if (mode == "check")
+            {
+                using (var connection = new SQLiteConnection(CString))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = @"update buffer_passage set isСhecked=1 where isСhecked=0";
+                    command.ExecuteNonQuery();
+                }
+            }
+ 
+            if (mode == "markdelete")
+            {
+                using (var connection = new SQLiteConnection(CString))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = $"update buffer_passage set toDelete=1 where passageID = {p.passageID} and isDelivered=0";
+                    command.ExecuteNonQuery();
+                    // просим обновить доставленное, и в БД УЯ тоже
+                    command.CommandText = $"update buffer_passage set toDelete=1, isDelivered=2 where passageID = {p.passageID} and isDelivered>0";
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("Delete marked!!!!!!!!!!!!!!");
+
+                }
             }
 
         }
@@ -305,25 +359,7 @@ namespace kppApp
             }
             return tsUTC;
         }
-        public void updatePassageToDeleteByPassageID(string id)
-        {
-            //string qry = @"update buffer_passage set toDelete=1 where passageID = (select passageID from buffer_passage order by passageID desc limit 1)";
-            string qry;
-            using (var connection = new SQLiteConnection(CString))
-            {
-                qry = $"update buffer_passage set toDelete=1 where passageID = {id} and isDelivered=0";
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = qry;
-                command.ExecuteNonQuery();
-                // просим обновить доставленное, и в БД УЯ тоже
-                qry = $"update buffer_passage set toDelete=1, isDelivered=2 where passageID = {id} and isDelivered>0";
-                //connection.Open();
-                //command = connection.CreateCommand();
-                command.CommandText = qry;
-                command.ExecuteNonQuery();
-            }
-        }
+
         public void deleteManualPassageByID(string id)
         {
             using (var connection = new SQLiteConnection(CString))
@@ -586,7 +622,6 @@ namespace kppApp
             catch { }
             return xlist;
         }
-
 
         private List<PassageFIO> getLastPassageFIOByCard_REST(string card)
         {

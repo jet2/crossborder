@@ -12,8 +12,6 @@ namespace rest10.Controllers
     [ApiController]
     public class PassageController : ControllerBase
     {
-        internal string sqlite_connectionstring_ro = "Data Source=c:\\appkpp\\kppbuffer.db;Mode=ReadOnly;Cache=Shared;";
-        internal string sqlite_connectionstring_rw = "Data Source=c:\\appkpp\\kppbuffer.db;Mode=ReadWrite;Cache=Shared;";
         internal string CString = "Data Source=c:\\appkpp\\kppbuffer.db;Mode=ReadOnly;Cache=Shared;";
         internal string CStringW = "Data Source=c:\\appkpp\\kppbuffer.db;Mode=ReadWrite;Cache=Shared;";
         internal Dictionary<string, int> ParamsIndexes = new Dictionary<string, int>
@@ -200,21 +198,89 @@ namespace rest10.Controllers
                                        $"VALUES({myPassage.timestampUTC}, '{myPassage.card}', {myPassage.operCode}, '{Environment.MachineName}', '{myPassage.userguid}',"+
                                        $"{myPassage.isManual},'{myPassage.description}', 0)";
                     SqliteCommand Command = new SqliteCommand(commandText, Connect);
-                /*
-                    Command.Parameters.AddWithValue("@timestampUTC", myPassage.timestampUTC);
-                    Command.Parameters.AddWithValue("@card", myPassage.card);
-                    Command.Parameters.AddWithValue("@userguid", myPassage.userguid);
-                    Command.Parameters.AddWithValue("@IsOut", myPassage.operCode);
-                    Command.Parameters.AddWithValue("@KPPID", Environment.MachineName);
-                    Command.Parameters.AddWithValue("@isManual", myPassage.isManual);
-                    Command.Parameters.AddWithValue("@description", myPassage.description);
-                */
                     Connect.Open();
                     Command.ExecuteNonQuery();
                     Connect.Close();
                     Console.WriteLine("INSERTED!!!!!!!!!!!!!!");
                 }
         }
+
+        // PUT api/Passage/good
+        // PUT api/Passage/red
+        // PUT api/Passage/check
+        // PUT api/Passage/markdelete
+        [HttpPut("{mode}")]
+        public void updatePassage(string mode, [FromBody] Passage p)
+        {
+            if (mode == "good")
+            {
+                using (var connection = new SqliteConnection(CStringW))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = $"update buffer_passage set card='{p.card}', IsOUT={p.operCode}, userguid='{p.userguid}', description='{p.description}' where passageId={p.passageID} and isDelivered=0";
+                    command.ExecuteNonQuery();
+                    command.CommandText = $"update buffer_passage set card='{p.card}', IsOUT={p.operCode}, userguid='{p.userguid}', description='{p.description}', isDelivered=2 where passageId={p.passageID} and isDelivered>0";
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("Red Updated!!!!!!!!!!!!!!");
+                }
+            }
+            if (mode == "red")
+            {
+                using (var connection = new SqliteConnection(CStringW))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = $"update buffer_passage set description='{p.description}', isOut={p.operCode} where passageID = {p.passageID} and isDelivered=0";
+                    command.ExecuteNonQuery();
+                    command.CommandText = $"update buffer_passage set description='{p.description}', isOut={p.operCode}, isDelivered=2 where passageID = {p.passageID} and isDelivered>0";
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("Red Updated!!!!!!!!!!!!!!");
+                }
+            }
+            if (mode == "check")
+            {
+                using (var connection = new SqliteConnection(CStringW))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = @"update buffer_passage set isСhecked=1 where isСhecked=0";
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("Checked!!!!!!!!!!!!!!");
+                }
+            }
+            if (mode == "markdelete")
+            {
+                using (var connection = new SqliteConnection(CStringW))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = $"update buffer_passage set toDelete=1 where passageID = {p.passageID} and isDelivered=0";
+                    command.ExecuteNonQuery();
+                    // просим обновить доставленное, и в БД УЯ тоже
+                    command.CommandText = $"update buffer_passage set toDelete=1, isDelivered=2 where passageID = {p.passageID} and isDelivered>0";
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("Delete marked!!!!!!!!!!!!!!");
+                }
+            }
+        }
+
+        // DELETE api/<passage>/5
+        [HttpDelete("{id}")]
+        public void deleteManualPassageByID(int id)
+        {
+                using (var connection = new SqliteConnection(CStringW))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = $"delete from buffer_passage where passageID = {id} and isDelivered=0";
+                    command.ExecuteNonQuery();
+                    command.CommandText = $"update buffer_passage set toDelete=1 and description = '[deleted manually]' + description where passageID = {id} and isDelivered>0";
+                    command.ExecuteNonQuery();
+                }
+            Console.WriteLine("KILLED!!!!!!!!!!!!!!");
+        }
+
 
         /*
          *         // GET api/<passage>/5

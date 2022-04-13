@@ -253,22 +253,16 @@ namespace kppApp
             return myWP;
         }
 
-        private void uodate2sqlite(Passage p, string old_id)
+        private void uodate2sqlite(Passage p)
         {
-            ManRest.updatePassageById(p, old_id);
+            ManRest.updatePassage("good", p, useRest);
             MainTableReload(this, new EventArgs());
         }
 
         private void write2sqlite(Passage myPassage)
         {
             // записываем информацию в базу данных
-            if (useRest)
-            {
-                ManRest.insertPassage_REST(myPassage);
-            }
-            else { 
-                ManRest.insertPassageDB(myPassage); 
-            }
+            ManRest.insertPassage(myPassage, useRest);
             MainTableReload(this, new EventArgs());
         }
 
@@ -1101,7 +1095,8 @@ namespace kppApp
         private void makeCheck(object sender, EventArgs e)
         {
             clearDetectionView();
-            ManRest.updatePassagesByCheck();
+            ManRest.updatePassage("check", new Passage(), useRest);
+            
             MainTableReload(sender, e);
         }
 
@@ -1373,7 +1368,12 @@ namespace kppApp
 
             string operCode = $"{((KeyValuePair<int, string>)comboRedEventOperation.SelectedItem).Key}";
 
-            ManRest.updateRedPassageById(editRedEventComment.Text, operCode, labelRedEventID.Text);
+            var p = new Passage();
+            p.operCode = int.Parse(operCode);
+            p.passageID = int.Parse(labelRedEventID.Text);
+            p.description = editRedEventComment.Text;
+            
+            ManRest.updatePassage("red",p, useRest);
 
             tabControl1.SelectTab(0);
             editRedEventComment.Text = "";
@@ -1575,7 +1575,8 @@ namespace kppApp
             //object xxx = comboManualEventOperation.SelectedItem;
             p.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             p.operCode = ((KeyValuePair<int, string>)comboGreenEventOperation.SelectedItem).Key;
-            uodate2sqlite(p, labelGreenEventID.Text);
+            p.passageID = int.Parse(labelGreenEventID.Text);
+            uodate2sqlite(p);
             buttonCancelGreenEvent_Click(sender, e);
             MainTableReload(sender, e);
         }
@@ -1711,7 +1712,13 @@ namespace kppApp
                 string[] spl = labelShomItem.Text.Split('-');
                 if (spl.Length > 1)
                 {
-                    ManRest.updatePassageToDeleteByPassageID(spl[0]);
+                    var p = new Passage();
+                    p.passageID = int.Parse(spl[0]);
+
+
+                    ManRest.updatePassage("markdelete", p);
+
+
                     MainTableReload(sender, e);
                 }
             }
