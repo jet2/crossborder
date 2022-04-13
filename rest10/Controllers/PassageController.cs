@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,20 @@ namespace rest10.Controllers
     [ApiController]
     public class PassageController : ControllerBase
     {
-        internal string CString = "Data Source=c:\\appkpp\\kppbuffer.db;Mode=ReadOnly;Cache=Shared;";
-        internal string CStringW = "Data Source=c:\\appkpp\\kppbuffer.db;Mode=ReadWrite;Cache=Shared;";
+        private IConfiguration configuration;
+        internal string CString;
+        internal string CStringW;
+        public PassageController(IConfiguration iConfig)
+        {
+            configuration = iConfig;
+            string dbConn2 = configuration.GetValue<string>("MySettings:pathToDatabase");
+            
+            CString = $"Data Source={dbConn2};Mode=ReadOnly;Cache=Shared;";
+            CStringW = $"{dbConn2};Mode=ReadWrite;Cache=Shared;";
+            
+        }
+
+        
         internal Dictionary<string, int> ParamsIndexes = new Dictionary<string, int>
         {
             { "card", 0 },
@@ -310,6 +323,10 @@ namespace rest10.Controllers
                 }
         */
     }
+
+
+
+
 }
 /*
        private void updateWorkers(object sender, DoWorkEventArgs e)

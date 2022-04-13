@@ -1162,7 +1162,7 @@ namespace kppApp
         {
 
             List<WorkerPerson> workerPersons = new List<WorkerPerson>();
-            workerPersons.AddRange(ManRest.getFilteredWorkersByEntityDB(entityName, entityValue));
+            workerPersons.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityValue,useRest));
 
             string result = "";
             if (workerPersons.Count > 0)
@@ -1197,7 +1197,7 @@ namespace kppApp
             hintsListBox.Items.Clear();
             hintsListBox.Visible = true;
             List<WorkerPerson> workerPersons = new List<WorkerPerson>();
-            workerPersons.AddRange(ManRest.getFilteredWorkersByEntityDB(entityName, entityTemplate));
+            workerPersons.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityTemplate,useRest));
 
             foreach (WorkerPerson worker in workerPersons)
             {
@@ -1623,7 +1623,7 @@ namespace kppApp
             // очистка
             while (LV.Items.Count > 0) { LV.Items.RemoveAt(0); };
             // заполнение
-            workers.AddRange(ManRest.getFilteredWorkersByEntityDB(entityName, entityValue));
+            workers.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityValue,useRest));
 
             foreach (WorkerPerson worker in workers)
             {
@@ -1716,7 +1716,7 @@ namespace kppApp
                     p.passageID = int.Parse(spl[0]);
 
 
-                    ManRest.updatePassage("markdelete", p);
+                    ManRest.updatePassage("markdelete", p, useRest);
 
 
                     MainTableReload(sender, e);

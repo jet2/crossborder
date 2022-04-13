@@ -376,6 +376,82 @@ namespace kppApp
 
 
         #region Workers sql + db 
+        /*
+         *
+         *  List<PassageFIO> xlist = new List<PassageFIO>();
+            var client = new RestClient(restServerAddr);
+            client.Timeout = 200;
+            var request = new RestRequest($"api/passage/lastcard?card={card.Replace(' ', '+')}", Method.GET);
+            var response = client.Execute<List<PassageFIO>>(request);
+            try
+            {
+                xlist.AddRange(response.Data);
+            }
+            catch { }
+            return xlist;
+
+         */
+        public List<WorkerPerson> getGUIDOwnerWorker(string userguid, bool useRest)
+        {
+            List<WorkerPerson> xlist = new List<WorkerPerson>();
+            if (useRest)
+            {
+                getGUIDOwnerWorker_REST(userguid);
+            }
+            else
+            {
+                getGUIDOwnerWorkerDB(userguid);
+            }
+            return xlist;
+
+        }
+
+        public List<WorkerPerson> getCardOwnerWorker(string card, bool useRest)
+        {
+            List<WorkerPerson> xlist = new List<WorkerPerson>();
+            if (useRest)
+            {
+                getCardOwnerWorker_REST(card);
+            }
+            else
+            {
+                getCardOwnerWorkerDB(card);
+            }
+            return xlist;
+
+        }
+
+        public List<WorkerPerson> getFilteredWorkersByEntity(string entityName, string entityValue, bool useRest)
+        {
+            List<WorkerPerson> xlist = new List<WorkerPerson>();
+            if (useRest)
+            {
+                getFilteredWorkersByEntity_REST(entityName, entityValue);
+            }
+            else
+            {
+                getFilteredWorkersByEntityDB(entityName, entityValue);
+            }
+            return xlist;
+
+        }
+
+
+        public List<WorkerPerson> getFilteredWorkersByEntity_REST(string entityName, string entityValue)
+        {
+            List<WorkerPerson> xlist = new List<WorkerPerson>();
+            var client = new RestClient(restServerAddr);
+            client.Timeout = 200;
+            var request = new RestRequest($"api/worker/byfilter?fieldname={entityName}fieldvalue={entityValue.Replace(' ', '+')}", Method.GET);
+            var response = client.Execute<List<WorkerPerson>>(request);
+            try
+            {
+                xlist.AddRange(response.Data);
+            }
+            catch { }
+            return xlist;
+
+        }
         public List<WorkerPerson> getFilteredWorkersByEntityDB(string entityName, string entityValue) 
         {
             List<WorkerPerson> results = new List<WorkerPerson>();
@@ -401,6 +477,20 @@ namespace kppApp
                 }
             }
             return results;
+        }
+        public List<WorkerPerson> getGUIDOwnerWorker_REST(string userguid)
+        {
+            List<WorkerPerson> xlist = new List<WorkerPerson>();
+            var client = new RestClient(restServerAddr);
+            client.Timeout = 200;
+            var request = new RestRequest($"api/worker/byguid?userguid={userguid}", Method.GET);
+            var response = client.Execute<List<WorkerPerson>>(request);
+            try
+            {
+                xlist.AddRange(response.Data);
+            }
+            catch { }
+            return xlist;
         }
         public List<WorkerPerson> getGUIDOwnerWorkerDB(string userguid)
         {
@@ -430,6 +520,20 @@ namespace kppApp
             }
             return results;
         }
+        public List<WorkerPerson> getCardOwnerWorker_REST(string card)
+        {
+            List<WorkerPerson> xlist = new List<WorkerPerson>();
+            var client = new RestClient(restServerAddr);
+            client.Timeout = 200;
+            var request = new RestRequest($"api/worker/bycard?card={card}", Method.GET);
+            var response = client.Execute<List<WorkerPerson>>(request);
+            try
+            {
+                xlist.AddRange(response.Data);
+            }
+            catch { }
+            return xlist;
+        }
         public List<WorkerPerson> getCardOwnerWorkerDB(string card)
         {
             List<WorkerPerson> results = new List<WorkerPerson>();
@@ -438,7 +542,7 @@ namespace kppApp
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText =
-                $"SELECT userguid, fio, tabnom, jobDescription,card FROM buffer_workers_described where card='{card}' LIMIT 1";
+                $"SELECT userguid, fio, tabnom, jobDescription, card FROM buffer_workers_described where card='{card}' LIMIT 1";
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -457,6 +561,8 @@ namespace kppApp
             }
             return results;
         }
+
+        /*
         public List<WorkerPerson> getWorkerGUIDByTabnomDB(string tabnom)
         {
             List<WorkerPerson> results = new List<WorkerPerson>();
@@ -481,9 +587,11 @@ namespace kppApp
             }
             return results;
         }
+        */
         #endregion Workers sql + db 
 
         #region workers no sql, no db 
+        /*
         public string getWorkerGUIDByTabnom(string myTabnom) 
         {
             string myGUID = "";
@@ -494,9 +602,10 @@ namespace kppApp
             }
             return myGUID;
         }
+        */
         public void getGUIDOwnerWorker(string userguid, ref WorkerPerson wp)
         {
-            List<WorkerPerson> xlist = getGUIDOwnerWorkerDB(userguid);
+            List<WorkerPerson> xlist = getGUIDOwnerWorker(userguid,useRest);
             if (xlist.Count > 0)
             {
                 wp.userguid = xlist[0].userguid;
@@ -508,7 +617,7 @@ namespace kppApp
         }
         public void getCardOwnerWorker(string card, ref WorkerPerson wp)
         {
-            List<WorkerPerson> xlist = getCardOwnerWorkerDB(card);
+            List<WorkerPerson> xlist = getCardOwnerWorker(card,useRest);
             if (xlist.Count > 0)
             {
                 wp.userguid = xlist[0].userguid;
