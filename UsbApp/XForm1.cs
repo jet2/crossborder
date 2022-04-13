@@ -471,7 +471,7 @@ namespace kppApp
                 }
                 if (arguments.Length > 2)
                 {
-                    if (arguments[2] == "-useRest")
+                    if (arguments[2] == "-userest")
                     {
                         useRest = true;
                     }

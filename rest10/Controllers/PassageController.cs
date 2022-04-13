@@ -14,16 +14,15 @@ namespace rest10.Controllers
     public class PassageController : ControllerBase
     {
         private IConfiguration configuration;
-        internal string CString;
+        //internal string CString;
         internal string CStringW;
         public PassageController(IConfiguration iConfig)
         {
             configuration = iConfig;
             string dbConn2 = configuration.GetValue<string>("MySettings:pathToDatabase");
             
-            CString = $"Data Source={dbConn2};Mode=ReadOnly;Cache=Shared;";
-            CStringW = $"{dbConn2};Mode=ReadWrite;Cache=Shared;";
-            
+//            CString = $"Data Source={dbConn2};Mode=ReadOnly;Cache=Shared;";
+            CStringW = $"Data Source={dbConn2};Mode=ReadWrite;Cache=Shared;";
         }
 
         
@@ -164,7 +163,7 @@ namespace rest10.Controllers
         private List<PassageFIO> selectPassagesFIO(string qry_select)
         {
             List<PassageFIO> myPassages = new List<PassageFIO>();
-            using (var connection = new SqliteConnection(CString))
+            using (var connection = new SqliteConnection(CStringW))
             {
                 connection.Open();
                 var command = connection.CreateCommand();
@@ -196,6 +195,7 @@ namespace rest10.Controllers
                         myPassages.Add(single_pass);
                     }
                 }
+                connection.Close();
             }
             return myPassages;
         }
@@ -204,8 +204,9 @@ namespace rest10.Controllers
         [HttpPost]
         public void Post([FromBody] Passage myPassage)
         {
-                //Passage myPassage = JsonConvert.DeserializeObject<Passage>(value);
-                using (SqliteConnection Connect = new SqliteConnection(CStringW))
+            Console.WriteLine("INSERT:"+ CStringW);
+            //Passage myPassage = JsonConvert.DeserializeObject<Passage>(value);
+            using (SqliteConnection Connect = new SqliteConnection(CStringW))
                 {
                     string commandText = "INSERT INTO buffer_passage ([timestampUTC], [card], [IsOUT], [KPPID], [userguid],[isManual],[description],[isСhecked])"+
                                        $"VALUES({myPassage.timestampUTC}, '{myPassage.card}', {myPassage.operCode}, '{Environment.MachineName}', '{myPassage.userguid}',"+
@@ -235,7 +236,8 @@ namespace rest10.Controllers
                     command.ExecuteNonQuery();
                     command.CommandText = $"update buffer_passage set card='{p.card}', IsOUT={p.operCode}, userguid='{p.userguid}', description='{p.description}', isDelivered=2 where passageId={p.passageID} and isDelivered>0";
                     command.ExecuteNonQuery();
-                    Console.WriteLine("Red Updated!!!!!!!!!!!!!!");
+                    Console.WriteLine("GOOD Updated!!!!!!!!!!!!!!");
+                    connection.Close();
                 }
             }
             if (mode == "red")
@@ -249,6 +251,7 @@ namespace rest10.Controllers
                     command.CommandText = $"update buffer_passage set description='{p.description}', isOut={p.operCode}, isDelivered=2 where passageID = {p.passageID} and isDelivered>0";
                     command.ExecuteNonQuery();
                     Console.WriteLine("Red Updated!!!!!!!!!!!!!!");
+                    connection.Close();
                 }
             }
             if (mode == "check")
@@ -260,6 +263,7 @@ namespace rest10.Controllers
                     command.CommandText = @"update buffer_passage set isСhecked=1 where isСhecked=0";
                     command.ExecuteNonQuery();
                     Console.WriteLine("Checked!!!!!!!!!!!!!!");
+                    connection.Close();
                 }
             }
             if (mode == "markdelete")
@@ -274,6 +278,7 @@ namespace rest10.Controllers
                     command.CommandText = $"update buffer_passage set toDelete=1, isDelivered=2 where passageID = {p.passageID} and isDelivered>0";
                     command.ExecuteNonQuery();
                     Console.WriteLine("Delete marked!!!!!!!!!!!!!!");
+                    connection.Close();
                 }
             }
         }
@@ -290,6 +295,7 @@ namespace rest10.Controllers
                     command.ExecuteNonQuery();
                     command.CommandText = $"update buffer_passage set toDelete=1 and description = '[deleted manually]' + description where passageID = {id} and isDelivered>0";
                     command.ExecuteNonQuery();
+                    connection.Close();
                 }
             Console.WriteLine("KILLED!!!!!!!!!!!!!!");
         }

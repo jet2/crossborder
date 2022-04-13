@@ -96,11 +96,11 @@ namespace kppApp
         {
             if (useRest)
             {
-                updatePassage_REST("markdelete", p);
+                updatePassage_REST(mode, p);
             }
             else
             {
-                updatePassageDB("markdelete", p);
+                updatePassageDB(mode, p);
             }
 
         }
@@ -396,11 +396,11 @@ namespace kppApp
             List<WorkerPerson> xlist = new List<WorkerPerson>();
             if (useRest)
             {
-                getGUIDOwnerWorker_REST(userguid);
+                xlist.AddRange(getGUIDOwnerWorker_REST(userguid));
             }
             else
             {
-                getGUIDOwnerWorkerDB(userguid);
+                xlist.AddRange(getGUIDOwnerWorkerDB(userguid));
             }
             return xlist;
 
@@ -411,11 +411,11 @@ namespace kppApp
             List<WorkerPerson> xlist = new List<WorkerPerson>();
             if (useRest)
             {
-                getCardOwnerWorker_REST(card);
+                xlist.AddRange(getCardOwnerWorker_REST(card));
             }
             else
             {
-                getCardOwnerWorkerDB(card);
+                xlist.AddRange(getCardOwnerWorkerDB(card));
             }
             return xlist;
 
@@ -426,11 +426,11 @@ namespace kppApp
             List<WorkerPerson> xlist = new List<WorkerPerson>();
             if (useRest)
             {
-                getFilteredWorkersByEntity_REST(entityName, entityValue);
+                xlist.AddRange(getFilteredWorkersByEntity_REST(entityName, entityValue));
             }
             else
             {
-                getFilteredWorkersByEntityDB(entityName, entityValue);
+                xlist.AddRange(getFilteredWorkersByEntityDB(entityName, entityValue));
             }
             return xlist;
 
@@ -442,7 +442,7 @@ namespace kppApp
             List<WorkerPerson> xlist = new List<WorkerPerson>();
             var client = new RestClient(restServerAddr);
             client.Timeout = 200;
-            var request = new RestRequest($"api/worker/byfilter?fieldname={entityName}fieldvalue={entityValue.Replace(' ', '+')}", Method.GET);
+            var request = new RestRequest($"api/worker/byfilter?fieldname={entityName}&fieldvalue={entityValue.Replace(' ', '+')}", Method.GET);
             var response = client.Execute<List<WorkerPerson>>(request);
             try
             {
