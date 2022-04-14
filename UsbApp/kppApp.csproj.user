@@ -12,6 +12,6 @@
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>-emucards -userest</StartArguments>
+    <StartArguments>-emucards</StartArguments>
   </PropertyGroup>
 </Project>

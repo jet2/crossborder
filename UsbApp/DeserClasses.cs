@@ -66,6 +66,25 @@ namespace kppApp
         [JsonProperty("fio")] public string fio { get; set; }
     }
 
+
+    internal class Passage1bitExt
+    {
+        [JsonProperty("id")] public string bit1_id { get; set; }
+        [JsonProperty("system")] public string bit1_system { get; set; }
+        [JsonProperty("timestamp")] public long bit1_timestampUTC { get; set; }
+        [JsonProperty("card_number")] public string bit1_card_number { get; set; }
+        [JsonProperty("card_guid")] public string bit1_card_guid { get; set; }
+        [JsonProperty("position_guid")] public string bit1_position_guid { get; set; }
+      //  [JsonProperty("individual_guid")] public string bit1_individual_guid { get; set; }
+        [JsonProperty("reader_id")] public int bit1_reader_id { get; set; }
+        [JsonProperty("description")] public string bit1_comment { get; set; }
+        [JsonProperty("personnel_number")] public string bit1_tabnom { get; set; }
+        [JsonProperty("type")] public string bit1_opercode { get; set; }
+        [JsonProperty("control_point_type_id")] public int bit1_control_point_type_id { get; set; }
+
+    }
+
+
     internal class Passage1bit
     {
         [JsonProperty("id")] public string bit1_id { get; set; }

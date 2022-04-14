@@ -7,14 +7,20 @@ using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Windows;
 using System.Windows.Forms;
 using UsbLibrary;
+using HorizontalAlignment = System.Windows.Forms.HorizontalAlignment;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace kppApp
 {
 
     public partial class XForm1 : Form
     {
+
+        private SizeF currentScaleFactor = new SizeF(1f, 1f);
+        
         internal Dictionary<string, int> ParamsIndexes = new Dictionary<string, int>
         {
             { "card", 0 },
@@ -60,6 +66,30 @@ namespace kppApp
         //WcfServer srv;
 
         public bool useRest = false;
+
+        public static float GetWindowsScaling()
+        {
+            return (float)(Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth);
+        }
+        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+        {
+            base.ScaleControl(factor, specified);
+
+            float zoomer = GetWindowsScaling();
+            currentScaleFactor.Width = 1f * zoomer;
+            currentScaleFactor.Height = 1f * zoomer;
+            /*
+            //Record the running scale factor used
+            this.currentScaleFactor = new SizeF(
+               this.currentScaleFactor.Width * factor.Width,
+               this.currentScaleFactor.Height * factor.Height);
+            */
+            //double factor2 = System.Windows.PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice.M11;
+            Kit.ScaleControlElements(lvGreenEventSearch, currentScaleFactor);
+            Kit.ScaleControlElements(lvManualEventSearch, currentScaleFactor); 
+            Kit.ScaleControlElements(listViewHistory, currentScaleFactor); 
+            Kit.ScaleControlElements(listViewHotBuffer, currentScaleFactor); 
+        }
         public XForm1()
         {
 
@@ -76,7 +106,7 @@ namespace kppApp
             //listViewHistory.Columns[4].ImageIndex = 0;
             listViewHistory.Columns[5].ImageIndex = 0;
             columnDelivery.ImageIndex = 0;
-   
+            tabControl1.ItemSize = new Size(1, 1);
         }
 
         private bool settings_read()
@@ -449,7 +479,6 @@ namespace kppApp
         {
             //listView2.DrawColumnHeader += listView2_DrawColumnHeader;
             //listView2.DrawItem += listView2_DrawItem;
-            
             try
             {
                 this.usb.ProductId = Int32.Parse(this.tb_product.Text, System.Globalization.NumberStyles.HexNumber);
@@ -492,15 +521,6 @@ namespace kppApp
 
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void listView1_ItemActivate(object sender, EventArgs e)
-        {
-
-        }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1471,7 +1491,7 @@ namespace kppApp
                 return;
             }
 
-            if (editGreenEventFIO.Text.Length >= sensibleTextLenght)
+            if (editGreenEventFIO.Text.Length >= sensibleTextLenght - 3)
             {
                 RiseMyHint(ref hintsGreenEventFIO, "fio", editGreenEventFIO.Text);
             }
@@ -1931,32 +1951,50 @@ namespace kppApp
 
         private void buttonPOST_Click(object sender, EventArgs e)
         {
-            Passage1bit bit = new Passage1bit();
+            Passage1bitExt bit = new Passage1bitExt();
 
             using (var connection = new SQLiteConnection(sqlite_connectionstring))
             {
                 connection.Open();
                 var command = connection.CreateCommand();
 
-                command.CommandText = $"select w.card, w.tabnom, p.isOut, p.timestampUTC, p.description from buffer_passage p left join buffer_workers w on p.userguid=w.userguid  where p.passageID={labelGreenEventID.Text}";
+                command.CommandText = $"select w.card, w.tabnom, p.isOut, p.timestampUTC, p.description,w.userguid from buffer_passage p left join buffer_workers w on p.userguid=w.userguid  where p.passageID={labelGreenEventID.Text}";
 
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        bit.bit1_system = "desktop_app";
-                        bit.bit1_lon = 0;
-                        bit.bit1_lat = 0;
+
                         
-                        bit.bit1_reader_id = "77777";
-                        //
-                        bit.bit1_card = reader.GetString(0);
+                        /*
+                        
+                        [JsonProperty("id")] public string bit1_id { get; set; }
+                        [JsonProperty("system")] public string bit1_system { get; set; }
+                        [JsonProperty("timestamp")] public long bit1_timestampUTC { get; set; }
+                        [JsonProperty("card_number")] public string bit1_card_number { get; set; }
+                        [JsonProperty("card_guid")] public string bit1_card_guid { get; set; }
+                        [JsonProperty("position_guid")] public string bit1_position_guid { get; set; }
+                        [JsonProperty("individual_guid")] public string bit1_individual_guid { get; set; }
+                        [JsonProperty("reader_id")] public string bit1_reader_id { get; set; }
+                        [JsonProperty("description")] public string bit1_comment { get; set; }
+                        [JsonProperty("personnel_number")] public string bit1_tabnom { get; set; }
+                        [JsonProperty("type")] public string bit1_opercode { get; set; }
+                        [JsonProperty("control_point_type_id")] public int bit1_control_point_type_id { get; set; }
+                        
+                        */
+                      bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
+                        bit.bit1_system = "stop-covid";
+                        bit.bit1_timestampUTC = (int)reader.GetDouble(3);
+                        bit.bit1_card_number = reader.GetString(0);
+                        bit.bit1_card_guid = reader.GetString(0);
+                        bit.bit1_position_guid = "77777";
+                        //bit.bit1_individual_guid = "";
+                        bit.bit1_reader_id = 1;
+                        bit.bit1_comment = $"[{reader.GetString(4)}]-{reader.GetString(5)}";
                         bit.bit1_tabnom = $"{reader.GetInt64(1)}";
                         bit.bit1_opercode = $"{reader.GetInt64(2)}";
-
-                        bit.bit1_timestampUTC = (int)reader.GetDouble(3);
-                        bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
-                        bit.bit1_comment = $"[{reader.GetString(4)}]";
+                        bit.bit1_opercode = "input";
+                        bit.bit1_control_point_type_id = 14;
                         break;
                     }
                 }
@@ -1972,7 +2010,33 @@ namespace kppApp
             // обновить состояние или не обновлять
             // удаление доставленных - другим методом
 
+            var client0 = new RestClient($"{restServerAddr}/auth/login/");
+            client0.Timeout = 5000;
+            var request0 = new RestRequest(Method.POST);
+            request0.AddHeader("Content-Type", "application/json");
+            var body0 = JsonConvert.SerializeObject(new { login = loginbox.Text, password = passwordbox.Text });
+            request0.AddParameter("application/json", body0, ParameterType.RequestBody);
+            IRestResponse response0 = client0.Execute(request0);
+            string tokentoken = "";
+            if (response0.IsSuccessful)
+            {
+                var zlist = response0.Content.Split(':');
+                if (zlist.Length > 2)
+                {
+                    tokentoken = zlist[2].Replace('"',' ').Replace('}', ' ');
+                }
+            }
+            else
+            {
+                MessageBox.Show("Неудачная авторизация!");
+                return;
+            }
 
+            
+            //            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
+
+
+            //var client = new RestClient($"{restServerAddr}/reading-event/");
             var client = new RestClient($"{restServerAddr}/reading-event/");
             client.Timeout = 5000;
             var request = new RestRequest(Method.POST);
@@ -1980,9 +2044,11 @@ namespace kppApp
             //            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
 
             //          request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            request.AddHeader("Authorization", $"Bearer {tokentoken}");
+
             request.AddHeader("Accept", "*" + "/" + "*");
             request.AddHeader("Accept-Encoding", "gzip, deflate, br");
-
             request.AddHeader("Content-Type", "application/json");
             var body = JsonConvert.SerializeObject(bit);
             request.AddParameter("application/json", body, ParameterType.RequestBody);
@@ -2009,7 +2075,8 @@ namespace kppApp
                 File.WriteAllText("Error.txt", body+"\n"+response.Content.ToString());
             }
         }
-    
+
+
     }
 
 }
