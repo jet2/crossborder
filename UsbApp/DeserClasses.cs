@@ -75,7 +75,7 @@ namespace kppApp
         [JsonProperty("card_number")] public string bit1_card_number { get; set; }
         [JsonProperty("card_guid")] public string bit1_card_guid { get; set; }
         [JsonProperty("position_guid")] public string bit1_position_guid { get; set; }
-      //  [JsonProperty("individual_guid")] public string bit1_individual_guid { get; set; }
+        [JsonProperty("individual_guid")] public string bit1_individual_guid { get; set; }
         [JsonProperty("reader_id")] public int bit1_reader_id { get; set; }
         [JsonProperty("description")] public string bit1_comment { get; set; }
         [JsonProperty("personnel_number")] public string bit1_tabnom { get; set; }

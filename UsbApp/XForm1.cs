@@ -861,34 +861,37 @@ namespace kppApp
 
         private void listView3_ColumnClick(object sender, ColumnClickEventArgs e)
         {
+            cardTextSelect_Click(sender, e);
             if (e.Column >= 1 && e.Column <= 8)
             {
 
                 panelFilterSelect.Visible = true;
-                if (e.Column != 4)
-                {
-                    tabSubfilter.Visible = true;
-                }
                 switch (e.Column)
                 {
                     case 1:
                         tabSubfilter.SelectTab(0);
+                        tabSubfilter.Visible = true;
                         break;
                     case 2:
                         tabSubfilter.SelectTab(1);
+                        tabSubfilter.Visible = true;
                         break;
                     case 3:
                         tabSubfilter.SelectTab(2);
+                        tabSubfilter.Visible = true;
                         break;
                     case 4:
 
                         tabSubfilter.Visible = false;
+
                         break;
                     case 5:
                         tabSubfilter.SelectTab(3);
+                        tabSubfilter.Visible = true;
                         break;
                     case 8:
                         tabSubfilter.SelectTab(4);
+                        tabSubfilter.Visible = true;
 
                         break;
                 }
@@ -1092,7 +1095,7 @@ namespace kppApp
             {
                 listViewHistory.Visible = true;
             }
-            labelSelectedEventsCount.Text = $"{cnt - 1}";
+            labelSelectedEventsCount.Text = $"Всего записей: {cnt - 1}";
 
             #endregion history update
 
@@ -1173,6 +1176,7 @@ namespace kppApp
             buttonOkGreenEvent.Enabled = false;
             buttonOkGreenEvent.BackColor = false ? Color.Teal : Color.Gainsboro;
             while (lvGreenEventSearch.Items.Count > 0) { lvGreenEventSearch.Items.RemoveAt(0); };
+            MainTableReload(sender, e);
         }
 
 
@@ -1952,54 +1956,73 @@ namespace kppApp
         private void buttonPOST_Click(object sender, EventArgs e)
         {
             Passage1bitExt bit = new Passage1bitExt();
-
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
+            try
             {
-                connection.Open();
-                var command = connection.CreateCommand();
-
-                command.CommandText = $"select w.card, w.tabnom, p.isOut, p.timestampUTC, p.description,w.userguid from buffer_passage p left join buffer_workers w on p.userguid=w.userguid  where p.passageID={labelGreenEventID.Text}";
-
-                using (var reader = command.ExecuteReader())
+                using (var connection = new SQLiteConnection(sqlite_connectionstring))
                 {
-                    while (reader.Read())
-                    {
+                    connection.Open();
+                    var command = connection.CreateCommand();
 
-                        
-                        /*
-                        
-                        [JsonProperty("id")] public string bit1_id { get; set; }
-                        [JsonProperty("system")] public string bit1_system { get; set; }
-                        [JsonProperty("timestamp")] public long bit1_timestampUTC { get; set; }
-                        [JsonProperty("card_number")] public string bit1_card_number { get; set; }
-                        [JsonProperty("card_guid")] public string bit1_card_guid { get; set; }
-                        [JsonProperty("position_guid")] public string bit1_position_guid { get; set; }
-                        [JsonProperty("individual_guid")] public string bit1_individual_guid { get; set; }
-                        [JsonProperty("reader_id")] public string bit1_reader_id { get; set; }
-                        [JsonProperty("description")] public string bit1_comment { get; set; }
-                        [JsonProperty("personnel_number")] public string bit1_tabnom { get; set; }
-                        [JsonProperty("type")] public string bit1_opercode { get; set; }
-                        [JsonProperty("control_point_type_id")] public int bit1_control_point_type_id { get; set; }
-                        
-                        */
-                      bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
-                        bit.bit1_system = "stop-covid";
-                        bit.bit1_timestampUTC = (int)reader.GetDouble(3);
-                        bit.bit1_card_number = reader.GetString(0);
-                        bit.bit1_card_guid = reader.GetString(0);
-                        bit.bit1_position_guid = "77777";
-                        //bit.bit1_individual_guid = "";
-                        bit.bit1_reader_id = 1;
-                        bit.bit1_comment = $"[{reader.GetString(4)}]-{reader.GetString(5)}";
-                        bit.bit1_tabnom = $"{reader.GetInt64(1)}";
-                        bit.bit1_opercode = $"{reader.GetInt64(2)}";
-                        bit.bit1_opercode = "input";
-                        bit.bit1_control_point_type_id = 14;
-                        break;
+                    command.CommandText = $"select w.card, w.tabnom, p.isOut, p.timestampUTC, p.description,w.userguid from buffer_passage p left join buffer_workers w on p.userguid=w.userguid  where p.passageID={labelGreenEventID.Text}";
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+
+
+                            /*
+
+                            [JsonProperty("id")] public string bit1_id { get; set; }
+                            [JsonProperty("system")] public string bit1_system { get; set; }
+                            [JsonProperty("timestamp")] public long bit1_timestampUTC { get; set; }
+                            [JsonProperty("card_number")] public string bit1_card_number { get; set; }
+                            [JsonProperty("card_guid")] public string bit1_card_guid { get; set; }
+                            [JsonProperty("position_guid")] public string bit1_position_guid { get; set; }
+                            [JsonProperty("individual_guid")] public string bit1_individual_guid { get; set; }
+                            [JsonProperty("reader_id")] public string bit1_reader_id { get; set; }
+                            [JsonProperty("description")] public string bit1_comment { get; set; }
+                            [JsonProperty("personnel_number")] public string bit1_tabnom { get; set; }
+                            [JsonProperty("type")] public string bit1_opercode { get; set; }
+                            [JsonProperty("control_point_type_id")] public int bit1_control_point_type_id { get; set; }
+                                "id": "98ac5735-68af-47d1-8d25-3edc311632a0-1",
+    "system": "stop-covid",
+    "timestamp": 1650440387,
+    "card_number": "47 3354",
+    "card_guid": "47 3354",
+    "position_guid": "101",
+    "reader_id": 101,
+    "description": "[111111]-ok477ewk-1bit",
+    "personnel_number": "674",
+     "individual_guid":"0aa46cdd-9bd2-11ea-912c-00505684313d",
+    "type": "input",
+    "control_point_type_id": 3
+                            */
+                            bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
+                            bit.bit1_system = "stop-covid";
+                            bit.bit1_timestampUTC = (int)reader.GetDouble(3);
+                            bit.bit1_card_number = reader.IsDBNull(0) ? "" : reader.GetString(0);
+                            bit.bit1_card_guid = reader.IsDBNull(0) ? "" : reader.GetString(0);
+                            bit.bit1_position_guid = "101";
+                            bit.bit1_individual_guid = "0aa46cdd-9bd2-11ea-912c-00505684313d";
+                            bit.bit1_reader_id = 101;
+                            bit.bit1_comment = "[" + (reader.IsDBNull(4) ? "" : reader.GetString(4)) + "]-" + (reader.IsDBNull(5) ? "" : reader.GetString(5));
+                            if (!reader.IsDBNull(1)) { 
+                                bit.bit1_tabnom = $"{reader.GetInt64(1)}";
+                            }
+                            //bit.bit1_opercode = $"{reader.GetInt64(2)}";
+                            bit.bit1_opercode = "input";
+                            bit.bit1_control_point_type_id = 3;
+                            break;
+                        }
                     }
                 }
             }
-
+            catch (Exception ex)
+            {
+                MessageBox.Show("Подготовка формата отправки:\n" + ex.Message);
+                return;
+            }
 
             // restsharp
             // выбираем первый неотправленный passage и если массив непустой - отправляем через rest
@@ -2009,74 +2032,276 @@ namespace kppApp
             // оценить результат
             // обновить состояние или не обновлять
             // удаление доставленных - другим методом
-
-            var client0 = new RestClient($"{restServerAddr}/auth/login/");
-            client0.Timeout = 5000;
-            var request0 = new RestRequest(Method.POST);
-            request0.AddHeader("Content-Type", "application/json");
-            var body0 = JsonConvert.SerializeObject(new { login = loginbox.Text, password = passwordbox.Text });
-            request0.AddParameter("application/json", body0, ParameterType.RequestBody);
-            IRestResponse response0 = client0.Execute(request0);
             string tokentoken = "";
-            if (response0.IsSuccessful)
-            {
-                var zlist = response0.Content.Split(':');
-                if (zlist.Length > 2)
+            try { 
+                var client0 = new RestClient($"{restServerAddr}/auth/login/");
+                client0.Timeout = 5000;
+                var request0 = new RestRequest(Method.POST);
+                request0.AddHeader("Content-Type", "application/json");
+                var body0 = JsonConvert.SerializeObject(new { login = loginbox.Text, password = passwordbox.Text });
+                request0.AddParameter("application/json", body0, ParameterType.RequestBody);
+                IRestResponse response0 = client0.Execute(request0);
+
+                if (response0.IsSuccessful)
                 {
-                    tokentoken = zlist[2].Replace('"',' ').Replace('}', ' ');
+                    var zlist = response0.Content.Split(':');
+                    if (zlist.Length > 2)
+                    {
+                        tokentoken = zlist[2].Replace('"',' ').Replace('}', ' ');
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Неудачная авторизация!");
+                    return;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Неудачная авторизация!");
-                return;
+                MessageBox.Show("Авторизация:\n"+ex.Message);
             }
 
-            
-            //            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
-
-
-            //var client = new RestClient($"{restServerAddr}/reading-event/");
-            var client = new RestClient($"{restServerAddr}/reading-event/");
-            client.Timeout = 5000;
-            var request = new RestRequest(Method.POST);
 
             //            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
 
-            //          request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-
-            request.AddHeader("Authorization", $"Bearer {tokentoken}");
-
-            request.AddHeader("Accept", "*" + "/" + "*");
-            request.AddHeader("Accept-Encoding", "gzip, deflate, br");
-            request.AddHeader("Content-Type", "application/json");
-            var body = JsonConvert.SerializeObject(bit);
-            request.AddParameter("application/json", body, ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            if (response.IsSuccessful)
+            try
             {
+                //var client = new RestClient($"{restServerAddr}/reading-event/");
+                var client = new RestClient($"{restServerAddr}/reading-event/");
+                client.Timeout = 5000;
+                var request = new RestRequest(Method.POST);
 
-                string qry_update_mark_id_asdelivered = @"update buffer_passage set isDelivered=1
-                            where isDelivered=0 and passageID=" + $"{labelGreenEventID.Text}";
-                using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                //            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
+
+                //          request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                request.AddHeader("Authorization", $"Bearer {tokentoken}");
+
+                request.AddHeader("Accept", "*" + "/" + "*");
+                request.AddHeader("Accept-Encoding", "gzip, deflate, br");
+                request.AddHeader("Content-Type", "application/json");
+                var body = JsonConvert.SerializeObject(bit);
+                request.AddParameter("application/json", body, ParameterType.RequestBody);
+                IRestResponse response = client.Execute(request);
+                if (true)
                 {
-                    connection.Open();
-                    var command = connection.CreateCommand();
-                    command.CommandText = qry_update_mark_id_asdelivered;
-                    command.ExecuteNonQuery();
 
-                    send_cnt++;
+                    string qry_update_mark_id_asdelivered = $"update buffer_passage set isDelivered=1 where (isDelivered=0 or isDelivered=2) and passageID={labelGreenEventID.Text}";
+                    using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                    {
+                        connection.Open();
+                        var command = connection.CreateCommand();
+                        command.CommandText = qry_update_mark_id_asdelivered;
+                        command.ExecuteNonQuery();
+
+                        send_cnt++;
+                    }
+                    MessageBox.Show("Доставлено успешно!");
                 }
-                MessageBox.Show("Доставлено успешно!");
+                else
+                {
+                    MessageBox.Show("Не доставлено!\nСм. Error.txt");
+                    File.WriteAllText("Error.txt", body + "\n" + response.Content.ToString());
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Не доставлено!\nСм. Error.txt");
-                File.WriteAllText("Error.txt", body+"\n"+response.Content.ToString());
+                MessageBox.Show($"POST {restServerAddr}/reading-event/:\n" + ex.Message);
             }
+
         }
 
+        private void buttonHistoryReload_Click(object sender, EventArgs e)
+        {
+            List<PassageFIO> passages = new List<PassageFIO>();
+            listViewHistory.Columns[1].ImageIndex = 0;
+            listViewHistory.Columns[2].ImageIndex = 0;
+            listViewHistory.Columns[3].ImageIndex = 0;
+            // listViewHistory.Columns[4].ImageIndex = 0;
+            listViewHistory.Columns[5].ImageIndex = 0;
+            columnDelivery.ImageIndex = 0;
 
+            string filterName = "";
+            string filterValue = "";
+
+
+            bool withFilter = tabSubfilter.Visible;
+            tabSubfilter.Visible = false;
+            // panelFilterSelect.Visible = false;
+
+            #region history view update
+            /*
+            string from_clause = " FROM buffer_passage p ";
+            // готовим фильтрацию
+            long tsUTCbeg = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            long tsUTCend = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds + (long)numericHours.Value*3600;
+            string where_clause = $" where p.timestampUTC >= {tsUTCbeg} and p.timestampUTC <= {tsUTCend} ";
+            */
+            if (withFilter)
+            {
+                listViewHistory.Columns[1].ImageIndex = 0;
+                listViewHistory.Columns[2].ImageIndex = 0;
+                listViewHistory.Columns[3].ImageIndex = 0;
+                //listViewHistory.Columns[4].ImageIndex = 0;
+                listViewHistory.Columns[5].ImageIndex = 0;
+                columnDelivery.ImageIndex = 0;
+                columnDate.ImageIndex = -1;
+                switch (tabSubfilter.SelectedIndex)
+                {
+                    case 0:
+                        columnCard.ImageIndex = 1;
+                        filterName = "card";
+                        filterValue = cardTextSelect.Text;
+                        //where_clause += $" and p.card='{cardTextSelect.Text}' ";
+                        break;
+                    case 1:
+                        columnTabnom.ImageIndex = 1;
+                        filterName = "tabnom";
+                        filterValue = tabnomTextSelect.Text;
+                        //                        where_clause += $" and p.tabnom={tabnomTextSelect.Text} ";
+                        break;
+                    case 2:
+                        columnFIO.ImageIndex = 1;
+                        filterName = "fio";
+                        filterValue = fioTextSelect.Text;
+
+                        //from_clause = " FROM buffer_passage p, buffer_workers w ";
+                        //where_clause += $" and p.tabnom=w.tabnom and w.fio is not null and w.fio LIKE '%{fioTextSelect.Text}%' ";
+                        break;
+                    case 3:
+                        columnOperation.ImageIndex = 1;
+                        if (comboBoxHistoryOperations.SelectedIndex != -1)
+                        {
+                            object xxx = comboBoxHistoryOperations.SelectedItem;
+                            /*
+                            lastPassage.operCode = ((KeyValuePair<int, string>)xxx).Key;
+                            string[] arr2 = new string[0];
+                            */
+                            int ch = ((KeyValuePair<int, string>)xxx).Key;
+
+                            filterName = "operation";
+                            filterValue = $"{ch}";
+
+                            //where_clause += $" and isOut={ch} ";
+                        };
+                        break;
+                    case 4:
+                        columnDelivery.ImageIndex = 1;
+                        filterName = "delivered";
+                        filterValue = $"{(radioDelivered.Checked ? 1 : 0)}";
+                        /*
+                        if (radioDelivered.Checked)
+                        {
+                            where_clause += $" and isDelivered=1";
+                        }
+                        else
+                        {
+                            where_clause += $" and isDelivered=0";
+                        }
+                        */
+                        break;
+                }
+            }
+            long timestampUTC = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            //long timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            listViewHistory.Visible = false;
+            int cnt = 1;
+            // очистка
+            while (listViewHistory.Items.Count > 0) { listViewHistory.Items.RemoveAt(0); };
+            // заполнение
+            try
+            {
+
+
+                if (useRest)
+                {
+                    passages.AddRange(ManRest.getFilteredPassagesFIO_REST(filterName, filterValue, timestampUTC, (int)numericHours.Value));
+                }
+                else
+                {
+                    passages.AddRange(ManRest.getFilteredPassagesFIODB(filterName, filterValue, timestampUTC, (int)numericHours.Value));
+                }
+
+                foreach (var history_pass in passages)
+                {
+                    ListViewItem lvi = new ListViewItem();
+
+                    lvi.Text = "      ";
+
+                    //lvi.Text = "";
+                    lvi.SubItems.Add(history_pass.card);
+
+                    if (history_pass.fio != "")
+                    {
+                        if (history_pass.tabnom != 0) { lvi.SubItems.Add($"{history_pass.tabnom}"); }
+                        else { lvi.SubItems.Add($""); }
+                        lvi.SubItems.Add($"{history_pass.fio}");
+                    }
+                    else
+                    {
+                        lvi.SubItems.Add("-");
+                        lvi.SubItems.Add("-");
+                        lvi.ForeColor = Color.Red;
+                        lvi.UseItemStyleForSubItems = false;
+                        lvi.Text += "💡";
+                    }
+
+                    System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+                    dtDateTime = dtDateTime.AddSeconds(history_pass.timestampUTC).ToLocalTime();
+                    string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
+                    lvi.SubItems.Add(timeText);
+
+                    string myOperation = "?";
+                    if (OperationsSelector4View.ContainsKey($"{history_pass.operCode}"))
+                    {
+                        myOperation = OperationsSelector4View[$"{history_pass.operCode}"];
+                    };
+                    lvi.SubItems.Add($"{myOperation}");
+
+                    string finalManual = "";
+                    if (history_pass.isManual == 1)
+                    {
+                        finalManual += symbol_pencil;
+                    }
+
+                    if (history_pass.description != "")
+                    {
+                        if (finalManual != "")
+                        {
+                            finalManual += " ";
+                        }
+                        finalManual += symbol_comment;
+                    }
+
+                    lvi.SubItems.Add($"{finalManual}");
+
+                    lvi.SubItems.Add($"{cnt}");
+
+                    if (history_pass.isDelivered == 0)
+                    {
+                        lvi.SubItems.Add("⌛");
+                    }
+
+
+                    listViewHistory.Items.Insert(0, lvi);
+                    cnt++;
+                }
+
+            }
+            finally
+            {
+                listViewHistory.Visible = true;
+            }
+            labelSelectedEventsCount.Text = $"{cnt - 1}";
+
+            #endregion history update
+
+        }
+
+        private void cardTextSelect_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
 }

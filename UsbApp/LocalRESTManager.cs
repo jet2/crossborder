@@ -106,7 +106,7 @@ namespace kppApp
         }
         public void updatePassageDB(string mode, Passage p)
         {
-            if (mode == "red")
+            if (mode == "good")
             {
                 using (SQLiteConnection Connect = new SQLiteConnection(CString))
                 {
@@ -121,7 +121,7 @@ namespace kppApp
                     Command.ExecuteNonQuery();
                 }
             }
-            if (mode == "good")
+            if (mode == "red")
             {
                 using (var connection = new SQLiteConnection(CString))
                 {
@@ -209,16 +209,16 @@ namespace kppApp
                     where_clause += $" and p.card='{value}' ";
                     break;
                 case 1:
-                    where_clause += $" and p.tabnom={value} ";
+                    where_clause += $" and w.tabnom={value} ";
                     break;
                 case 2:
                     where_clause += $" and w.fio is not null and w.fio LIKE '%{value}%' ";
                     break;
                 case 3:
-                    where_clause += $" and isOut={value} ";
+                    where_clause += $" and p.isOut={value} ";
                     break;
                 case 4:
-                    where_clause += $" and isDelivered={value}";
+                    where_clause += $" and p.isDelivered={value}";
                     break;
             }
             try
