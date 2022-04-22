@@ -69,53 +69,53 @@ namespace rest10.Controllers
 
         //api/passage/history?key=card&value=11+2345&tsbegin=161231231&hours=72
         [HttpGet("history")]
-        public IEnumerable<PassageFIO> getFilteredPassagesFIODB(string key, string value, long tsbegin, int hours)
+        public IEnumerable<PassageFIO> getFilteredPassagesFIODBhttp(string card, string tabnom, string fio, string operation, string delivered, string tsbeg, string tsend )
         {
+            Dictionary<string,string> filters = new Dictionary<string,string>();   
+            if (card != null &&  card != "") { filters.Add("card", card); };
+            if (tabnom != null && tabnom != "") { filters.Add("tabnom", tabnom); };
+            if (fio != null && fio != "") { filters.Add("fio", fio); };
+            if (operation != null && operation != "") { filters.Add("operation", operation); };
+            if (delivered != null && delivered != "") { filters.Add("delivered", delivered); };
+            if (tsbeg != null && tsbeg != "" && tsend!="") { filters.Add("tsbeg", tsbeg); filters.Add("tsend", tsend); };
             
             List<PassageFIO> lwp = new List<PassageFIO>();
+            List<string> filters_array = new List<string>();
+            string from_clause = " FROM buffer_passage p left join buffer_workers w on p.userguid = w.userguid ";
 
-            string from_clause = " FROM buffer_passage p left join buffer_workers w on p.userguid = w.userguid";
-
-            // готовим фильтрацию
-            long tsUTCend = tsbegin + (long)hours * 3600;
-            long tsUTCbeg = tsbegin;
-
-            string where_clause = $" where p.timestampUTC >= {tsUTCbeg} and p.timestampUTC <= {tsUTCend} ";
-            int filter_switcher = -1;
-            if (key != null)
+            if (filters.ContainsKey("tsbeg") && filters.ContainsKey("tsend"))
             {
-                if (ParamsIndexes.ContainsKey(key))
-                {
-                    filter_switcher = ParamsIndexes[key];
-                }
-            };
-            
-            switch (filter_switcher)
-            {
-                case 0:
-                    where_clause += $" and p.card='{value}' ";
-                    break;
-                case 1:
-                    where_clause += $" and w.tabnom={value} ";
-                    break;
-                case 2:
-                    where_clause += $" and w.fio is not null and w.fio LIKE '%{value}%' ";
-                    break;
-                case 3:
-                    where_clause += $" and p.isOut={value} ";
-                    break;
-                case 4:
-                    where_clause += $" and p.isDelivered={value}";
-                    break;
+                filters_array.Add($" p.timestampUTC >= {filters["tsbeg"]} and p.timestampUTC <= {filters["tsend"]} ");
             }
+            if (filters.ContainsKey("card"))
+            {
+                filters_array.Add($" p.card='{filters["card"]}' ");
+            }
+            if (filters.ContainsKey("tabnom"))
+            {
+                filters_array.Add($" w.tabnom='{filters["tabnom"]}' ");
+            }
+            if (filters.ContainsKey("fio"))
+            {
+                filters_array.Add($" w.fio LIKE '%{filters["fio"]}%'");
+            }
+            if (filters.ContainsKey("operation"))
+            {
+                filters_array.Add($" p.isOut = {filters["operation"]} ");
+            }
+            if (filters.ContainsKey("delivered"))
+            {
+                filters_array.Add($" p.isDelivered = {filters["delivered"]} ");
+            }
+
+            string assembly_filters = String.Join(" and ", filters_array);
+            string where_clause = $" where 1=1 " + ((assembly_filters.Length > 0) ? " and " + assembly_filters : "");
+
             try
             {
                 string qry_select = "SELECT p.passageID, p.timestampUTC, p.card, p.isOut, p.kppId, w.tabnom, p.isManual, p.isDelivered, p.description, p.isСhecked, p.toDelete, w.fio, w.userguid " +
                 $" {from_clause} {where_clause} order by p.timestampUTC";
-                Console.WriteLine();
-                Console.WriteLine($"{qry_select}");
                 lwp.AddRange(selectPassagesFIO(qry_select));
-                
             }
             catch { };
             return lwp;

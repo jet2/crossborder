@@ -1820,7 +1820,7 @@ namespace kppApp
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-
+            MainTableReload(sender, e);
         }
 
         private void buttonPOST_Click(object sender, EventArgs e)
@@ -2049,7 +2049,7 @@ namespace kppApp
             {
                 if (useRest)
                 {
-                  //  passages.AddRange(ManRest.getFilteredPassagesFIO_REST(filterName, filterValue, timestampUTC, (int)numericHours.Value));
+                    passages.AddRange(ManRest.getFilteredPassagesFIO_REST(SQLFilters));
                 }
                 else
                 {
@@ -2133,6 +2133,11 @@ namespace kppApp
         private void cardTextSelect_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void radioButtonDaily_CheckedChanged(object sender, EventArgs e)
+        {
+            MainTableReload(sender, e);
         }
     }
 

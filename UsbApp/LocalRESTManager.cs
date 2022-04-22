@@ -265,7 +265,7 @@ namespace kppApp
             }
 
             string assembly_filters = String.Join(" and ", filters_array);
-            string where_clause = $" where w.fio is not null " + ((assembly_filters.Length>0) ? " and "+ assembly_filters : "") ;
+            string where_clause = $" where 1=1 " + ((assembly_filters.Length>0) ? " and "+ assembly_filters : "") ;
             
             try
             {
@@ -746,6 +746,48 @@ namespace kppApp
             }
             catch { }
             return xlist;
+        }
+
+        public List<PassageFIO> getFilteredPassagesFIO_REST(Dictionary<string, string> filters)
+        {
+            List<string> filters_array = new List<string>();
+
+            if (filters.ContainsKey("tsbeg") && filters.ContainsKey("tsend"))
+            {
+                filters_array.Add($"tsbeg={filters["tsbeg"]}&tsend={filters["tsend"]} ");
+            }
+            if (filters.ContainsKey("card"))
+            {
+                filters_array.Add($"card='{filters["card"]}'");
+            }
+            if (filters.ContainsKey("tabnom"))
+            {
+                filters_array.Add($"tabnom='{filters["tabnom"]}'");
+            }
+            if (filters.ContainsKey("fio"))
+            {
+                filters_array.Add($"fio={filters["fio"]}");
+            }
+            if (filters.ContainsKey("operation"))
+            {
+                filters_array.Add($"operation={filters["operation"]}");
+            }
+            if (filters.ContainsKey("delivered"))
+            {
+                filters_array.Add($"delivered={filters["delivered"]}");
+            }
+            List<PassageFIO> xlist = new List<PassageFIO>();
+            var client = new RestClient(restServerAddr);
+            client.Timeout = 200;
+            var request = new RestRequest($"api/passage/history?{String.Join("&", filters_array)}", Method.GET);
+            var response = client.Execute<List<PassageFIO>>(request);
+            try
+            {
+                xlist.AddRange(response.Data);
+            }
+            catch { }
+            return xlist;
+
         }
 
         public List<PassageFIO> getFilteredPassagesFIO_REST(string key, string value, long tsbegin, int hours)
