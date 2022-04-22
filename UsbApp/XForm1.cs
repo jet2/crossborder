@@ -31,6 +31,9 @@ namespace kppApp
             { "delivered", 4 },
         };
 
+        internal Dictionary<string, string> SQLFilters = new Dictionary<string, string>
+        {
+        };
 
         int sensibleTextLenght = 6;
         private string symbol_pencil = "🖉";
@@ -104,9 +107,10 @@ namespace kppApp
             listViewHistory.Columns[1].ImageIndex = 0;
             listViewHistory.Columns[2].ImageIndex = 0;
             listViewHistory.Columns[3].ImageIndex = 0;
-            //listViewHistory.Columns[4].ImageIndex = 0;
+            listViewHistory.Columns[4].ImageIndex = 0;
             listViewHistory.Columns[5].ImageIndex = 0;
-            columnDelivery.ImageIndex = 0;
+            listViewHistory.Columns[8].ImageIndex = 0;
+//            columnDelivery.ImageIndex = 0;
             tabControl1.ItemSize = new Size(1, 1);
         }
 
@@ -225,7 +229,7 @@ namespace kppApp
                 signaler =new SignalRCover("http://localhost:5000/endpoint");
                 signaler.OnDeviceArrived += usb_OnDeviceArrived;
                 signaler.OnDeviceRemoved += usb_OnDeviceRemoved;
-                signaler.OnDataReceived += usb_OnDataRecieved;
+                signaler.OnDataRecieved += usb_OnDataRecieved;
                 signaler.OnServiceDown += Signaler_OnServiceDown;
                 signaler.OnServiceUp += Signaler_OnServiceUp;
 
@@ -318,7 +322,7 @@ namespace kppApp
             MainTableReload(this, new EventArgs());
         }
 
-        private void usb_OnDataRecieved(object sender, DataRecievedEventArgs args)
+        private void usb_OnDataRecieved(object sender, UsbLibrary.DataRecievedEventArgs args)
         {
 
         }
@@ -690,7 +694,7 @@ namespace kppApp
         {
             byte[] decBytes1 = Encoding.ASCII.GetBytes(args.Data);
             UsbLibrary.DataRecievedEventArgs argz = new UsbLibrary.DataRecievedEventArgs(decBytes1);
-            usb_OnDataRecieved(sender, argz);
+            usb_OnDataRecieved(sender, new UsbLibrary.DataRecievedEventArgs(decBytes1));
         }
 
         static string BytesToString(byte[] bytes)
@@ -755,60 +759,41 @@ namespace kppApp
 
         private void listView3_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            cardTextSelect_Click(sender, e);
+            label36.Text = e.Column.ToString();
+            tabSubfilter.SelectedIndex = 0; 
             if (e.Column >= 1 && e.Column <= 8)
             {
-
-                panelFilterSelect.Visible = true;
+                listViewHistory.Columns[e.Column].ImageIndex = 1 - listViewHistory.Columns[e.Column].ImageIndex;
                 switch (e.Column)
                 {
                     case 1:
                         tabSubfilter.SelectTab(0);
-                        tabSubfilter.Visible = true;
                         break;
                     case 2:
                         tabSubfilter.SelectTab(1);
-                        tabSubfilter.Visible = true;
                         break;
                     case 3:
                         tabSubfilter.SelectTab(2);
-                        tabSubfilter.Visible = true;
                         break;
                     case 4:
-
-                        tabSubfilter.Visible = false;
-
+                        tabSubfilter.SelectTab(5);
                         break;
                     case 5:
                         tabSubfilter.SelectTab(3);
-                        tabSubfilter.Visible = true;
                         break;
                     case 8:
                         tabSubfilter.SelectTab(4);
-                        tabSubfilter.Visible = true;
-
                         break;
                 }
             }
-            /*
-            ListView.SelectedListViewItemCollection breakfast = this.listView1.SelectedItems;
-
-            foreach (ListViewItem item in breakfast)
-            {
-                int idx = item.Index;
-                tabSubfilter.SelectTab(idx);
-                break;
-            }
-            */
-            //MessageBox.Show(listView3.Columns[e.Column].Text+" 🖉   💬");
         }
 
         private void buttonHistoryFilterHide_Click(object sender, EventArgs e)
         {
-            tabSubfilter.Visible = false;
-            panelFilterSelect.Visible = false;
+           // tabSubfilter.Visible = false;
+           // panelFilterSelect.Visible = false;
         }
-
+/*
         private void buttonHistorySelect_Click(object sender, EventArgs e)
         {
             List<PassageFIO> passages = new List<PassageFIO>();
@@ -828,13 +813,7 @@ namespace kppApp
            // panelFilterSelect.Visible = false;
 
             #region history view update
-            /*
-            string from_clause = " FROM buffer_passage p ";
-            // готовим фильтрацию
-            long tsUTCbeg = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-            long tsUTCend = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds + (long)numericHours.Value*3600;
-            string where_clause = $" where p.timestampUTC >= {tsUTCbeg} and p.timestampUTC <= {tsUTCend} ";
-            */
+
             if (withFilter)
             {
                 listViewHistory.Columns[1].ImageIndex = 0;
@@ -871,10 +850,7 @@ namespace kppApp
                         if (comboBoxHistoryOperations.SelectedIndex != -1)
                         {
                             object xxx = comboBoxHistoryOperations.SelectedItem;
-                            /*
-                            lastPassage.operCode = ((KeyValuePair<int, string>)xxx).Key;
-                            string[] arr2 = new string[0];
-                            */
+
                             int ch = ((KeyValuePair<int, string>)xxx).Key;
 
                             filterName = "operation";
@@ -887,16 +863,7 @@ namespace kppApp
                         columnDelivery.ImageIndex = 1;
                         filterName = "delivered";
                         filterValue = $"{(radioDelivered.Checked ? 1 : 0)}";
-                        /*
-                        if (radioDelivered.Checked)
-                        {
-                            where_clause += $" and isDelivered=1";
-                        }
-                        else
-                        {
-                            where_clause += $" and isDelivered=0";
-                        }
-                        */
+
                         break;
                 }
             }
@@ -912,11 +879,14 @@ namespace kppApp
 
                 if (useRest)
                 {
-                    passages.AddRange(ManRest.getFilteredPassagesFIO_REST(filterName, filterValue, timestampUTC, (int)numericHours.Value));
+                   // passages.AddRange(ManRest.getFilteredPassagesFIO_REST(filterName, filterValue, timestampUTC, (int)numericHours.Value));
                 }
                 else
                 {
-                    passages.AddRange(ManRest.getFilteredPassagesFIODB(filterName, filterValue, timestampUTC, (int)numericHours.Value));
+
+                    var rng = ManRest.getFilteredPassagesFIODB(SQLFilters);
+                    
+                    passages.AddRange(rng);
                 }
 
                 foreach (var history_pass in passages)
@@ -994,7 +964,7 @@ namespace kppApp
             #endregion history update
 
         }
-
+        */
         private void clearDetectionView()
         {
             labelEventName.Text = "-";
@@ -1617,10 +1587,16 @@ namespace kppApp
 
         private void buttonResetFilter_Click(object sender, EventArgs e)
         {
-            numericHours.Value = 72;
-            begPickerSelect.Value = DateTime.Now.AddHours(-(long)numericHours.Value);
-            tabSubfilter.Visible = false;
-            buttonHistorySelect_Click(sender, e);
+            listViewHistory.Columns[1].ImageIndex = 0;
+            listViewHistory.Columns[2].ImageIndex = 0;
+            listViewHistory.Columns[3].ImageIndex = 0;
+            listViewHistory.Columns[4].ImageIndex = 0;
+            listViewHistory.Columns[5].ImageIndex = 0;
+            listViewHistory.Columns[8].ImageIndex = 0;
+            begPickerSelect.Value = DateTime.Now.AddHours(-24*3);
+            //tabSubfilter.Visible = false;
+            listViewHistory.Items.Clear();
+            //buttonHistorySelect_Click(sender, e);
         }
 
         private void buttonMarkToDelete_Click(object sender, EventArgs e)
@@ -2008,21 +1984,14 @@ namespace kppApp
         private void buttonHistoryReload_Click(object sender, EventArgs e)
         {
             List<PassageFIO> passages = new List<PassageFIO>();
+            /*
             listViewHistory.Columns[1].ImageIndex = 0;
             listViewHistory.Columns[2].ImageIndex = 0;
             listViewHistory.Columns[3].ImageIndex = 0;
-            // listViewHistory.Columns[4].ImageIndex = 0;
+            listViewHistory.Columns[4].ImageIndex = 0;
             listViewHistory.Columns[5].ImageIndex = 0;
-            columnDelivery.ImageIndex = 0;
-
-            string filterName = "";
-            string filterValue = "";
-
-
-            bool withFilter = tabSubfilter.Visible;
-            tabSubfilter.Visible = false;
-            // panelFilterSelect.Visible = false;
-
+            listViewHistory.Columns[8].ImageIndex = 0;
+            */
             #region history view update
             /*
             string from_clause = " FROM buffer_passage p ";
@@ -2031,73 +2000,46 @@ namespace kppApp
             long tsUTCend = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds + (long)numericHours.Value*3600;
             string where_clause = $" where p.timestampUTC >= {tsUTCbeg} and p.timestampUTC <= {tsUTCend} ";
             */
-            if (withFilter)
+
+            //listViewHistory.Columns[1].ImageIndex = 0; //card
+            //listViewHistory.Columns[2].ImageIndex = 0; //tabnom
+            //listViewHistory.Columns[3].ImageIndex = 0; //fio
+            //listViewHistory.Columns[4].ImageIndex = 0; //operation
+            //listViewHistory.Columns[5].ImageIndex = 0; //delivered
+            //listViewHistory.Columns[8].ImageIndex = 0; //dates
+            SQLFilters.Clear();
+            if (listViewHistory.Columns[1].ImageIndex ==1)
             {
-                listViewHistory.Columns[1].ImageIndex = 0;
-                listViewHistory.Columns[2].ImageIndex = 0;
-                listViewHistory.Columns[3].ImageIndex = 0;
-                //listViewHistory.Columns[4].ImageIndex = 0;
-                listViewHistory.Columns[5].ImageIndex = 0;
-                columnDelivery.ImageIndex = 0;
-                columnDate.ImageIndex = -1;
-                switch (tabSubfilter.SelectedIndex)
-                {
-                    case 0:
-                        columnCard.ImageIndex = 1;
-                        filterName = "card";
-                        filterValue = cardTextSelect.Text;
-                        //where_clause += $" and p.card='{cardTextSelect.Text}' ";
-                        break;
-                    case 1:
-                        columnTabnom.ImageIndex = 1;
-                        filterName = "tabnom";
-                        filterValue = tabnomTextSelect.Text;
-                        //                        where_clause += $" and p.tabnom={tabnomTextSelect.Text} ";
-                        break;
-                    case 2:
-                        columnFIO.ImageIndex = 1;
-                        filterName = "fio";
-                        filterValue = fioTextSelect.Text;
-
-                        //from_clause = " FROM buffer_passage p, buffer_workers w ";
-                        //where_clause += $" and p.tabnom=w.tabnom and w.fio is not null and w.fio LIKE '%{fioTextSelect.Text}%' ";
-                        break;
-                    case 3:
-                        columnOperation.ImageIndex = 1;
-                        if (comboBoxHistoryOperations.SelectedIndex != -1)
-                        {
-                            object xxx = comboBoxHistoryOperations.SelectedItem;
-                            /*
-                            lastPassage.operCode = ((KeyValuePair<int, string>)xxx).Key;
-                            string[] arr2 = new string[0];
-                            */
-                            int ch = ((KeyValuePair<int, string>)xxx).Key;
-
-                            filterName = "operation";
-                            filterValue = $"{ch}";
-
-                            //where_clause += $" and isOut={ch} ";
-                        };
-                        break;
-                    case 4:
-                        columnDelivery.ImageIndex = 1;
-                        filterName = "delivered";
-                        filterValue = $"{(radioDelivered.Checked ? 1 : 0)}";
-                        /*
-                        if (radioDelivered.Checked)
-                        {
-                            where_clause += $" and isDelivered=1";
-                        }
-                        else
-                        {
-                            where_clause += $" and isDelivered=0";
-                        }
-                        */
-                        break;
-                }
+                SQLFilters["card"] = cardTextSelect.Text;
             }
-            long timestampUTC = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-            //long timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            if (listViewHistory.Columns[2].ImageIndex == 1)
+            {
+                SQLFilters["tabnom"] = tabnomTextSelect.Text;
+            }
+            if (listViewHistory.Columns[3].ImageIndex == 1)
+            {
+                SQLFilters["fio"] = fioTextSelect.Text;
+            }
+            if (listViewHistory.Columns[5].ImageIndex == 1)
+            {
+                
+                if (comboBoxHistoryOperations.SelectedIndex != -1)
+                {
+                    object xxx = comboBoxHistoryOperations.SelectedItem;
+                    int ch = ((KeyValuePair<int, string>)xxx).Key;
+                    SQLFilters["operation"]  = $"{ch}";
+                };
+            }
+            if (listViewHistory.Columns[8].ImageIndex == 1)
+            {
+                SQLFilters["delivered"] = radioDelivered.Checked ? "1" : "0";
+            }
+            if (listViewHistory.Columns[4].ImageIndex == 1)
+            {
+                SQLFilters["tsbeg"] = $"{(long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds}";
+                SQLFilters["tsend"] = $"{(long)endPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds}";
+            }
+
             listViewHistory.Visible = false;
             int cnt = 1;
             // очистка
@@ -2105,15 +2047,13 @@ namespace kppApp
             // заполнение
             try
             {
-
-
                 if (useRest)
                 {
-                    passages.AddRange(ManRest.getFilteredPassagesFIO_REST(filterName, filterValue, timestampUTC, (int)numericHours.Value));
+                  //  passages.AddRange(ManRest.getFilteredPassagesFIO_REST(filterName, filterValue, timestampUTC, (int)numericHours.Value));
                 }
                 else
                 {
-                    passages.AddRange(ManRest.getFilteredPassagesFIODB(filterName, filterValue, timestampUTC, (int)numericHours.Value));
+                    passages.AddRange(ManRest.getFilteredPassagesFIODB(SQLFilters));
                 }
 
                 foreach (var history_pass in passages)
@@ -2176,17 +2116,15 @@ namespace kppApp
                         lvi.SubItems.Add("⌛");
                     }
 
-
                     listViewHistory.Items.Insert(0, lvi);
                     cnt++;
                 }
-
             }
             finally
             {
                 listViewHistory.Visible = true;
             }
-            labelSelectedEventsCount.Text = $"{cnt - 1}";
+            labelSelectedEventsCount.Text = $"Всего записей: {cnt - 1}";
 
             #endregion history update
 

@@ -183,7 +183,8 @@ namespace kppApp
             catch { };
             return lwp;
         }
-        public List<PassageFIO> getFilteredPassagesFIODB(string key, string value, long tsbegin, int hours)
+
+        public List<PassageFIO> getFilterSumPassagesFIODB(string key, string value, long tsbegin, int hours)
         {
             List<PassageFIO> lwp = new List<PassageFIO>();
 
@@ -221,6 +222,51 @@ namespace kppApp
                     where_clause += $" and p.isDelivered={value}";
                     break;
             }
+            try
+            {
+                string qry_select = "SELECT p.passageID, p.timestampUTC, p.card, p.isOut, p.kppId, w.tabnom, p.isManual, p.isDelivered, p.description, p.isСhecked, p.toDelete, w.fio, w.userguid " +
+                $" {from_clause} {where_clause} order by p.timestampUTC";
+                lwp.AddRange(selectPassagesFIO(qry_select));
+            }
+            catch { };
+            return lwp;
+
+        }
+
+
+        public List<PassageFIO> getFilteredPassagesFIODB(Dictionary<string,string> filters )
+        {
+            List<PassageFIO> lwp = new List<PassageFIO>();
+            List<string> filters_array = new List<string>();
+            string from_clause = " FROM buffer_passage p left join buffer_workers w on p.userguid = w.userguid ";
+
+            if (filters.ContainsKey("tsbeg") && filters.ContainsKey("tsend")){
+                filters_array.Add($" p.timestampUTC >= {filters["tsbeg"]} and p.timestampUTC <= {filters["tsend"]} ");
+            }
+            if (filters.ContainsKey("card"))
+            {
+                filters_array.Add($" p.card='{filters["card"]}' ");
+            }
+            if (filters.ContainsKey("tabnom"))
+            {
+                filters_array.Add($" w.tabnom='{filters["tabnom"]}' ");
+            }
+            if (filters.ContainsKey("fio"))
+            {
+                filters_array.Add($" w.fio LIKE '%{filters["fio"]}%'");
+            }
+            if (filters.ContainsKey("operation"))
+            {
+                filters_array.Add($" p.isOut = {filters["operation"]} ");
+            }
+            if (filters.ContainsKey("delivered"))
+            {
+                filters_array.Add($" p.isDelivered = {filters["delivered"]} ");
+            }
+
+            string assembly_filters = String.Join(" and ", filters_array);
+            string where_clause = $" where w.fio is not null " + ((assembly_filters.Length>0) ? " and "+ assembly_filters : "") ;
+            
             try
             {
                 string qry_select = "SELECT p.passageID, p.timestampUTC, p.card, p.isOut, p.kppId, w.tabnom, p.isManual, p.isDelivered, p.description, p.isСhecked, p.toDelete, w.fio, w.userguid " +

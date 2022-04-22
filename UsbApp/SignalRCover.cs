@@ -44,7 +44,8 @@ namespace kppApp
 
     public class SignalRCover
     {
-        public event MyDataEventHandler OnDataReceived;
+        public event UsbLibrary.DataRecievedEventHandler OnDataRecieved;
+        //public event MyDataEventHandler OnDataReceived;
         public event MyEventHandler OnDeviceArrived;
         public event MyEventHandler OnDeviceRemoved;
         public event MyEventHandler OnServiceUp;
@@ -138,9 +139,9 @@ namespace kppApp
 
         private void UpdateReaderReport(string message)
         {
-            if (OnDataReceived != null)
+            if (OnDataRecieved != null)
             {
-                OnDataReceived(this, new DataRecievedEventArgs(Encoding.ASCII.GetBytes(message)));
+                OnDataRecieved(this, new UsbLibrary.DataRecievedEventArgs(Encoding.ASCII.GetBytes(message)));
             }
         }
     }
