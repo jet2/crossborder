@@ -18,6 +18,7 @@ namespace kppApp
 
     public partial class XForm1 : Form
     {
+        private SignalRCover signaler;
 
         private SizeF currentScaleFactor = new SizeF(1f, 1f);
         
@@ -213,30 +214,65 @@ namespace kppApp
             return result;
         }
 
-        private void usb_OnDeviceArrived(object sender, EventArgs e)
+        private void SettingsOfReaderHandle(bool userest)
         {
-            //this.lb_message.Items.Add("Found a Device");
-            this.setRFIDFound();
+            if (!userest) {
+                usb.OnDataRecieved += Usb_OnDataRecieved;
+                usb.OnSpecifiedDeviceRemoved += usb_OnSpecifiedDeviceRemoved;
+                usb.OnSpecifiedDeviceArrived += usb_OnSpecifiedDeviceArrived;
+            }
+            else {
+                signaler =new SignalRCover("http://localhost:5000/endpoint");
+                signaler.OnDeviceArrived += usb_OnDeviceArrived;
+                signaler.OnDeviceRemoved += usb_OnDeviceRemoved;
+                signaler.OnDataReceived += usb_OnDataRecieved;
+                signaler.OnServiceDown += Signaler_OnServiceDown;
+                signaler.OnServiceUp += Signaler_OnServiceUp;
+
+            }
         }
 
-        private void usb_OnDeviceRemoved(object sender, EventArgs e)
+        private void showServiceState(int state)
         {
-            if (InvokeRequired)
-            {
-                Invoke(new EventHandler(usb_OnDeviceRemoved), new object[] { sender, e });
-            }
-            else
-            {
-                // this.lb_message.Items.Add("Device was removed");
-                this.setRFIDLost();
-            }
+            ServiceStateLabel.Text = state==1 ? "Доступна" : "Недоступна";
+        }
+
+        private void Signaler_OnServiceUp(object source, MyEventArgs e)
+        {
+            this.showServiceState(1);
+        }
+
+        private void Signaler_OnServiceDown(object source, MyEventArgs e)
+        {
+            this.showServiceState(0);
+        }
+
+        private void Usb_OnDataRecieved(object sender, UsbLibrary.DataRecievedEventArgs args)
+        {
+            
         }
 
         private void usb_OnSpecifiedDeviceArrived(object sender, EventArgs e)
         {
             this.setRFIDFound();
-
         }
+
+
+        private void usb_OnSpecifiedDeviceRemoved(object sender, EventArgs e)
+        {
+             this.setRFIDLost();
+        }
+
+        private void usb_OnDeviceArrived(object sender, EventArgs e)
+        {
+            //this.setRFIDFound();
+        }
+
+        private void usb_OnDeviceRemoved(object sender, EventArgs e)
+        {
+            //this.setRFIDLost();
+        }
+
 
         protected override void OnHandleCreated(EventArgs e)
         {
@@ -248,20 +284,6 @@ namespace kppApp
         {
             usb.ParseMessages(ref m);
             base.WndProc(ref m);	// pass message on to base form
-        }
-
-
-        private void usb_OnSpecifiedDeviceRemoved(object sender, EventArgs e)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new EventHandler(usb_OnSpecifiedDeviceRemoved), new object[] { sender, e });
-            }
-            else
-            {
-                //this.lb_message.Items.Add("My device was removed");
-                this.setRFIDLost();
-            }
         }
 
         private WorkerPerson getWorkerByGUID(string userguid)
@@ -298,135 +320,7 @@ namespace kppApp
 
         private void usb_OnDataRecieved(object sender, DataRecievedEventArgs args)
         {
-            if (InvokeRequired)
-            {
-                try
-                {
-                    Invoke(new DataRecievedEventHandler(usb_OnDataRecieved), new object[] { sender, args });
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
-            }
-            else
-            {
 
-                byte[] bdata = new byte[100];
-                //args.data.CopyTo(bdata, 2);
-                Array.Copy(args.data, 1, bdata, 0, 100);
-                // читаем карту
-                string readerBytes = BytesToString(bdata);
-                readerBytes = readerBytes.TrimEnd('\0');
-                // номер короток
-                if (readerBytes.Length < 1) return;
-                // получаем УНИВЕРСАЛЬНОЕ время
-                lastPassage.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-                this.BackColor = Color.DimGray;
-                bool bered_flag = false;
-                panelSignal2.BackColor = Color.Transparent;
-                if (readerBytes.Length > 0)
-                {
-                    lastPassage.card = readerBytes;
-                    clearDetectionView();
-                    /*
-                    labelEventName.Text = "";
-                    labelEventFamOtc.Text = "";
-                    labelEventUserguid.Text = "";
-                    labelEventName.ForeColor = Color.Black;
-                    labelEventFamOtc.ForeColor = Color.Black;
-                    labelEventUserguid.ForeColor = Color.Black;
-                    labelEventJobDescription.Text = "";
-                    */
-                    long goodRest = restToGoodRepeat(lastPassage.card);
-                    WorkerPerson  myWorkerPerson = getWorkerByCard(readerBytes);
-                    string savedGUID = myWorkerPerson.userguid;
-                    if (goodRest != 0){
-                        myWorkerPerson.userguid = "";
-                        myWorkerPerson.jobDescription = $"Ожидайте {InacceptebleInterval - goodRest} сек";
-                    }
-
-                    //WorkerPerson myWorkerPerson = getWorkerByCard(readerBytes);
-                    // тревога по отсутствию userguid
-                    // тревога повтора использует тот же механизм. но гуид сохраняется и показывается
-                    if (myWorkerPerson.userguid != "")
-                    {
-                        panelSignal2.BackColor = Color.Transparent;
-                    }
-                    else
-                    {
-                        labelEventName.Text = labelTPL.Text;
-                        
-                        if (goodRest == 0 || savedGUID == "") {
-                            labelEventFamOtc.Text = "";
-                            labelEventName.ForeColor = Color.Coral;
-                            labelEventUserguid.Text = labelTPL.Text;
-                            labelEventUserguid.ForeColor = Color.Coral;
-                        }
-                        else {
-                                labelEventName.ForeColor = Color.Black;
-                                labelEventUserguid.ForeColor = Color.Black;
-                                labelEventUserguid.Text = savedGUID;
-                        };
-
-                        panelSignal2.BackColor = Color.Red;
-                        bered_flag = true;
-
-                    }
-
-                    System.DateTime dtDateTime = DateTime.Now;
-                    string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToShortTimeString(); 
-                    labelEventDate.Text = timeText;
-                    labelEventCard.Text = readerBytes;
-
-                    string[] arr = new string[0];
-                    if (myWorkerPerson.fio != "")
-                    {
-                        arr = myWorkerPerson.fio.Split('@');
-                    };
-                    if (myWorkerPerson.userguid != "")
-                    {
-                        labelEventUserguid.Text = myWorkerPerson.userguid;
-                    };
-
-                    //buttonMarkToDelete.Visible = labelEventUserguid.Text.Length > 3;
-                    labelEventJobDescription.Text = myWorkerPerson.jobDescription;
-                    if (arr.Length > 0)
-                    {
-                        labelEventName.Text = arr[0];
-                        string s = "";
-                        if (arr.Length > 1)
-                        {
-                            s += arr[1];
-                        }
-                        if (arr.Length > 2)
-                        {
-                            s += " " + arr[2];
-                        }
-                        labelEventFamOtc.Text = s;
-                    }
-                    lastPassage.userguid = myWorkerPerson.userguid;
-                    lastPassage.card = myWorkerPerson.card;
-                    lastPassage.rowID = "";
-                    if (comboBoxOperationsMain.SelectedIndex != -1)
-                    {
-                        //string key = ((KeyValuePair<int, string>)comboBox1.SelectedItem).Key;
-                        //string value = ((KeyValuePair<string, string>)comboBox1.SelectedItem).Value;
-                        object xxx = comboBoxOperationsMain.SelectedItem;
-                        lastPassage.operCode = ((KeyValuePair<int, string>)xxx).Key;
-                        // в базу пишем только не повторные считывания
-                        if (goodRest == 0)
-                        {
-                            write2sqlite(lastPassage);
-                        }
-                        if (bered_flag)
-                        {
-                            buttonBeRed_Click(sender, args);
-                        }
-                    }
-                }
-
-            }
         }
 
         private long restToGoodRepeat(string card)
