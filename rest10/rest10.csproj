@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HidSharpCore" Version="1.2.1.1" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.3" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="6.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

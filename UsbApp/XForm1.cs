@@ -103,7 +103,7 @@ namespace kppApp
                 MessageBox.Show("Не удалось прочитать настройки из config.ini");
             };
             //ManRest = new LocalRESTManager(sqlite_connectionstring);
-            ManRest = new LocalRESTManager(sqlite_connectionstring, useRest);
+
             listViewHistory.Columns[1].ImageIndex = 0;
             listViewHistory.Columns[2].ImageIndex = 0;
             listViewHistory.Columns[3].ImageIndex = 0;
@@ -227,12 +227,15 @@ namespace kppApp
             }
             else {
                 signaler =new SignalRCover("http://localhost:5000/endpoint");
-                signaler.OnDeviceArrived += usb_OnDeviceArrived;
-                signaler.OnDeviceRemoved += usb_OnDeviceRemoved;
+                signaler.OnDeviceArrived += usb_OnSpecifiedDeviceArrived;
+                signaler.OnDeviceRemoved += usb_OnSpecifiedDeviceRemoved;
                 signaler.OnDataRecieved += usb_OnDataRecieved;
                 signaler.OnServiceDown += Signaler_OnServiceDown;
                 signaler.OnServiceUp += Signaler_OnServiceUp;
-
+                ServiceStateLabel.Visible = true;
+                ServiceLabel.Visible = true;
+                this.showServiceState(0);
+                signaler.Start();
             }
         }
 
@@ -324,7 +327,138 @@ namespace kppApp
 
         private void usb_OnDataRecieved(object sender, UsbLibrary.DataRecievedEventArgs args)
         {
+            if (InvokeRequired)
+            {
+                try
+                {
+                    Invoke(new DataRecievedEventHandler(usb_OnDataRecieved), new object[] { sender, args });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+            else
+            {
 
+                byte[] bdata = new byte[100];
+                //args.data.CopyTo(bdata, 2);
+                Array.Copy(args.data, 1, bdata, 0, 100);
+                // читаем карту
+                string readerBytes = BytesToString(bdata);
+                readerBytes = readerBytes.TrimEnd('\0');
+                // номер короток
+                if (readerBytes.Length < 1) return;
+                // получаем УНИВЕРСАЛЬНОЕ время
+                lastPassage.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                this.BackColor = Color.DimGray;
+                bool bered_flag = false;
+                panelSignal2.BackColor = Color.Transparent;
+                if (readerBytes.Length > 0)
+                {
+                    lastPassage.card = readerBytes;
+                    clearDetectionView();
+                    /*
+                    labelEventName.Text = "";
+                    labelEventFamOtc.Text = "";
+                    labelEventUserguid.Text = "";
+                    labelEventName.ForeColor = Color.Black;
+                    labelEventFamOtc.ForeColor = Color.Black;
+                    labelEventUserguid.ForeColor = Color.Black;
+                    labelEventJobDescription.Text = "";
+                    */
+                    long goodRest = restToGoodRepeat(lastPassage.card);
+                    WorkerPerson myWorkerPerson = getWorkerByCard(readerBytes);
+                    string savedGUID = myWorkerPerson.userguid;
+                    if (goodRest != 0)
+                    {
+                        myWorkerPerson.userguid = "";
+                        myWorkerPerson.jobDescription = $"Ожидайте {InacceptebleInterval - goodRest} сек";
+                    }
+
+                    //WorkerPerson myWorkerPerson = getWorkerByCard(readerBytes);
+                    // тревога по отсутствию userguid
+                    // тревога повтора использует тот же механизм. но гуид сохраняется и показывается
+                    if (myWorkerPerson.userguid != "")
+                    {
+                        panelSignal2.BackColor = Color.Transparent;
+                    }
+                    else
+                    {
+                        labelEventName.Text = labelTPL.Text;
+
+                        if (goodRest == 0 || savedGUID == "")
+                        {
+                            labelEventFamOtc.Text = "";
+                            labelEventName.ForeColor = Color.Coral;
+                            labelEventUserguid.Text = labelTPL.Text;
+                            labelEventUserguid.ForeColor = Color.Coral;
+                        }
+                        else
+                        {
+                            labelEventName.ForeColor = Color.Black;
+                            labelEventUserguid.ForeColor = Color.Black;
+                            labelEventUserguid.Text = savedGUID;
+                        };
+
+                        panelSignal2.BackColor = Color.Red;
+                        bered_flag = true;
+
+                    }
+
+                    System.DateTime dtDateTime = DateTime.Now;
+                    string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToShortTimeString();
+                    labelEventDate.Text = timeText;
+                    labelEventCard.Text = readerBytes;
+
+                    string[] arr = new string[0];
+                    if (myWorkerPerson.fio != "")
+                    {
+                        arr = myWorkerPerson.fio.Split('@');
+                    };
+                    if (myWorkerPerson.userguid != "")
+                    {
+                        labelEventUserguid.Text = myWorkerPerson.userguid;
+                    };
+
+                    //buttonMarkToDelete.Visible = labelEventUserguid.Text.Length > 3;
+                    labelEventJobDescription.Text = myWorkerPerson.jobDescription;
+                    if (arr.Length > 0)
+                    {
+                        labelEventName.Text = arr[0];
+                        string s = "";
+                        if (arr.Length > 1)
+                        {
+                            s += arr[1];
+                        }
+                        if (arr.Length > 2)
+                        {
+                            s += " " + arr[2];
+                        }
+                        labelEventFamOtc.Text = s;
+                    }
+                    lastPassage.userguid = myWorkerPerson.userguid;
+                    lastPassage.card = myWorkerPerson.card;
+                    lastPassage.rowID = "";
+                    if (comboBoxOperationsMain.SelectedIndex != -1)
+                    {
+                        //string key = ((KeyValuePair<int, string>)comboBox1.SelectedItem).Key;
+                        //string value = ((KeyValuePair<string, string>)comboBox1.SelectedItem).Value;
+                        object xxx = comboBoxOperationsMain.SelectedItem;
+                        lastPassage.operCode = ((KeyValuePair<int, string>)xxx).Key;
+                        // в базу пишем только не повторные считывания
+                        if (goodRest == 0)
+                        {
+                            write2sqlite(lastPassage);
+                        }
+                        if (bered_flag)
+                        {
+                            buttonBeRed_Click(sender, args);
+                        }
+                    }
+                }
+
+            }
         }
 
         private long restToGoodRepeat(string card)
@@ -377,16 +511,6 @@ namespace kppApp
         {
             //listView2.DrawColumnHeader += listView2_DrawColumnHeader;
             //listView2.DrawItem += listView2_DrawItem;
-            try
-            {
-                this.usb.ProductId = Int32.Parse(this.tb_product.Text, System.Globalization.NumberStyles.HexNumber);
-                this.usb.VendorId = Int32.Parse(this.tb_vendor.Text, System.Globalization.NumberStyles.HexNumber);
-                this.usb.CheckDevicePresent();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
             string[] arguments = Environment.GetCommandLineArgs();
             if (arguments.Length > 1)
             {
@@ -404,7 +528,28 @@ namespace kppApp
                     }
                 }
             }
-            
+
+            if (!useRest)
+            {
+                try
+                {
+                    this.usb.ProductId = Int32.Parse(this.tb_product.Text, System.Globalization.NumberStyles.HexNumber);
+                    this.usb.VendorId = Int32.Parse(this.tb_vendor.Text, System.Globalization.NumberStyles.HexNumber);
+                    this.usb.CheckDevicePresent();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+            else
+            {
+                
+            }
+
+
+            ManRest = new LocalRESTManager(sqlite_connectionstring, useRest);
+            SettingsOfReaderHandle(useRest);
             // ПЕРЕМЕСТИТЬ в сервис!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //dictionaryWorkersUpdater();
             MainTableReload(this, e);
@@ -1595,7 +1740,7 @@ namespace kppApp
             listViewHistory.Columns[8].ImageIndex = 0;
             begPickerSelect.Value = DateTime.Now.AddHours(-24*3);
             //tabSubfilter.Visible = false;
-            listViewHistory.Items.Clear();
+//            listViewHistory.Items.Clear();
             //buttonHistorySelect_Click(sender, e);
         }
 

@@ -67,13 +67,19 @@ namespace kppApp
             .WithUrl(this.endpoint)
             .Build();
 
-            connection.DisposeAsync().Wait();
+            //connection.DisposeAsync().Wait();
 
             connection.Closed += Connection_Closed;
             connection.On<string>("readerreport", (message) => UpdateReaderReport(message));
             connection.On<string>("readerstate", (message) => UpdateReaderState(message));
 
         }
+
+        public void Start()
+        {
+            _ = makeConnect();
+        }
+
         private async Task Connection_Closed(Exception arg)
         {
             //throw new NotImplementedException();
