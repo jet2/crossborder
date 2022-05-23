@@ -67,7 +67,7 @@ namespace rest10.Controllers
             return lwp;
         }
 
-        public List<PassageFIO> getFilteredPassagesFIODB(Dictionary<string, string> filters)
+        private List<PassageFIO> getFilteredPassagesFIODB_internal(Dictionary<string, string> filters)
         {
             List<PassageFIO> lwp = new List<PassageFIO>();
             List<string> filters_array = new List<string>();
@@ -114,7 +114,7 @@ namespace rest10.Controllers
 
         //api/passage/history?key=card&value=11+2345&tsbegin=161231231&hours=72
         [HttpGet("history")]
-        public IEnumerable<PassageFIO> getFilteredPassagesFIODBhttp(string card, string tabnom, string fio, string operation, string delivered, string tsbeg, string tsend )
+        public IEnumerable<PassageFIO> getFilteredPassagesFIODB(string card, string tabnom, string fio, string operation, string delivered, string tsbeg, string tsend )
         {
             Dictionary<string,string> filters = new Dictionary<string,string>();   
             if (card != null &&  card != "") { filters.Add("card", card); };
@@ -123,7 +123,7 @@ namespace rest10.Controllers
             if (operation != null && operation != "") { filters.Add("operation", operation); };
             if (delivered != null && delivered != "") { filters.Add("delivered", delivered); };
             if (tsbeg != null && tsbeg != "" && tsend!="") { filters.Add("tsbeg", tsbeg); filters.Add("tsend", tsend); };
-            return getFilteredPassagesFIODB(filters);
+            return getFilteredPassagesFIODB_internal(filters);
         }
 
 

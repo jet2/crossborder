@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rest10", "rest10\rest10.csp
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupAppKpp", "appKPPsetup\ПриложениеКПП.vdproj", "{824A8280-2C61-42D4-A9BC-83A71CA0373F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersLoader", "PersLoader\PersLoader.csproj", "{6FF1D155-76A5-47EE-96E0-F4627400C6ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{FEE7692E-1853-4C6A-81DC-C41104A60D58}.Release|Any CPU.Build.0 = Release|Any CPU
 		{824A8280-2C61-42D4-A9BC-83A71CA0373F}.Debug|Any CPU.ActiveCfg = Debug
 		{824A8280-2C61-42D4-A9BC-83A71CA0373F}.Release|Any CPU.ActiveCfg = Release
+		{6FF1D155-76A5-47EE-96E0-F4627400C6ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FF1D155-76A5-47EE-96E0-F4627400C6ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FF1D155-76A5-47EE-96E0-F4627400C6ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FF1D155-76A5-47EE-96E0-F4627400C6ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

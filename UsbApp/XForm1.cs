@@ -61,7 +61,7 @@ namespace kppApp
         private WcfServer srv;
         IniFile INI;
         private string restServerAddr = "http://localhost:3002";
-        internal string sqlite_connectionstring = "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False;";
+        internal string sqlite_connectionstring = "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False";
         private string statusCodeOK = "201";
         private int prev_passageID = -2;
         private bool was_sended = false;
@@ -2013,7 +2013,9 @@ namespace kppApp
     "type": "input",
     "control_point_type_id": 3
                             */
+                            // формируется мной
                             bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
+                            // не
                             bit.bit1_system = "stop-covid";
                             bit.bit1_timestampUTC = (int)reader.GetDouble(3);
                             bit.bit1_card_number = reader.IsDBNull(0) ? "" : reader.GetString(0);
@@ -2283,6 +2285,11 @@ namespace kppApp
         private void radioButtonDaily_CheckedChanged(object sender, EventArgs e)
         {
             MainTableReload(sender, e);
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+
         }
     }
 
