@@ -172,7 +172,7 @@ namespace kppApp
         public List<PassageFIO> getHotPassagesFIODB(int isDaily)
         {
             List<PassageFIO> lwp = new List<PassageFIO>();
-            long timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            long timestampUTC = TimeLord.UTCNow();
             string where_clause = " where p.isСhecked = 0";
             if (isDaily == 1)
             {

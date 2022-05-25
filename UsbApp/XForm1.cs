@@ -25,6 +25,9 @@ namespace kppApp
 
         private static NLog.Logger logger;
 
+        private int BearerExpiredSeconds = 15 * 60;
+        private long BearerLoadUTC = 0;
+        private string BearerToken = "";
         private SizeF currentScaleFactor = new SizeF(1f, 1f);
         private string RightPart = "[&B950:#$0F3F91210381]";
         private string LeftPart = "";
@@ -75,7 +78,9 @@ namespace kppApp
         private string passageDirection = "";
         private int reader_id = 777;
         private string restServerAddr = "http://localhost:3002";
+        private string restapiAuthEnabled = "1";
         internal string sqlite_connectionstring = "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False";
+
         private string statusCodeOK = "201";
         private int prev_passageID = -2;
         private bool was_sended = false;
@@ -167,6 +172,7 @@ namespace kppApp
             {
                 WaitModeEnable();
             }
+            tryUpdateBearer(false);
         }
 
         private bool checkOperations(string fullpathOperations)
@@ -403,11 +409,12 @@ namespace kppApp
             //bool sqlite_in_settings = INI.KeyExists("sqlite_connectionstring", "settings");
             bool direction_in_settings = INI.KeyExists("passage_direction", "settings");
             bool readerid_in_settings = INI.KeyExists("reader_id", "settings");
-            //bool ok_status_in_settings = INI.KeyExists("status_code_ok", "settings");
-
-            if (rest_in_settings & direction_in_settings & readerid_in_settings)
+            bool auth_enabled_in_settings = INI.KeyExists("restapi_auth_enabled", "settings");
+            
+            if (rest_in_settings & direction_in_settings & readerid_in_settings & auth_enabled_in_settings)
             {
                 restServerAddr = INI.Read("restapi_path", "settings");
+                restapiAuthEnabled = INI.Read("restapi_auth_enabled", "settings");
                 passageDirection = INI.Read("passage_direction", "settings");
                 try
                 {
@@ -430,6 +437,8 @@ namespace kppApp
               //  if (!sqlite_in_settings) INI.Write("sqlite_connectionstring", $"Data Source={AppDomain.CurrentDomain.BaseDirectory}kppbuffer.db;Version=3;New=False;", "settings");
                 if (!direction_in_settings) INI.Write("passage_direction", "input", "settings");
                 if (!readerid_in_settings) INI.Write("reader_id", "777", "settings");
+                if (!readerid_in_settings) INI.Write("reader_id", "777", "settings");
+                if (!auth_enabled_in_settings) INI.Write("restapi_auth_enabled", "1", "settings");
                 //sqlite_connectionstring =  $"Data Source={AppDomain.CurrentDomain.BaseDirectory}kppbuffer.db;Version=3;New=False;";
                 restapi_path_label.Text = "Неизвестно";
                 result = false;
@@ -729,7 +738,7 @@ namespace kppApp
                 // номер короток
                 if (readerBytes.Length < 1) return;
                 // получаем УНИВЕРСАЛЬНОЕ время
-                lastPassage.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                lastPassage.timestampUTC = TimeLord.UTCNow();
                 this.BackColor = Color.DimGray;
                 bool bered_flag = false;
                 panelSignal2.BackColor = Color.Transparent;
@@ -840,6 +849,8 @@ namespace kppApp
             }
         }
 
+
+
         private long restToGoodRepeat(string card)
         {
             long Result = 0;
@@ -847,7 +858,7 @@ namespace kppApp
             // скан нашелся
             if (tsUTC > 0)
             {
-                double tmp = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds - tsUTC * 1000;
+                double tmp = TimeLord.UTCNow() - tsUTC * 1000;
                 if (tmp > 0)
                 {
                     Result = (long)Math.Ceiling(tmp/1000);  
@@ -1740,7 +1751,7 @@ namespace kppApp
             p.userguid = editManualEventGUID.Text;
             p.description = editManualEventComment.Text;
             //object xxx = comboManualEventOperation.SelectedItem;
-            p.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            p.timestampUTC = TimeLord.UTCNow();
             p.operCode = ((KeyValuePair<int, string>)comboManualEventOperation.SelectedItem).Key;
             p.kppId = Environment.MachineName;
             p.rowID = "";
@@ -1988,7 +1999,7 @@ namespace kppApp
             p.userguid = editGreenEventGUID.Text;
             p.description = editGreenEventComment.Text;
             //object xxx = comboManualEventOperation.SelectedItem;
-            p.timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            p.timestampUTC = TimeLord.UTCNow();
             p.operCode = ((KeyValuePair<int, string>)comboGreenEventOperation.SelectedItem).Key;
             p.passageID = int.Parse(labelGreenEventID.Text);
             uodate2sqlite(p);
@@ -2709,20 +2720,30 @@ namespace kppApp
         private void timerWaitMode_Tick(object sender, EventArgs e)
         {
             timerWaitMode.Enabled = false;
+            // справочники еще не загружены
             if (operCheck.Checked && peopleCheck.Checked)
             {
                 WaitModeDisable();
                 return;
             }
-                
+            // проверяем необходимость использования авторизации и обновления токена для нее
+
+
+            
             try
             {
+                blockingBox.Clear();
+                if (!tryUpdateBearer(true))
+                {
+                    return;
+                }
+
                 if (!operCheck.Checked){
                     operCheck.Checked = RestLoadOperations(OperationsJSONFile);
                 }
                 if (!peopleCheck.Checked)
                 {
-                    List<WorkerPersonX> xlist = RestLoadPeople(restServerAddr, 0, (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
+                    List<WorkerPersonX> xlist = RestLoadPeople(restServerAddr, 0, TimeLord.UTCNow());
                     peopleCheck.Checked = xlist.Count > 0;
                     peopleCheck.Checked = CreateInfoDatabase();
                     peopleCheck.Checked = UpdateInfoFile(xlist);
@@ -2733,6 +2754,39 @@ namespace kppApp
             }
         }
 
+        private bool tryUpdateBearer(bool isBlockMode)
+        {
+            bool myResult = true;
+            if (restapiAuthEnabled == "1")
+            {
+                if (BearerLoadUTC > -1)
+                {
+                    if ((TimeLord.UTCNow() - BearerLoadUTC) > BearerExpiredSeconds)
+                    {
+                        try
+                        {
+                            if (LoadBearerToken())
+                            {
+                                logger.Info("Bearer токен получен успешно");
+                                if (isBlockMode) regbb("Bearer токен получен успешно");
+                            }
+                            else
+                            {
+                                logger.Error("Bearer токен не получен");
+                                if (isBlockMode) regbb("Bearer токен НЕ получен");
+                                myResult=false;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Error("Авторизация", ex);
+                            myResult = false;
+                        }
+                    }
+                }
+            }
+            return myResult;
+        }
 
         private bool UpdateInfoFile(List<WorkerPersonX> xlist)
         {
@@ -2763,7 +2817,7 @@ namespace kppApp
                         }
                     }
                 }
-                logger.Error($"Успех при заполнении БД {InfoDatabaseFile} из rest json ");
+                logger.Info($"Успех при заполнении БД {InfoDatabaseFile} из rest json ");
                 return true;
             }
             catch (Exception ex)
@@ -2838,5 +2892,49 @@ namespace kppApp
             }
         }
 
+        private bool LoadBearerToken()
+        {
+            string tokentoken = "";
+            bool myResult = false;
+            var resourceURL = $"{restServerAddr}auth/login/";
+            try
+            {
+                var client0 = new RestClient();
+                client0.Timeout = 8000;
+                var request0 = new RestRequest(resourceURL, Method.POST);
+                request0.AddHeader("Content-Type", "application/json");
+                var body0 = JsonConvert.SerializeObject(new { login = loginbox.Text, password = passwordbox.Text });
+                request0.AddParameter("application/json", body0, ParameterType.RequestBody);
+                IRestResponse response0 = client0.Execute(request0);
+
+                if (response0.IsSuccessful)
+                {
+                    logger.Info("Успешная авторизация в " + $"{resourceURL} [login={loginbox.Text},password={passwordbox.Text}]");
+                    var zlist = response0.Content.Split(':');
+                    if (zlist.Length > 2)
+                    {
+                        tokentoken = zlist[2].Replace('"', ' ').Replace('}', ' ');
+                        myResult = true;
+                        BearerToken = tokentoken;
+                        BearerLoadUTC = TimeLord.UTCNow();
+                    }
+                    else
+                    {
+                        logger.Error($"Проблема при извлечении токена из {response0.Content}");
+                    }
+                }
+                else
+                {
+                    logger.Error("Неудачная авторизация в " + $"{resourceURL} [login={loginbox.Text},password={passwordbox.Text}]");
+            //        MessageBox.Show("Неудачная авторизация!");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Сбой при авторизации " + $"{resourceURL} [login={loginbox.Text},password={passwordbox.Text}]", ex);
+                //MessageBox.Show("Авторизация:\n" + ex.Message);
+            }
+            return myResult;
+        }
     }
 }

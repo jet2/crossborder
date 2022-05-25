@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFormKPP));
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("История считываний", 1);
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("История считываний", 1);
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "123", System.Drawing.SystemColors.WindowText, System.Drawing.Color.Gainsboro, new System.Drawing.Font("Roboto", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "111-111", System.Drawing.Color.Gray, System.Drawing.Color.Gainsboro, new System.Drawing.Font("Roboto", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "#12356"),
@@ -42,7 +42,7 @@
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "🖉   💬", System.Drawing.Color.Teal, System.Drawing.Color.Gainsboro, new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "55555"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "123", System.Drawing.Color.Gray, System.Drawing.Color.Gainsboro, new System.Drawing.Font("Roboto", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204))))}, -1);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "      💡", System.Drawing.Color.Red, System.Drawing.SystemColors.Window, new System.Drawing.Font("Roboto", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "111-111"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "#12356"),
@@ -52,7 +52,7 @@
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "🖉   💬", System.Drawing.Color.Teal, System.Drawing.Color.White, new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "55555"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "123")}, -1);
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "2",
             "3",
@@ -73,6 +73,7 @@
             this.toolStripStatusLabel12 = new System.Windows.Forms.ToolStripStatusLabel();
             this.ServiceLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.ServiceStateLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.needRestartlabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.threadWorkersUpdater = new System.ComponentModel.BackgroundWorker();
             this.threadPassageSender = new System.ComponentModel.BackgroundWorker();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
@@ -282,10 +283,11 @@
             this.columnHeader23 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.buttonDeleteGreenEvent = new System.Windows.Forms.Button();
             this.tabPage7 = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.blockingBox = new System.Windows.Forms.TextBox();
+            this.panel20 = new System.Windows.Forms.Panel();
             this.operCheck = new System.Windows.Forms.CheckBox();
             this.peopleCheck = new System.Windows.Forms.CheckBox();
+            this.blockingBox = new System.Windows.Forms.TextBox();
+            this.label46 = new System.Windows.Forms.Label();
             this.usb = new UsbLibrary.UsbHidPort(this.components);
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -334,7 +336,7 @@
             this.panel6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.editGreenEventTabnom)).BeginInit();
             this.tabPage7.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
+            this.panel20.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -357,7 +359,8 @@
             this.labelHostAccess,
             this.toolStripStatusLabel12,
             this.ServiceLabel,
-            this.ServiceStateLabel});
+            this.ServiceStateLabel,
+            this.needRestartlabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 803);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 7, 0);
@@ -470,6 +473,13 @@
             this.ServiceStateLabel.Text = "Исключена";
             this.ServiceStateLabel.Visible = false;
             // 
+            // needRestartlabel
+            // 
+            this.needRestartlabel.Name = "needRestartlabel";
+            this.needRestartlabel.Size = new System.Drawing.Size(207, 18);
+            this.needRestartlabel.Text = "Требуется перезапуск приложения";
+            this.needRestartlabel.Visible = false;
+            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -499,7 +509,7 @@
             // 
             // timerWaitMode
             // 
-            this.timerWaitMode.Interval = 1000;
+            this.timerWaitMode.Interval = 2500;
             this.timerWaitMode.Tick += new System.EventHandler(this.timerWaitMode_Tick);
             // 
             // timerPassageSender
@@ -542,7 +552,7 @@
             this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer2.Panel2.Font = new System.Drawing.Font("Roboto Lt", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(204)));
             this.splitContainer2.Size = new System.Drawing.Size(1524, 803);
-            this.splitContainer2.SplitterDistance = 221;
+            this.splitContainer2.SplitterDistance = 220;
             this.splitContainer2.TabIndex = 4;
             // 
             // buttonBeRed
@@ -610,11 +620,11 @@
             this.listView1.FullRowSelect = true;
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listView1.HideSelection = false;
-            listViewItem6.IndentCount = 5;
-            listViewItem7.IndentCount = 5;
+            listViewItem1.IndentCount = 5;
+            listViewItem2.IndentCount = 5;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem6,
-            listViewItem7});
+            listViewItem1,
+            listViewItem2});
             this.listView1.LabelWrap = false;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(0, 104);
@@ -656,7 +666,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(1);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1299, 803);
+            this.tabControl1.Size = new System.Drawing.Size(1300, 803);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl1.TabIndex = 2;
             this.tabControl1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvManualEventSearch_MouseDoubleClick);
@@ -672,7 +682,7 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(1);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(1);
-            this.tabPage1.Size = new System.Drawing.Size(1291, 695);
+            this.tabPage1.Size = new System.Drawing.Size(1292, 695);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Главное";
             // 
@@ -691,7 +701,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 23F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 77F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1289, 665);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1290, 665);
             this.tableLayoutPanel1.TabIndex = 15;
             // 
             // panel10
@@ -743,9 +753,9 @@
             this.listViewHotBuffer.GridLines = true;
             this.listViewHotBuffer.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewHotBuffer.HideSelection = false;
-            listViewItem1.UseItemStyleForSubItems = false;
+            listViewItem3.UseItemStyleForSubItems = false;
             this.listViewHotBuffer.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
+            listViewItem3});
             this.listViewHotBuffer.Location = new System.Drawing.Point(5, 5);
             this.listViewHotBuffer.Margin = new System.Windows.Forms.Padding(1);
             this.listViewHotBuffer.MultiSelect = false;
@@ -1270,7 +1280,7 @@
             this.panelSignal.Margin = new System.Windows.Forms.Padding(1);
             this.panelSignal.MaximumSize = new System.Drawing.Size(0, 41);
             this.panelSignal.Name = "panelSignal";
-            this.panelSignal.Size = new System.Drawing.Size(0, 28);
+            this.panelSignal.Size = new System.Drawing.Size(1290, 28);
             this.panelSignal.TabIndex = 6;
             // 
             // label34
@@ -1340,7 +1350,7 @@
             this.tabPage2.Margin = new System.Windows.Forms.Padding(1);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(1);
-            this.tabPage2.Size = new System.Drawing.Size(1291, 695);
+            this.tabPage2.Size = new System.Drawing.Size(1292, 695);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "История";
             this.tabPage2.Enter += new System.EventHandler(this.tabPage2_Enter);
@@ -1356,7 +1366,7 @@
             this.panel18.Margin = new System.Windows.Forms.Padding(1);
             this.panel18.Name = "panel18";
             this.panel18.Padding = new System.Windows.Forms.Padding(15, 15, 15, 15);
-            this.panel18.Size = new System.Drawing.Size(1289, 693);
+            this.panel18.Size = new System.Drawing.Size(1290, 693);
             this.panel18.TabIndex = 18;
             // 
             // panel19
@@ -1367,7 +1377,7 @@
             this.panel19.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel19.Location = new System.Drawing.Point(15, 99);
             this.panel19.Name = "panel19";
-            this.panel19.Size = new System.Drawing.Size(1259, 556);
+            this.panel19.Size = new System.Drawing.Size(1260, 556);
             this.panel19.TabIndex = 27;
             // 
             // listViewHistory
@@ -1388,16 +1398,16 @@
             this.listViewHistory.Font = new System.Drawing.Font("Roboto", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.listViewHistory.GridLines = true;
             this.listViewHistory.HideSelection = false;
-            listViewItem2.StateImageIndex = 0;
-            listViewItem2.UseItemStyleForSubItems = false;
+            listViewItem4.StateImageIndex = 0;
+            listViewItem4.UseItemStyleForSubItems = false;
             this.listViewHistory.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem2});
+            listViewItem4});
             this.listViewHistory.Location = new System.Drawing.Point(0, 0);
             this.listViewHistory.Margin = new System.Windows.Forms.Padding(1);
             this.listViewHistory.MultiSelect = false;
             this.listViewHistory.Name = "listViewHistory";
             this.listViewHistory.ShowGroups = false;
-            this.listViewHistory.Size = new System.Drawing.Size(1259, 556);
+            this.listViewHistory.Size = new System.Drawing.Size(1260, 556);
             this.listViewHistory.SmallImageList = this.imageList3;
             this.listViewHistory.TabIndex = 20;
             this.listViewHistory.UseCompatibleStateImageBehavior = false;
@@ -1479,7 +1489,7 @@
             this.panel16.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel16.Location = new System.Drawing.Point(15, 655);
             this.panel16.Name = "panel16";
-            this.panel16.Size = new System.Drawing.Size(1259, 23);
+            this.panel16.Size = new System.Drawing.Size(1260, 23);
             this.panel16.TabIndex = 20;
             // 
             // labelSelectedEventsCount
@@ -1506,7 +1516,7 @@
             this.panelFilterSelect.Location = new System.Drawing.Point(15, 41);
             this.panelFilterSelect.Margin = new System.Windows.Forms.Padding(2);
             this.panelFilterSelect.Name = "panelFilterSelect";
-            this.panelFilterSelect.Size = new System.Drawing.Size(1259, 58);
+            this.panelFilterSelect.Size = new System.Drawing.Size(1260, 58);
             this.panelFilterSelect.TabIndex = 18;
             // 
             // label36
@@ -1824,7 +1834,7 @@
             this.panel1.Location = new System.Drawing.Point(15, 15);
             this.panel1.MaximumSize = new System.Drawing.Size(0, 41);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(0, 26);
+            this.panel1.Size = new System.Drawing.Size(1260, 26);
             this.panel1.TabIndex = 17;
             // 
             // label1
@@ -1876,7 +1886,7 @@
             this.tabPage3.Margin = new System.Windows.Forms.Padding(1);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(1);
-            this.tabPage3.Size = new System.Drawing.Size(1291, 695);
+            this.tabPage3.Size = new System.Drawing.Size(1292, 695);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Создание";
             // 
@@ -1902,7 +1912,7 @@
             this.panel4.Margin = new System.Windows.Forms.Padding(1);
             this.panel4.MaximumSize = new System.Drawing.Size(0, 41);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(0, 25);
+            this.panel4.Size = new System.Drawing.Size(1290, 25);
             this.panel4.TabIndex = 30;
             // 
             // label12
@@ -2344,7 +2354,7 @@
             this.tabPage5.Margin = new System.Windows.Forms.Padding(1);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(1);
-            this.tabPage5.Size = new System.Drawing.Size(1291, 695);
+            this.tabPage5.Size = new System.Drawing.Size(1292, 695);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Красная";
             // 
@@ -2370,7 +2380,7 @@
             this.panel9.Margin = new System.Windows.Forms.Padding(1);
             this.panel9.MaximumSize = new System.Drawing.Size(0, 41);
             this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(0, 25);
+            this.panel9.Size = new System.Drawing.Size(1290, 25);
             this.panel9.TabIndex = 35;
             // 
             // label28
@@ -2610,7 +2620,7 @@
             this.tabPage4.Margin = new System.Windows.Forms.Padding(1);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(1);
-            this.tabPage4.Size = new System.Drawing.Size(1291, 695);
+            this.tabPage4.Size = new System.Drawing.Size(1292, 695);
             this.tabPage4.TabIndex = 5;
             this.tabPage4.Text = "Зеленая";
             // 
@@ -2675,7 +2685,7 @@
             this.panel7.Margin = new System.Windows.Forms.Padding(1);
             this.panel7.MaximumSize = new System.Drawing.Size(0, 41);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(0, 25);
+            this.panel7.Size = new System.Drawing.Size(1290, 25);
             this.panel7.TabIndex = 34;
             // 
             // label23
@@ -3080,7 +3090,7 @@
             this.lvGreenEventSearch.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lvGreenEventSearch.HideSelection = false;
             this.lvGreenEventSearch.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3});
+            listViewItem5});
             this.lvGreenEventSearch.Location = new System.Drawing.Point(313, 21);
             this.lvGreenEventSearch.Margin = new System.Windows.Forms.Padding(1);
             this.lvGreenEventSearch.MultiSelect = false;
@@ -3134,56 +3144,37 @@
             // 
             // tabPage7
             // 
-            this.tabPage7.Controls.Add(this.tableLayoutPanel2);
+            this.tabPage7.Controls.Add(this.panel20);
             this.tabPage7.Location = new System.Drawing.Point(4, 104);
-            this.tabPage7.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage7.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tabPage7.Size = new System.Drawing.Size(1291, 695);
+            this.tabPage7.Padding = new System.Windows.Forms.Padding(2);
+            this.tabPage7.Size = new System.Drawing.Size(1292, 695);
             this.tabPage7.TabIndex = 6;
             this.tabPage7.Text = "Загр справ";
             this.tabPage7.UseVisualStyleBackColor = true;
             // 
-            // tableLayoutPanel2
+            // panel20
             // 
-            this.tableLayoutPanel2.ColumnCount = 3;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.Controls.Add(this.operCheck, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.blockingBox, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.peopleCheck, 1, 1);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(2, 2);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1287, 310);
-            this.tableLayoutPanel2.TabIndex = 3;
-            // 
-            // blockingBox
-            // 
-            this.tableLayoutPanel2.SetColumnSpan(this.blockingBox, 3);
-            this.blockingBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.blockingBox.Font = new System.Drawing.Font("Roboto", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.blockingBox.Location = new System.Drawing.Point(2, 2);
-            this.blockingBox.Margin = new System.Windows.Forms.Padding(2);
-            this.blockingBox.Multiline = true;
-            this.blockingBox.Name = "blockingBox";
-            this.blockingBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.blockingBox.Size = new System.Drawing.Size(1283, 275);
-            this.blockingBox.TabIndex = 1;
+            this.panel20.Controls.Add(this.operCheck);
+            this.panel20.Controls.Add(this.peopleCheck);
+            this.panel20.Controls.Add(this.blockingBox);
+            this.panel20.Controls.Add(this.label46);
+            this.panel20.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel20.Location = new System.Drawing.Point(2, 2);
+            this.panel20.MinimumSize = new System.Drawing.Size(0, 300);
+            this.panel20.Name = "panel20";
+            this.panel20.Size = new System.Drawing.Size(1288, 300);
+            this.panel20.TabIndex = 7;
             // 
             // operCheck
             // 
             this.operCheck.AutoSize = true;
             this.operCheck.Enabled = false;
-            this.operCheck.Location = new System.Drawing.Point(3, 282);
+            this.operCheck.Location = new System.Drawing.Point(321, 16);
             this.operCheck.Name = "operCheck";
             this.operCheck.Size = new System.Drawing.Size(85, 19);
-            this.operCheck.TabIndex = 2;
+            this.operCheck.TabIndex = 20;
             this.operCheck.Text = "Операции";
             this.operCheck.UseVisualStyleBackColor = true;
             // 
@@ -3191,12 +3182,37 @@
             // 
             this.peopleCheck.AutoSize = true;
             this.peopleCheck.Enabled = false;
-            this.peopleCheck.Location = new System.Drawing.Point(94, 282);
+            this.peopleCheck.Location = new System.Drawing.Point(237, 16);
             this.peopleCheck.Name = "peopleCheck";
             this.peopleCheck.Size = new System.Drawing.Size(78, 19);
-            this.peopleCheck.TabIndex = 4;
+            this.peopleCheck.TabIndex = 19;
             this.peopleCheck.Text = "Физлица";
             this.peopleCheck.UseVisualStyleBackColor = true;
+            // 
+            // blockingBox
+            // 
+            this.blockingBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.blockingBox.Font = new System.Drawing.Font("Roboto", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.blockingBox.Location = new System.Drawing.Point(0, 45);
+            this.blockingBox.Margin = new System.Windows.Forms.Padding(2);
+            this.blockingBox.Multiline = true;
+            this.blockingBox.Name = "blockingBox";
+            this.blockingBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.blockingBox.Size = new System.Drawing.Size(1288, 255);
+            this.blockingBox.TabIndex = 18;
+            // 
+            // label46
+            // 
+            this.label46.BackColor = System.Drawing.Color.Transparent;
+            this.label46.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label46.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label46.Location = new System.Drawing.Point(0, 0);
+            this.label46.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(1288, 45);
+            this.label46.TabIndex = 17;
+            this.label46.Text = "Загрузка справочников";
+            this.label46.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // usb
             // 
@@ -3287,8 +3303,8 @@
             this.panel6.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.editGreenEventTabnom)).EndInit();
             this.tabPage7.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
+            this.panel20.ResumeLayout(false);
+            this.panel20.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -3522,9 +3538,11 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label labelEventFamOtc;
         private System.Windows.Forms.TabPage tabPage7;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Panel panel20;
         private System.Windows.Forms.CheckBox operCheck;
-        private System.Windows.Forms.TextBox blockingBox;
         private System.Windows.Forms.CheckBox peopleCheck;
+        private System.Windows.Forms.TextBox blockingBox;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.ToolStripStatusLabel needRestartlabel;
     }
 }
