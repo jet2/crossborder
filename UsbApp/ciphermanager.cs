@@ -16,6 +16,11 @@ namespace kppApp
             xfile = pluginfile;
         }
 
+        public void UpdatePStorage(string pword)
+        {
+            File.WriteAllBytes(xfile, seedPassword(pword));
+        }
+
         private static byte[] seedPassword(string pass)
         {
             Random r = new Random();
@@ -87,9 +92,9 @@ namespace kppApp
         }
 
 
-        public string getFullPassword(string RightPart, string pfile)
+        public string getFullPassword(string RightPart)
         {
-            string result = getStoredPassword(pfile) + RightPart;
+            string result = getStoredPassword(this.xfile) + RightPart;
 
             return result;
         }

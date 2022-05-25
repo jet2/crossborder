@@ -22,7 +22,9 @@ namespace kppApp
     public partial class MainFormKPP : Form
     {
         private SignalRCover signaler;
-
+        
+        private static SQLiteConnectionString memDBOptions = new SQLiteConnectionString(":memory:");
+        private static SQLiteConnection memdb = new SQLiteConnection(memDBOptions);
         private static NLog.Logger logger;
 
         private int BearerExpiredSeconds = 15 * 60;
@@ -35,7 +37,7 @@ namespace kppApp
         private static readonly string SpecialDataFolder = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments)).FullName, "PSISoftware", "AppKPP");
         private static readonly string BufferDatabaseFile = Path.Combine(SpecialDataFolder, "bufferkpp.db3");
         private static readonly string InfoDatabaseFile = Path.Combine(SpecialDataFolder, "paradox.db3");
-        private static readonly string InfoPluginFile = Path.Combine(SpecialDataFolder, "httprest.dll");
+        private static readonly string InfoPluginFile = Path.Combine(SpecialDataFolder, "httpsrest.dll");
         private static readonly string OperationsJSONFile = Path.Combine(SpecialDataFolder, "operations.json");
         internal Dictionary<string, int> ParamsIndexes = new Dictionary<string, int>
         {
@@ -123,7 +125,7 @@ namespace kppApp
 
 
             var logfile = new NLog.Targets.FileTarget("logfile") { FileName = Path.Combine(SpecialDataFolder, "appkpp-log-${shortdate}.txt"),
-                Layout = "${longdate}|${level:uppercase=true}|${logger}|${message:withexception=true}",
+                Layout = "${longdate}|${level:uppercase=true}|${logger}|${message:withException=true}",
                 ArchiveNumbering = NLog.Targets.ArchiveNumberingMode.Sequence,
                 ArchiveAboveSize = 5242880,
                 MaxArchiveFiles = 30
@@ -173,6 +175,42 @@ namespace kppApp
                 WaitModeEnable();
             }
             tryUpdateBearer(false);
+            fillMemoryDB();
+        }
+
+        private bool fillMemoryDB()
+        {
+
+            var cfm = new CipherManager(InfoPluginFile);
+            var doptions = new SQLiteConnectionString(InfoDatabaseFile, true, cfm.getFullPassword(RightPart)); ;
+            SQLiteConnection diskdb = new SQLiteConnection(doptions);
+            try
+            {
+                logger.Info($"БД {InfoDatabaseFile} -> mem копирование начато");
+                //memdb.DropTable<WorkerPerson>();
+                memdb.CreateTable<WorkerPersonPure>();
+                memdb.InsertAll(diskdb.Table<WorkerPersonPure>());
+                logger.Info($"БД {InfoDatabaseFile} -> mem копирование WorkerPersonPure окончено");
+                //memdb.DropTable<Position>();
+                memdb.CreateTable<Position>();
+                memdb.InsertAll(diskdb.Table<Position>());
+                logger.Info($"БД {InfoDatabaseFile} -> mem копирование Position окончено");
+                //memdb.DropTable<Card>();
+                memdb.CreateTable<Card>();
+                memdb.InsertAll(diskdb.Table<Card>());
+                memdb.CreateCommand(@"create view prettyworker as select w.second_name||'@'||w.first_name||'@'||w.last_name as fio, w.asup_guid as userguid, p.name as job, p.personnel_number as tabnom,d.number as card
+from WorkerPersonPure w left
+join Position p on p.ownerid = w.id left
+join card d on d.ownerid = p.id;").ExecuteNonQuery();
+                logger.Info($"БД {InfoDatabaseFile} -> mem копирование Card окончено");
+                //MessageBox.Show("Mem done!");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.Fatal(ex,$"Ошибка копирования БД {InfoDatabaseFile} -> mem copy");
+                return false;
+            }          
         }
 
         private bool checkOperations(string fullpathOperations)
@@ -197,7 +235,7 @@ namespace kppApp
             CipherManager cfm = new CipherManager(InfoPluginFile);
             try
             {
-                var pword = cfm.getFullPassword(RightPart, InfoPluginFile);
+                var pword = cfm.getFullPassword(RightPart);
                 var options = new SQLiteConnectionString(InfoDatabaseFile, true, pword);
                 var connection = new SQLiteConnection(options);
 
@@ -219,7 +257,7 @@ namespace kppApp
             }
             catch (Exception ex)
             {
-                logger.Error("InfoDatabaseFile испорчен", ex);
+                logger.Warn(ex, "InfoDatabaseFile испорчен");
                 myResult = false;
             }
             
@@ -311,14 +349,35 @@ namespace kppApp
             bool myResult = false;
             try
             {
-
-                var options = new SQLiteConnectionString(BufferDatabaseFile); 
-                    using (var db = new SQLiteConnection(options))
+                var options = new SQLiteConnectionString(BufferDatabaseFile);
+                using (var db = new SQLiteConnection(options))
+                {
+                    db.CreateTable<Passage>();
+                    List<Passage> passages = new List<Passage>();   
+                  /*  for (int i = 0; i < 50000; i++)
                     {
-                        db.CreateTable<WorkerPerson>();
-                        db.CreateTable<Position>();
-                        db.CreateTable<Card>();
-                    }
+                        
+                        var x = new Passage()
+                        {
+                            card = $"{i}",
+                            description = $"{i}" + $"{i}" + $"{i}",
+                            isDelivered = 0,
+                            isManual = 1,
+                            kppId = $"{i}",
+                            operCode = i,
+                            passageID = i,
+                            rowID = $"{i}",
+                            tabnom = i,
+                            timestampUTC = i,
+                            toDelete = 0,
+                            userguid = $"{i}"
+
+                        };
+                        passages.Add(x);
+                        
+                    }*/
+                    db.InsertAll(passages);
+                }
                 myResult = true;
                 logger.Info($"Успех создания буферной БД { BufferDatabaseFile}");
             }
@@ -350,10 +409,12 @@ namespace kppApp
                 logger.Info($"Сбой удаления инфоБД", ex);
             }
 
+            var cfm =new CipherManager(InfoPluginFile);
             try
             {
                 var pword = LeftPart + $"{r.Next(100000, 999999)}";
-                File.WriteAllBytes(InfoPluginFile, seedPassword(pword));
+                cfm.UpdatePStorage(pword);
+//                File.WriteAllBytes(InfoPluginFile, seedPassword(pword));
                 //pword = unseedPassword(File.ReadAllBytes(InfoPluginFile));
                 logger.Info($"Успех создания парольного хранилища");
             }
@@ -363,12 +424,12 @@ namespace kppApp
             }
 
 
-            LeftPart = unseedPassword(File.ReadAllBytes(InfoPluginFile));
+            //LeftPart = unseedPassword(File.ReadAllBytes(InfoPluginFile));
 
             try
             {
 
-                var options = new SQLiteConnectionString(InfoDatabaseFile, true, LeftPart+RightPart);
+                var options = new SQLiteConnectionString(InfoDatabaseFile, true, cfm.getFullPassword(RightPart));
                 using (var db = new SQLiteConnection(options))
                 {
                     db.CreateTable<Card>();
@@ -422,7 +483,7 @@ namespace kppApp
                 } catch (Exception ex)
                 {
                     reader_id = 777777;
-                    logger.Error($"Ошибка преобразования reader_id из настроек",ex);
+                    logger.Error(ex, $"Ошибка преобразования reader_id из настроек");
                 }
                 restapi_path_label.Text = restServerAddr;
                 //    sqlite_connectionstring = INI.Read("sqlite_connectionstring", "settings");
@@ -457,7 +518,7 @@ namespace kppApp
                     InitOperationsViews(OperationsJSONFile);
                 }catch (Exception ex)
                 {
-                    logger.Error($"Загрузка операций из файла {OperationsJSONFile}",ex.Message);
+                    logger.Error(ex, $"Загрузка операций из файла {OperationsJSONFile}");
                 }
             }
             else
@@ -527,7 +588,7 @@ namespace kppApp
                     catch (Exception ex)
                     {
                         regbb($"Ошибка извлечения списка ControlPoints, длина={xlist.data.Count} [{ex.Message}]");
-                        logger.Error($"Извлечение списка ControlPoints, длина={xlist.data.Count}", ex);
+                        logger.Error(ex, $"Извлечение списка ControlPoints, длина={xlist.data.Count}");
                         myResult = false;
                         return myResult;
                     }
@@ -545,11 +606,11 @@ namespace kppApp
             try
             {
                 File.WriteAllText(OperationsJSONFile, JsonConvert.SerializeObject(polist));
-                logger.Error($"Успешно сохранен список {polist.Count} операций в {OperationsJSONFile}");
+                logger.Info($"Успешно сохранен список {polist.Count} операций в {OperationsJSONFile}");
             }
             catch (Exception ex)
             {
-                logger.Error($"Сохранение списка ControlPoints в {OperationsJSONFile}", ex);
+                logger.Error(ex, $"Сохранение списка ControlPoints в {OperationsJSONFile}");
                 myResult = false;
                 return myResult;
             }
@@ -689,9 +750,9 @@ namespace kppApp
             return myWP;
         }
 
-        private WorkerPerson getWorkerByCard(string card)
+        private PrettyWorker getWorkerByCard(string card)
         {
-            WorkerPerson myWP = new WorkerPerson();
+            PrettyWorker myWP = new PrettyWorker();
             myWP.userguid = "";
             myWP.fio = "";
             myWP.card = card;
@@ -722,7 +783,7 @@ namespace kppApp
                 }
                 catch (Exception ex)
                 {
-                    logger.Error("usb_OnDataRecieved", ex);
+                    logger.Error(ex, "usb_OnDataRecieved");
                     //Console.WriteLine(ex.ToString());
                 }
             }
@@ -746,22 +807,14 @@ namespace kppApp
                 {
                     lastPassage.card = readerBytes;
                     clearDetectionView();
-                    /*
-                    labelEventName.Text = "";
-                    labelEventFamOtc.Text = "";
-                    labelEventUserguid.Text = "";
-                    labelEventName.ForeColor = Color.Black;
-                    labelEventFamOtc.ForeColor = Color.Black;
-                    labelEventUserguid.ForeColor = Color.Black;
-                    labelEventJobDescription.Text = "";
-                    */
+
                     long goodRest = restToGoodRepeat(lastPassage.card);
-                    WorkerPerson myWorkerPerson = getWorkerByCard(readerBytes);
+                    PrettyWorker myWorkerPerson = getWorkerByCard(readerBytes);
                     string savedGUID = myWorkerPerson.userguid;
                     if (goodRest != 0)
                     {
                         myWorkerPerson.userguid = "";
-                        myWorkerPerson.jobDescription = $"Ожидайте {InacceptebleInterval - goodRest} сек";
+                        myWorkerPerson.job = $"Ожидайте {InacceptebleInterval - goodRest} сек";
                     }
 
                     //WorkerPerson myWorkerPerson = getWorkerByCard(readerBytes);
@@ -810,7 +863,7 @@ namespace kppApp
                     };
 
                     //buttonMarkToDelete.Visible = labelEventUserguid.Text.Length > 3;
-                    labelEventJobDescription.Text = myWorkerPerson.jobDescription;
+                    labelEventJobDescription.Text = myWorkerPerson.job;
                     if (arr.Length > 0)
                     {
                         labelEventName.Text = arr[0];
@@ -827,6 +880,7 @@ namespace kppApp
                     }
                     lastPassage.userguid = myWorkerPerson.userguid;
                     lastPassage.card = myWorkerPerson.card;
+                    lastPassage.tabnom = myWorkerPerson.tabnom;
                     lastPassage.rowID = "";
                     if (comboBoxOperationsMain.SelectedIndex != -1)
                     {
@@ -858,10 +912,11 @@ namespace kppApp
             // скан нашелся
             if (tsUTC > 0)
             {
-                double tmp = TimeLord.UTCNow() - tsUTC * 1000;
+                double tsnow = TimeLord.UTCNow();
+                double tmp =  tsnow - tsUTC ;
                 if (tmp > 0)
                 {
-                    Result = (long)Math.Ceiling(tmp/1000);  
+                    Result = (long)Math.Ceiling(tmp);  
                 }
             }
             return (Result>=InacceptebleInterval) ? 0 : Result;
@@ -931,7 +986,7 @@ namespace kppApp
                 }
                 catch (Exception ex)
                 {
-                    logger.Error("Инициализация считывателя", ex);
+                    logger.Error(ex, "Инициализация считывателя");
                     //MessageBox.Show(ex.ToString());
                 }
             }
@@ -941,7 +996,7 @@ namespace kppApp
             }
 
 
-            ManRest = new LocalRESTManager(sqlite_connectionstring, useRest);
+            ManRest = new LocalRESTManager(memdb, BufferDatabaseFile, useRest, logger);
             SettingsOfReaderHandle(useRest);
             // ПЕРЕМЕСТИТЬ в сервис!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //dictionaryWorkersUpdater();
@@ -961,12 +1016,39 @@ namespace kppApp
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             ListView.SelectedListViewItemCollection breakfast = this.listView1.SelectedItems;
-
+            int idx = 0;
             foreach (ListViewItem item in breakfast)
             {
-                int idx = item.Index;
+                idx = item.Index;
                 tabControl1.SelectTab(idx);
+
                 break;
+            }
+            
+            if (idx == 1)
+            {
+                CopyPassageTable2Memory();
+            }
+        }
+
+        private bool CopyPassageTable2Memory()
+        {
+
+            var doptions = new SQLiteConnectionString(BufferDatabaseFile); ;
+            SQLiteConnection diskdb = new SQLiteConnection(doptions);
+            try
+            {
+                //logger.Info($"БД {BufferDatabaseFile} -> mem копирование начато");
+                memdb.DropTable<Passage>();
+                memdb.CreateTable<Passage>();
+                memdb.InsertAll(diskdb.Table<Passage>());
+                //logger.Info($"БД {BufferDatabaseFile} -> mem копирование Passage окончено");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.Fatal(ex, $"Ошибка копирования БД {BufferDatabaseFile} -> mem copy");
+                return false;
             }
         }
 
@@ -1077,7 +1159,7 @@ namespace kppApp
                     }
                     if (first_pass.fio != "")
                     {
-                        if (first_pass.tabnom != 0) { lvi.SubItems.Add($"{first_pass.tabnom}"); }
+                        if (first_pass.tabnom != "") { lvi.SubItems.Add($"{first_pass.tabnom}"); }
                         else { lvi.SubItems.Add($"-"); }
 
                         lvi.SubItems.Add($"{first_pass.fio}");
@@ -2139,21 +2221,7 @@ namespace kppApp
 
         private void buttonMarkToDelete_Click(object sender, EventArgs e)
         {
-            if (listViewHotBuffer.SelectedItems.Count > 0)
-            {
-                string[] spl = labelShomItem.Text.Split('-');
-                if (spl.Length > 1)
-                {
-                    var p = new Passage();
-                    p.passageID = int.Parse(spl[0]);
 
-
-                    ManRest.updatePassage("markdelete", p, useRest);
-
-
-                    MainTableReload(sender, e);
-                }
-            }
         }
 
         private void PaintByColor(Color col)
@@ -2401,7 +2469,7 @@ namespace kppApp
             }
             catch (Exception ex)
             {
-                logger.Error("Подготовка формата отправки", ex);
+                logger.Error(ex, "Подготовка формата отправки");
                 MessageBox.Show("Подготовка формата отправки:\n" + ex.Message);
                 return;
             }
@@ -2441,7 +2509,7 @@ namespace kppApp
             }
             catch (Exception ex)
             {
-                logger.Error("Авторизация " + $"{restServerAddr}/auth/login/", ex);
+                logger.Error(ex, "Авторизация " + $"{restServerAddr}/auth/login/");
                 MessageBox.Show("Авторизация:\n"+ex.Message);
             }
 
@@ -2490,7 +2558,7 @@ namespace kppApp
             }
             catch (Exception ex)
             {
-                logger.Error($"POST {restServerAddr}/reading-event/", ex);
+                logger.Error(ex, $"POST {restServerAddr}/reading-event/", ex);
                 MessageBox.Show($"POST {restServerAddr}/reading-event/:\n" + ex.Message);
             }
 
@@ -2582,7 +2650,7 @@ namespace kppApp
 
                     if (history_pass.fio != "")
                     {
-                        if (history_pass.tabnom != 0) { lvi.SubItems.Add($"{history_pass.tabnom}"); }
+                        if (history_pass.tabnom != "") { lvi.SubItems.Add($"{history_pass.tabnom}"); }
                         else { lvi.SubItems.Add($""); }
                         lvi.SubItems.Add($"{history_pass.fio}");
                     }
@@ -2657,65 +2725,12 @@ namespace kppApp
 
         private void XForm1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            memdb.Close();
             logger.Info("Завершение приложения");
             NLog.LogManager.Shutdown();
         }
 
-        #region seed
-        private static byte[] seedPassword(string pass)
-        {
-            Random r = new Random();
-            byte[] buffer = new byte[98765];
-            byte[] asciiBytes = Encoding.ASCII.GetBytes(pass);
-            int glob_pointer = 110;
-            byte rnd_offset;
-            r.NextBytes(buffer);
-            //Console.WriteLine("1>>>>>>>>>");
-            for (int i = 0; i < asciiBytes.Length; i++)
-            {
-                glob_pointer += 3; // сдвигаем указатель сеяния на позицию хранения сдвига до сл элемента
-                rnd_offset = (byte)(r.Next(10, 250)); // вычисляем сдвиг
-                buffer[glob_pointer] = rnd_offset; // записываем сдвиг в позицию указателя сеяния
-                glob_pointer += rnd_offset; // сдвигаем указателя сеяния в позицию хранения элемента пароля 
-                buffer[glob_pointer] = asciiBytes[i]; // записываем код символа элемента в позицию указателя сеяния
-              //  Console.Write(asciiBytes[i]);
-//                Console.Write(" ");
-            }
-            //Console.WriteLine("1<<<<<<<<<<<<<<");
-            // пароль посеян, сеем завершение.
-            glob_pointer += 3; // сдвигаем указатель сеяния на позицию хранения сдвига до сл элемента
-            rnd_offset = (byte)(r.Next(10, 250)); // вычисляем сдвиг
-            buffer[glob_pointer] = rnd_offset; // записываем сдвиг в позицию указателя сеяния
-            glob_pointer += rnd_offset; // сдвигаем указателя сеяния в позицию хранения элемента пароля 
-            buffer[glob_pointer] = 255; // записываем код завершения пароля в позицию указателя сеяния
-            return buffer;
-        }
 
-        private static string unseedPassword(byte[] asciiBytes)
-        {
-            Random r = new Random();
-            string unhidden = "";
-            byte aschar;
-            int glob_pointer = 110;
-  //          Console.WriteLine("2>>>>>>>>>");
-            while (glob_pointer < asciiBytes.Length)
-            {
-                glob_pointer += 3; // сдвигаем указатель сеяния на позицию хранения сдвига до сл элемента
-                var el_pos = asciiBytes[glob_pointer];
-                glob_pointer += el_pos;
-//                Console.Write(asciiBytes[glob_pointer]);
-//                Console.Write(" ");
-                aschar = asciiBytes[glob_pointer]; // записываем сдвиг в позицию указателя сеяния
-                if (aschar == 255)
-                {
-                    break;
-                }
-                unhidden += (char)aschar;
-            };
-//            Console.WriteLine("2<<<<<<<<<<<<<<");
-            return unhidden;
-        }
-        #endregion seed
 
         private void timerWaitMode_Tick(object sender, EventArgs e)
         {
@@ -2779,7 +2794,7 @@ namespace kppApp
                         }
                         catch (Exception ex)
                         {
-                            logger.Error("Авторизация", ex);
+                            logger.Error(ex, "Авторизация");
                             myResult = false;
                         }
                     }
@@ -2792,7 +2807,7 @@ namespace kppApp
         {
             // пишем в подготовленную БД
             CipherManager cfm = new CipherManager(InfoPluginFile);
-            var pword = cfm.getFullPassword(RightPart, InfoPluginFile);
+            var pword = cfm.getFullPassword(RightPart);
             var options = new SQLiteConnectionString(InfoDatabaseFile, true, pword);
             try
             {
@@ -2822,7 +2837,7 @@ namespace kppApp
             }
             catch (Exception ex)
             {
-                logger.Error($"БД {InfoDatabaseFile} при заполнении из rest json", ex);
+                logger.Error(ex, $"БД {InfoDatabaseFile} при заполнении из rest json");
                 return false;
             }
 
@@ -2861,7 +2876,7 @@ namespace kppApp
                 catch (Exception ex)
                 {
                     regbb($"Получено {response.Data.data.Count} человек [{ex.Message}]");
-                    logger.Error($"Ошибка получения человек {operurl}{pageNumberValue}", ex);
+                    logger.Error(ex, $"Ошибка получения человек {operurl}{pageNumberValue}");
                     break;
                 }
                 pageNumberValue += 1;
@@ -2931,10 +2946,17 @@ namespace kppApp
             }
             catch (Exception ex)
             {
-                logger.Error("Сбой при авторизации " + $"{resourceURL} [login={loginbox.Text},password={passwordbox.Text}]", ex);
+                logger.Error(ex, "Сбой при авторизации " + $"{resourceURL} [login={loginbox.Text},password={passwordbox.Text}]");
                 //MessageBox.Show("Авторизация:\n" + ex.Message);
             }
             return myResult;
         }
+
+        private void buttonCheckEvents_Click(object sender, EventArgs e)
+        {
+            makeCheck(sender, e);
+        }
+
+
     }
 }

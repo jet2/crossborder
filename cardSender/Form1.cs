@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,6 +46,13 @@ namespace cardSender
                 label1.Text = $"OK послалось!";
             }
 
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            comboBox1.Items.Clear();
+            var cards=File.ReadAllLines("cards.txt");
+            comboBox1.Items.AddRange(cards);    
         }
     }
 }

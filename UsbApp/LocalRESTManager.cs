@@ -11,7 +11,9 @@ using System.Threading.Tasks;
 namespace kppApp
 {
     internal class LocalRESTManager
-    {  
+    {
+        private static NLog.Logger logger;
+
         internal Dictionary<string, int> ParamsIndexes = new Dictionary<string, int>
         {
             { "card", 0 },
@@ -23,10 +25,13 @@ namespace kppApp
         private string CString;
         private string restServerAddr = "http://localhost:5000/";
         private bool useRest = false;
-        public LocalRESTManager(string connectionstring, bool useRest)
+        private SQLiteConnection memdb=null;
+        public LocalRESTManager(SQLiteConnection memDatabase, string connectionstring, bool useRest, NLog.Logger nlogger)
         {
+            logger = nlogger;
             this.CString = connectionstring;
             this.useRest = useRest;
+            this.memdb = memDatabase;
         }
 
         #region passage insert update table.db 
@@ -58,6 +63,15 @@ namespace kppApp
         }
         public void insertPassageDB(Passage myPassage)
         {
+            using (SQLiteConnection dbdisk = new SQLiteConnection(CString))
+            {
+                myPassage.kppId = Environment.MachineName;
+                dbdisk.Insert(myPassage);
+                logger.Info($"Проход card={myPassage.card}, userguid={myPassage.userguid}");
+            }
+            
+            
+            //db.Query<PrettyWorker>($"SELECT userguid, fio, tabnom, job, card FROM prettyworker where card='{card}' LIMIT 1");
             /*
             using (SQLiteConnection Connect = new SQLiteConnection(CString))
             {
@@ -173,18 +187,24 @@ namespace kppApp
         {
             List<PassageFIO> lwp = new List<PassageFIO>();
             long timestampUTC = TimeLord.UTCNow();
-            string where_clause = " where p.isСhecked = 0";
+            string where_clause = " where p.isChecked = 0";
             if (isDaily == 1)
             {
                 where_clause = $" where {timestampUTC}-p.timestampUTC <= 60*60*24 ";
             }
-            try
+
+            using (var db = new SQLiteConnection(new SQLiteConnectionString(CString)))
             {
-                string qry_select = "SELECT p.passageID, p.timestampUTC, p.card, p.isOut, p.kppId, w.tabnom, p.isManual, p.isDelivered, p.description, p.isСhecked, p.toDelete, w.fio, w.userguid" +
-                $" FROM buffer_passage p left join buffer_workers w on p.userguid=w.userguid {where_clause} order by timestampUTC";
-                lwp.AddRange(selectPassagesFIO(qry_select));
+                memdb.DropTable<Passage>();
+                memdb.CreateTable<Passage>();
+                memdb.InsertAll(db.Query<Passage>($"select p.* from Passage p {where_clause}"));
+                lwp.AddRange(memdb.Query<PassageFIO>($"select p.*, w.second_name||' '||w.first_name||' '||w.last_name as fio from Passage p left join workerpersonpure w on w.asup_guid = p.userguid"));
+                for(int i = 0; i < lwp.Count; i++)
+                {
+                     if (lwp[i].description == null) { lwp[i].description = ""; };
+                     if (lwp[i].tabnom == null) { lwp[i].tabnom = ""; };
+                }
             }
-            catch { };
             return lwp;
         }
 
@@ -299,6 +319,27 @@ namespace kppApp
         private List<PassageFIO> getLastPassageFIOByCardDB(string card)
         {
             List<PassageFIO> lwp = new List<PassageFIO>();
+            long timestampUTC = TimeLord.UTCNow();
+            string where_clause = $" where p.card='{card}'"; 
+
+            using (var db = new SQLiteConnection(new SQLiteConnectionString(CString)))
+            {
+                memdb.DropTable<Passage>();
+                memdb.CreateTable<Passage>();
+                memdb.InsertAll(db.Query<Passage>($"select p.* from Passage p {where_clause}  order by passageID desc LIMIT 1"));
+                lwp.AddRange(memdb.Query<PassageFIO>($"select p.*, w.second_name||' '||w.first_name||' '||w.last_name as fio from Passage p left join workerpersonpure w on w.asup_guid = p.userguid"));
+                for (int i = 0; i < lwp.Count; i++)
+                {
+                    if (lwp[i].description == null) { lwp[i].description = ""; };
+                    if (lwp[i].tabnom == null) { lwp[i].tabnom = ""; };
+                }
+            }
+            return lwp;
+
+
+
+/*
+            List<PassageFIO> lwp = new List<PassageFIO>();
             string from_clause = " FROM buffer_passage p left join buffer_workers w on p.userguid = w.userguid";
 
             string where_clause = $" where p.card='{card}'";
@@ -310,6 +351,7 @@ namespace kppApp
             }
             catch { }
             return lwp;
+*/
         }
         private List<PassageFIO> selectPassagesFIO(string qry_select)
         {
@@ -459,12 +501,12 @@ namespace kppApp
 
         }
 
-        public List<WorkerPerson> getCardOwnerWorker(string card, bool useRest)
+        public List<PrettyWorker> getCardOwnerWorker(string card, bool useRest)
         {
-            List<WorkerPerson> xlist = new List<WorkerPerson>();
+            List<PrettyWorker> xlist = new List<PrettyWorker>();
             if (useRest)
             {
-                xlist.AddRange(getCardOwnerWorker_REST(card));
+                //xlist.AddRange(getCardOwnerWorker_REST(card));
             }
             else
             {
@@ -590,10 +632,11 @@ namespace kppApp
             catch { }
             return xlist;
         }
-        public List<WorkerPerson> getCardOwnerWorkerDB(string card)
+        public List<PrettyWorker> getCardOwnerWorkerDB(string card)
         {
-            List<WorkerPerson> results = new List<WorkerPerson>();
-            /*
+            List<PrettyWorker> results = new List<PrettyWorker>();
+            results.AddRange(memdb.Query<PrettyWorker>($"SELECT userguid, fio, tabnom, job, card FROM prettyworker where card='{card}' LIMIT 1"));
+/*            
             using (var connection = new SQLiteConnection(CString))
             {
                 connection.Open();
@@ -673,16 +716,16 @@ namespace kppApp
                 wp.jobDescription = xlist[0].jobDescription;    
             }
         }
-        public void getCardOwnerWorker(string card, ref WorkerPerson wp)
+        public void getCardOwnerWorker(string card, ref PrettyWorker wp)
         {
-            List<WorkerPerson> xlist = getCardOwnerWorker(card,useRest);
+            List<PrettyWorker> xlist = getCardOwnerWorker(card,useRest);
             if (xlist.Count > 0)
             {
                 wp.userguid = xlist[0].userguid;
                 wp.card = xlist[0].card;
                 wp.fio = xlist[0].fio;
                 wp.tabnom = xlist[0].tabnom;
-                wp.jobDescription = xlist[0].jobDescription;
+                wp.job = xlist[0].job;
             }
         }
         #endregion workers no sql, no db 

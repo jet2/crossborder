@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SQLite;
 using System.Collections.Generic;
 
 namespace kppApp
@@ -29,6 +30,19 @@ namespace kppApp
         [JsonProperty("cnt")] public int cnt { get; set; }
     }
 
+    // select w.second_name||'@'||w.first_name||'@'||w.last_name as fio,
+    // w.asup_guid as userguid,
+    // p.name as job,
+    // p.personnel_number as tabnom,
+    // d.number as card
+    public class PrettyWorker
+    {
+        [JsonProperty("fio")] public string fio { get; set; }
+        [JsonProperty("userguid")] public string userguid { get; set; }
+        [JsonProperty("job")] public string job { get; set; }
+        [JsonProperty("tabnom")] public string tabnom { get; set; }
+        [JsonProperty("card")] public string card { get; set; }
+    }
     public class WorkerPerson
     {
         [JsonProperty("f")] public string fio { get; set; }
@@ -47,7 +61,7 @@ namespace kppApp
     }
 
 
-    
+
     /*
     timestampUTC REAL NOT NULL,
     card TEXT NOT NULL,
@@ -56,18 +70,22 @@ namespace kppApp
     tabnom INTEGER DEFAULT 0 NOT NULL,
     isManual INTEGER DEFAULT 0 NOT NULL,
     */
+    
+
     internal class Passage
     {
-        [JsonProperty("rowID")] public string rowID { get; set; }   
-        [JsonProperty("passageID")] public long passageID { get; set; }
+        [JsonProperty("rowID")] public string rowID { get; set; }
+       
+        [PrimaryKey, AutoIncrement] public long passageID { get; set; }
         [JsonProperty("timestampUTC")] public double timestampUTC { get; set; }
         [JsonProperty("card")] public string card { get; set; }
         [JsonProperty("operCode")] public int operCode { get; set; }
         [JsonProperty("kppId")] public string kppId { get; set; }
-        [JsonProperty("tabnom")] public long tabnom { get; set; }
+        [JsonProperty("tabnom")] public string tabnom { get; set; }
         [JsonProperty("userguid")] public string userguid { get; set; }
         [JsonProperty("isManual")] public int isManual { get; set; }
         [JsonProperty("isDelivered")] public int isDelivered { get; set; }
+        [JsonProperty("isChecked")] public int isChecked { get; set; }
         [JsonProperty("description")] public string description { get; set; }
         [JsonProperty("toDelete")] public int toDelete { get; set; }
     }
