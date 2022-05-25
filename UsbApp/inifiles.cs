@@ -11,7 +11,7 @@ namespace kppApp
 {
     class IniFile
     {
-        string Path;
+        public string Path { get; }
         string EXE = Assembly.GetExecutingAssembly().GetName().Name;
 
         [DllImport("kernel32", CharSet = CharSet.Unicode)]

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
+using SQLite;
 using System;
 using System.Collections.Generic;
 //using System.Data.SQLite;
@@ -57,6 +58,7 @@ namespace kppApp
         }
         public void insertPassageDB(Passage myPassage)
         {
+            /*
             using (SQLiteConnection Connect = new SQLiteConnection(CString))
             {
                 string commandText = @"INSERT INTO buffer_passage ([timestampUTC], [card], [IsOUT], [KPPID], [userguid],[isManual],[description],[isСhecked]) 
@@ -74,6 +76,7 @@ namespace kppApp
                 Connect.Close();
                 // MessageBox.Show("Проход записан в базу данных");
             }
+            */
 
         }
 
@@ -106,6 +109,7 @@ namespace kppApp
         }
         public void updatePassageDB(string mode, Passage p)
         {
+            /*
             if (mode == "good")
             {
                 using (SQLiteConnection Connect = new SQLiteConnection(CString))
@@ -160,7 +164,7 @@ namespace kppApp
 
                 }
             }
-
+            */
         }
         #endregion passage insert update table.db 
 
@@ -310,6 +314,7 @@ namespace kppApp
         private List<PassageFIO> selectPassagesFIO(string qry_select)
         {
             List<PassageFIO> myPassages = new List<PassageFIO>();
+            /*
             using (var connection = new SQLiteConnection(CString))
             {
                 connection.Open();
@@ -343,6 +348,7 @@ namespace kppApp
                     }
                 }
             }
+            */
             return myPassages;
         }
         #endregion passage selectors from db 
@@ -406,17 +412,18 @@ namespace kppApp
             return tsUTC;
         }
 
-        public void deleteManualPassageByID(string id)
+        public void deleteManualPassageByID(string DBString, string id)
         {
-            using (var connection = new SQLiteConnection(CString))
+
+            using (var connection = new SQLiteConnection(DBString))
             {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = $"delete from buffer_passage where passageID = {id} and isDelivered=0";
+                var command = connection.CreateCommand($"delete from buffer_passage where passageID = {id} and isDelivered=0");
+                //command.CommandText = $"delete from buffer_passage where passageID = {id} and isDelivered=0";
                 command.ExecuteNonQuery();
-                command.CommandText = $"update buffer_passage set toDelete=1 and description = '[deleted manually]' + description where passageID = {id} and isDelivered>0";
-                command.ExecuteNonQuery();
+                var command2 = connection.CreateCommand($"update buffer_passage set toDelete=1 and description = '[deleted manually]' + description where passageID = {id} and isDelivered>0");
+                command2.ExecuteNonQuery();
             }
+            
         }
         #endregion passage no sql, no db 
 
@@ -501,7 +508,7 @@ namespace kppApp
         public List<WorkerPerson> getFilteredWorkersByEntityDB(string entityName, string entityValue) 
         {
             List<WorkerPerson> results = new List<WorkerPerson>();
-
+            /*
             using (var connection = new SQLiteConnection(CString))
             {
                 connection.Open();
@@ -522,6 +529,7 @@ namespace kppApp
                     }
                 }
             }
+            */
             return results;
         }
         public List<WorkerPerson> getGUIDOwnerWorker_REST(string userguid)
@@ -541,6 +549,7 @@ namespace kppApp
         public List<WorkerPerson> getGUIDOwnerWorkerDB(string userguid)
         {
             List<WorkerPerson> results = new List<WorkerPerson>();
+            /*
             using (var connection = new SQLiteConnection(CString))
             {
                 connection.Open();
@@ -564,6 +573,7 @@ namespace kppApp
                     }
                 }
             }
+            */
             return results;
         }
         public List<WorkerPerson> getCardOwnerWorker_REST(string card)
@@ -583,6 +593,7 @@ namespace kppApp
         public List<WorkerPerson> getCardOwnerWorkerDB(string card)
         {
             List<WorkerPerson> results = new List<WorkerPerson>();
+            /*
             using (var connection = new SQLiteConnection(CString))
             {
                 connection.Open();
@@ -605,6 +616,7 @@ namespace kppApp
                     }
                 }
             }
+            */
             return results;
         }
 
@@ -679,6 +691,7 @@ namespace kppApp
         public double getLastWorkersUpdateTimestamp()
         {
             double timestampUTC = 0;
+            /*
             using (var connection = new SQLiteConnection(CString))
             {
                 connection.Open();
@@ -695,9 +708,10 @@ namespace kppApp
                     }
                 }
             }
+            */
             return timestampUTC;
         }
-
+        /*
         // здесь неверно выбираются ВСЕ для обновления словаря
         // а словарь не нужен!!!!
         public List<WorkerPerson> getNewWorkersList()
@@ -727,7 +741,7 @@ namespace kppApp
             }
             return lwp;
         }
-
+        */
         #region restcalls
 
 

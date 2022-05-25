@@ -3,7 +3,8 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data.SQLite;
+//using System.Data.SQLite;
+using SQLite;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -12,16 +13,27 @@ using System.Windows.Forms;
 using UsbLibrary;
 using HorizontalAlignment = System.Windows.Forms.HorizontalAlignment;
 using MessageBox = System.Windows.Forms.MessageBox;
+using NLog;
+using System.Linq;
 
 namespace kppApp
 {
 
-    public partial class XForm1 : Form
+    public partial class MainFormKPP : Form
     {
         private SignalRCover signaler;
 
+        private static NLog.Logger logger;
+
         private SizeF currentScaleFactor = new SizeF(1f, 1f);
+        private string RightPart = "[&B950:#$0F3F91210381]";
+        private string LeftPart = "";
         
+        private static readonly string SpecialDataFolder = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments)).FullName, "PSISoftware", "AppKPP");
+        private static readonly string BufferDatabaseFile = Path.Combine(SpecialDataFolder, "bufferkpp.db3");
+        private static readonly string InfoDatabaseFile = Path.Combine(SpecialDataFolder, "paradox.db3");
+        private static readonly string InfoPluginFile = Path.Combine(SpecialDataFolder, "httprest.dll");
+        private static readonly string OperationsJSONFile = Path.Combine(SpecialDataFolder, "operations.json");
         internal Dictionary<string, int> ParamsIndexes = new Dictionary<string, int>
         {
             { "card", 0 },
@@ -34,7 +46,7 @@ namespace kppApp
         internal Dictionary<string, string> SQLFilters = new Dictionary<string, string>
         {
         };
-
+        bool MustClose = false;
         int sensibleTextLenght = 6;
         private string symbol_pencil = "🖉";
         private string symbol_comment = "💬";
@@ -60,6 +72,8 @@ namespace kppApp
         public static Dictionary<string, string> OperationsSelector4View = new Dictionary<string, string>();
         private WcfServer srv;
         IniFile INI;
+        private string passageDirection = "";
+        private int reader_id = 777;
         private string restServerAddr = "http://localhost:3002";
         internal string sqlite_connectionstring = "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False";
         private string statusCodeOK = "201";
@@ -90,18 +104,53 @@ namespace kppApp
             */
             //double factor2 = System.Windows.PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice.M11;
             Kit.ScaleControlElements(lvGreenEventSearch, currentScaleFactor);
-            Kit.ScaleControlElements(lvManualEventSearch, currentScaleFactor); 
-            Kit.ScaleControlElements(listViewHistory, currentScaleFactor); 
-            Kit.ScaleControlElements(listViewHotBuffer, currentScaleFactor); 
+            Kit.ScaleControlElements(lvManualEventSearch, currentScaleFactor);
+            Kit.ScaleControlElements(listViewHistory, currentScaleFactor);
+            Kit.ScaleControlElements(listViewHotBuffer, currentScaleFactor);
         }
-        public XForm1()
+        public MainFormKPP()
         {
 
             InitializeComponent();
-            if (!settings_read())
-            {
-                MessageBox.Show("Не удалось прочитать настройки из config.ini");
+            var config = new NLog.Config.LoggingConfiguration();
+
+            // Targets where to log to: File and Console
+
+
+            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = Path.Combine(SpecialDataFolder, "appkpp-log-${shortdate}.txt"),
+                Layout = "${longdate}|${level:uppercase=true}|${logger}|${message:withexception=true}",
+                ArchiveNumbering = NLog.Targets.ArchiveNumberingMode.Sequence,
+                ArchiveAboveSize = 5242880,
+                MaxArchiveFiles = 30
             };
+            //MessageBox.Show(logfile.Layout.ToString());
+
+            // Rules for mapping loggers to targets            
+            config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfile);
+
+            // Apply config           
+            NLog.LogManager.Configuration = config;
+            NLog.Common.InternalLogger.LogLevel = LogLevel.Debug;
+            NLog.Common.InternalLogger.LogFile = Path.Combine(SpecialDataFolder, "internal-log.txt"); // On Linux one can use "/home/nlog-internal.txt"
+            logger = NLog.LogManager.GetCurrentClassLogger();
+            logger.Info("Запуск приложения");
+
+
+            if (!SettingsRead())
+            {
+                MessageBox.Show("Не удалось прочитать настройки из appkpp.ini");
+            }
+            else
+            {
+                logger.Info("Настройки успешно прочитаны из appkpp.ini");
+            };
+
+            if (!PrepareDataFolder())
+            {
+                return;
+            };
+
+
             //ManRest = new LocalRESTManager(sqlite_connectionstring);
 
             listViewHistory.Columns[1].ImageIndex = 0;
@@ -110,11 +159,233 @@ namespace kppApp
             listViewHistory.Columns[4].ImageIndex = 0;
             listViewHistory.Columns[5].ImageIndex = 0;
             listViewHistory.Columns[8].ImageIndex = 0;
-//            columnDelivery.ImageIndex = 0;
+            //            columnDelivery.ImageIndex = 0;
             tabControl1.ItemSize = new Size(1, 1);
+            operCheck.Checked = checkOperations(OperationsJSONFile);
+            peopleCheck.Checked = checkPeople();
+            if (!operCheck.Checked || !peopleCheck.Checked)
+            {
+                WaitModeEnable();
+            }
         }
 
-        private bool settings_read()
+        private bool checkOperations(string fullpathOperations)
+        {
+            bool myResult = false;
+            if (!File.Exists(fullpathOperations)) { return myResult; };
+            using (StreamReader file = File.OpenText(fullpathOperations))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                List<PerimeterOperation> perop = (List<PerimeterOperation>)serializer.Deserialize(file, typeof(List<PerimeterOperation>));
+                if (perop.Count > 0)
+                {
+                    myResult = true;
+                }
+            }
+            return myResult;
+        }
+
+        private bool checkPeople()
+        {
+            bool myResult = false;
+            CipherManager cfm = new CipherManager(InfoPluginFile);
+            try
+            {
+                var pword = cfm.getFullPassword(RightPart, InfoPluginFile);
+                var options = new SQLiteConnectionString(InfoDatabaseFile, true, pword);
+                var connection = new SQLiteConnection(options);
+
+                var xcmd = connection.Query<Val>("SELECT name as str FROM sqlite_master;\n").ToArray();
+                int tablecounter = 0;
+                foreach (Val x in xcmd)
+                {
+                    if (x.str == "WorkerPersonPure" || x.str == "Position" || x.str == "Card")
+                    {
+                        tablecounter++;
+                    }
+                }
+                myResult = tablecounter == 3;
+                if (myResult)
+                {
+                    var xcmd2 = connection.Query<ValCnt>("SELECT count(w.id) as cnt FROM WorkerPersonPure w;\n").ToArray();
+                    myResult = xcmd2[0].cnt > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("InfoDatabaseFile испорчен", ex);
+                myResult = false;
+            }
+            
+            return myResult;
+        }
+
+        private void WaitModeEnable()
+        {
+            listView1.Enabled = false;
+            tabControl1.SelectTab(5);
+            timerWaitMode.Enabled = true;
+        }
+
+        private void WaitModeDisable()
+        {
+            listView1.Enabled = true;
+            tabControl1.SelectTab(0);
+            timerWaitMode.Enabled = false;
+        }
+
+        private bool PrepareDataFolder()
+        {
+            bool myResult = true;
+
+            if (!Directory.Exists(SpecialDataFolder))
+            {
+                try
+                {
+                    Directory.CreateDirectory(SpecialDataFolder);
+//                    logger.Info($"Успех создания папки БД {SpecialDataFolder}");
+                } catch (Exception ex)
+                {
+  //                  logger.Fatal("Ошибка создания папки БД", ex);
+                    //reg($"Ошибка создания папки БД: {ex.Message}");
+                    MessageBox.Show("Невозможно создать папку БД!\nРабота программы будет прекращена!\nОбратитесь в службу технической поддержки.");
+                    Close();
+                }
+
+            }
+            
+
+            try
+            {
+                using (var fff = File.Create(Path.Combine(SpecialDataFolder, "test.txt")))
+                {
+                    logger.Info($"Успех создания тестового файла в папке БД {SpecialDataFolder}");
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                logger.Fatal($"Ошибка записи в папку { SpecialDataFolder}", ex);
+                //reg($"Ошибка записи в папку {SpecialDataFolder}: {ex.Message}");
+                MessageBox.Show($"Невозможно создать файл в папке {SpecialDataFolder}!\nРабота программы будет прекращена!\nОбратитесь в службу технической поддержки."); ;
+//                Close();
+            }
+            try
+            {
+                File.Delete(Path.Combine(SpecialDataFolder, "test.txt"));
+                logger.Info($"Успех удаления тестового файла в папке БД {SpecialDataFolder}");
+            }
+            catch (Exception ex)
+            {
+                logger.Fatal($"Ошибка удаления в папке { SpecialDataFolder}", ex);
+                //reg($"Ошибка записи в папку {SpecialDataFolder}: {ex.Message}");
+                MessageBox.Show($"Невозможно удалить файл в папке {SpecialDataFolder}!\nРабота программы будет прекращена!\nОбратитесь в службу технической поддержки."); ;
+                //                Close();
+            }
+            if (!File.Exists(BufferDatabaseFile))
+            {
+                if (!CreateBufferDatabase()){
+                    myResult = false;
+                    MustClose = true;
+                }
+            }
+            if (!File.Exists(InfoDatabaseFile) || !File.Exists(InfoPluginFile))
+            {
+                if (!CreateInfoDatabase())
+                {
+                    myResult = false;
+                    MustClose= true;
+                }
+            }
+
+            return myResult;
+        }
+
+        private bool CreateBufferDatabase(){
+            bool myResult = false;
+            try
+            {
+
+                var options = new SQLiteConnectionString(BufferDatabaseFile); 
+                    using (var db = new SQLiteConnection(options))
+                    {
+                        db.CreateTable<WorkerPerson>();
+                        db.CreateTable<Position>();
+                        db.CreateTable<Card>();
+                    }
+                myResult = true;
+                logger.Info($"Успех создания буферной БД { BufferDatabaseFile}");
+            }
+            catch (Exception ex)
+            {
+                logger.Fatal($"Ошибка создания буферной БД { BufferDatabaseFile}", ex);
+                //reg($"Ошибка создания буферной БД {BufferDatabaseFile}: {ex.Message}");
+                MessageBox.Show($"Ошибка создания буферной БД {BufferDatabaseFile}: {ex.Message}!\nРабота программы будет прекращена!\nОбратитесь в службу технической поддержки."); ;
+            }
+            return myResult;
+        }
+
+
+
+        private bool CreateInfoDatabase()
+        {
+            Random r = new Random();
+            bool myResult = false;
+            LeftPart = new string(RightPart.Reverse().ToArray());
+            
+
+            try
+            {
+                File.Delete(InfoDatabaseFile);
+                logger.Info($"Успех удаления инфоБД");
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"Сбой удаления инфоБД", ex);
+            }
+
+            try
+            {
+                var pword = LeftPart + $"{r.Next(100000, 999999)}";
+                File.WriteAllBytes(InfoPluginFile, seedPassword(pword));
+                //pword = unseedPassword(File.ReadAllBytes(InfoPluginFile));
+                logger.Info($"Успех создания парольного хранилища");
+            }
+            catch (Exception ex)
+            {
+                reg($"Невозможно создать хранилище пароля [{ex.Message}]");
+            }
+
+
+            LeftPart = unseedPassword(File.ReadAllBytes(InfoPluginFile));
+
+            try
+            {
+
+                var options = new SQLiteConnectionString(InfoDatabaseFile, true, LeftPart+RightPart);
+                using (var db = new SQLiteConnection(options))
+                {
+                    db.CreateTable<Card>();
+                    db.CreateTable<WorkerPersonPure>();
+                    db.CreateTable<Position>();
+                }
+
+                logger.Info($"Успех создания справочной БД {InfoDatabaseFile}");
+                myResult = true;
+            }
+            catch (Exception ex)
+            {
+                logger.Fatal($"Ошибка создания справочной БД {InfoDatabaseFile}",ex);
+                File.Delete(InfoPluginFile);
+                MessageBox.Show($"Ошибка справочной БД {InfoDatabaseFile}: {ex.Message}!\nРабота программы будет прекращена!\nОбратитесь в службу технической поддержки."); ;
+            }
+
+            return myResult;
+        }
+
+
+
+        private bool SettingsRead()
         {
             bool result = false;
             /*
@@ -127,39 +398,169 @@ namespace kppApp
             }
             */
             IniFile INI = new IniFile();
+            
             bool rest_in_settings = INI.KeyExists("restapi_path", "settings");
-            bool sqlite_in_settings = INI.KeyExists("sqlite_connectionstring", "settings");
-            bool ok_status_in_settings = INI.KeyExists("status_code_ok", "settings");
+            //bool sqlite_in_settings = INI.KeyExists("sqlite_connectionstring", "settings");
+            bool direction_in_settings = INI.KeyExists("passage_direction", "settings");
+            bool readerid_in_settings = INI.KeyExists("reader_id", "settings");
+            //bool ok_status_in_settings = INI.KeyExists("status_code_ok", "settings");
 
-            if (rest_in_settings & sqlite_in_settings & ok_status_in_settings)
+            if (rest_in_settings & direction_in_settings & readerid_in_settings)
             {
                 restServerAddr = INI.Read("restapi_path", "settings");
+                passageDirection = INI.Read("passage_direction", "settings");
+                try
+                {
+                    reader_id = int.Parse(INI.Read("reader_id", "settings"));
+                } catch (Exception ex)
+                {
+                    reader_id = 777777;
+                    logger.Error($"Ошибка преобразования reader_id из настроек",ex);
+                }
                 restapi_path_label.Text = restServerAddr;
-                sqlite_connectionstring = INI.Read("sqlite_connectionstring", "settings");
+                //    sqlite_connectionstring = INI.Read("sqlite_connectionstring", "settings");
+                logger.Info($"Настройки в appkpp.ini: restapi_path={restServerAddr}, passage_direction={passageDirection}, reader_id={reader_id}");
                 result = true;
             }
             else
             {
+                logger.Info("Настройки в appkpp.ini не полные, заполнены примерами");
                 // заполняем примерами значений важных ключей
                 if (!rest_in_settings) INI.Write("restapi_path", "http://www.google.com", "settings");
-                if (!sqlite_in_settings) INI.Write("sqlite_connectionstring", $"Data Source={AppDomain.CurrentDomain.BaseDirectory}kppbuffer.db;Version=3;New=False;", "settings");
-                if (!ok_status_in_settings) INI.Write("status_code_ok", "201", "settings");
-                sqlite_connectionstring = $"Data Source={AppDomain.CurrentDomain.BaseDirectory}kppbuffer.db;Version=3;New=False;";
+              //  if (!sqlite_in_settings) INI.Write("sqlite_connectionstring", $"Data Source={AppDomain.CurrentDomain.BaseDirectory}kppbuffer.db;Version=3;New=False;", "settings");
+                if (!direction_in_settings) INI.Write("passage_direction", "input", "settings");
+                if (!readerid_in_settings) INI.Write("reader_id", "777", "settings");
+                //sqlite_connectionstring =  $"Data Source={AppDomain.CurrentDomain.BaseDirectory}kppbuffer.db;Version=3;New=False;";
                 restapi_path_label.Text = "Неизвестно";
                 result = false;
             }
-            
+
+            //if (!File.Exists(OperationsJSONFile)){
+            //    RestLoadOperations(OperationsJSONFile);
+            //}
+
             // read JSON directly from a file
             //            string mypath = AppDomain.CurrentDomain.BaseDirectory  + @"operations.json";
+            if (File.Exists(OperationsJSONFile))
+            {
+                try
+                {
+                    InitOperationsViews(OperationsJSONFile);
+                }catch (Exception ex)
+                {
+                    logger.Error($"Загрузка операций из файла {OperationsJSONFile}",ex.Message);
+                }
+            }
+            else
+            {
+                logger.Error($"Загрузка операций из файла {OperationsJSONFile}");
+            }
+            
 
-            using (StreamReader file = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + @"operations.json"))
+            /*
+                        List<WorkerPerson> remote_workers = JsonConvert.DeserializeObject<List<WorkerPerson>>(response2.Content);
+
+                        // очищаем приемную таблицу
+                        var command3 = connection.CreateCommand();
+                        command3.CommandText = $"delete from buffer_workers_input";
+                        command3.ExecuteNonQuery();
+
+                        if (remote_workers.Count > 0)
+                        {
+                            // каждую персону из списка вливаем в приемную таблицу
+                            foreach (WorkerPerson wp in remote_workers)
+                            {
+                                if (wp.card != "" & wp.fio != "" & wp.tabnom != 0)
+                                {
+                                    command3.CommandText = $"insert into buffer_workers_input(card,fio,tabnom,userguid,isGuardian) values('{wp.card}','{wp.fio}',{wp.tabnom},'{wp.userguid}',0)";
+                                    command3.ExecuteNonQuery();
+                                }
+                            }
+                        }
+
+              */
+            return result;
+        }
+
+        private bool RestLoadOperations(string fullpathOperations)
+        {
+            bool myResult = true;
+
+            string url = restServerAddr + "control-point?page=";
+            AppControlPoints xlist = new AppControlPoints();
+            List<PerimeterOperation> polist= new List<PerimeterOperation>();
+            var client = new RestClient();
+            //var client2 = new RestClient();
+            client.Timeout = 5000;
+            
+            //client.Execute(request);
+            //var response = client.Execute<AppControlPoints>(request);
+            var pagecount = 1;
+            while (pagecount < 1000)
+            {
+                var request = new RestRequest(url+$"{pagecount}", Method.GET);
+                var response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                {
+                    logger.Error($"Неуспех загрузки {url}");
+                    regbb($"Неуспех загрузки {url}");
+                    myResult = false;
+                }
+                else
+                {
+                    try
+                    {
+                        xlist = JsonConvert.DeserializeObject<AppControlPoints>(response.Content);
+                        //xlist.AddRange(response.Data.data);
+                        regbb($"Успех извлечения списка операций, длина={xlist.data.Count}");
+                    }
+                    catch (Exception ex)
+                    {
+                        regbb($"Ошибка извлечения списка ControlPoints, длина={xlist.data.Count} [{ex.Message}]");
+                        logger.Error($"Извлечение списка ControlPoints, длина={xlist.data.Count}", ex);
+                        myResult = false;
+                        return myResult;
+                    }
+                    if (xlist.data.Count < 1)
+                    {
+                        break;
+                    }
+                    foreach (ControlPoint cp in xlist.data)
+                    {
+                        polist.Add(new PerimeterOperation() { operid = cp.id, operdesc = cp.title, operhide = 0 });
+                    }
+                }
+                pagecount++;
+            }
+            try
+            {
+                File.WriteAllText(OperationsJSONFile, JsonConvert.SerializeObject(polist));
+                logger.Error($"Успешно сохранен список {polist.Count} операций в {OperationsJSONFile}");
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Сохранение списка ControlPoints в {OperationsJSONFile}", ex);
+                myResult = false;
+                return myResult;
+            }
+                
+             myResult = true;
+            
+
+            return myResult;    
+        }
+
+        private void InitOperationsViews(string fullpathOperations)
+        {
+            using (StreamReader file = File.OpenText(fullpathOperations))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                List<perimeterOperation> perop = (List<perimeterOperation>)serializer.Deserialize(file, typeof(List<perimeterOperation>));
+                List<PerimeterOperation> perop = (List<PerimeterOperation>)serializer.Deserialize(file, typeof(List<PerimeterOperation>));
                 if (perop.Count > 0)
                 {
                     //xList<string> xList= new List<string>(); 
-                    foreach (perimeterOperation oper in perop)
+                    foreach (PerimeterOperation oper in perop)
                     {
                         if (oper.operhide != 1)
                         {
@@ -193,35 +594,17 @@ namespace kppApp
                     comboBoxHistoryOperations.ValueMember = "Key";
                 }
             }
-            /*
-                        List<WorkerPerson> remote_workers = JsonConvert.DeserializeObject<List<WorkerPerson>>(response2.Content);
+        }
 
-                        // очищаем приемную таблицу
-                        var command3 = connection.CreateCommand();
-                        command3.CommandText = $"delete from buffer_workers_input";
-                        command3.ExecuteNonQuery();
-
-                        if (remote_workers.Count > 0)
-                        {
-                            // каждую персону из списка вливаем в приемную таблицу
-                            foreach (WorkerPerson wp in remote_workers)
-                            {
-                                if (wp.card != "" & wp.fio != "" & wp.tabnom != 0)
-                                {
-                                    command3.CommandText = $"insert into buffer_workers_input(card,fio,tabnom,userguid,isGuardian) values('{wp.card}','{wp.fio}',{wp.tabnom},'{wp.userguid}',0)";
-                                    command3.ExecuteNonQuery();
-                                }
-                            }
-                        }
-
-              */
-            return result;
+        private void reg(string mess)
+        {
+            Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} {mess}\r\n");
         }
 
         private void SettingsOfReaderHandle(bool userest)
         {
             if (!userest) {
-                usb.OnDataRecieved += Usb_OnDataRecieved;
+                usb.OnDataRecieved += usb_OnDataRecieved;
                 usb.OnSpecifiedDeviceRemoved += usb_OnSpecifiedDeviceRemoved;
                 usb.OnSpecifiedDeviceArrived += usb_OnSpecifiedDeviceArrived;
             }
@@ -252,11 +635,6 @@ namespace kppApp
         private void Signaler_OnServiceDown(object source, MyEventArgs e)
         {
             this.showServiceState(0);
-        }
-
-        private void Usb_OnDataRecieved(object sender, UsbLibrary.DataRecievedEventArgs args)
-        {
-            
         }
 
         private void usb_OnSpecifiedDeviceArrived(object sender, EventArgs e)
@@ -335,7 +713,8 @@ namespace kppApp
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    logger.Error("usb_OnDataRecieved", ex);
+                    //Console.WriteLine(ex.ToString());
                 }
             }
             else
@@ -479,6 +858,7 @@ namespace kppApp
 
         private void dictionaryWorkersUpdater()
         {
+            /*
             List<WorkerPerson> wplist = new List<WorkerPerson>();
             Persons = new Dictionary<string, string>();
             Persons.Clear();
@@ -505,6 +885,7 @@ namespace kppApp
             System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(local_updated.timestampUTC).ToLocalTime();
             this.toolStripStatusLabel6.Text = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
+            */
         }
 
         private void XForm1_Load(object sender, EventArgs e)
@@ -539,7 +920,8 @@ namespace kppApp
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
+                    logger.Error("Инициализация считывателя", ex);
+                    //MessageBox.Show(ex.ToString());
                 }
             }
             else
@@ -1416,7 +1798,7 @@ namespace kppApp
         private void buttonDeleteGreenEvent_Click(object sender, EventArgs e)
         {
 
-            ManRest.deleteManualPassageByID(labelGreenEventID.Text);
+            ManRest.deleteManualPassageByID(BufferDatabaseFile, labelGreenEventID.Text);
             clearDetectionView();
             /*
             using (var connection = new SQLiteConnection(sqlite_connectionstring))
@@ -1971,72 +2353,44 @@ namespace kppApp
         private void buttonPOST_Click(object sender, EventArgs e)
         {
             Passage1bitExt bit = new Passage1bitExt();
+
             try
             {
-                using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                using (var db = new SQLiteConnection(BufferDatabaseFile))
                 {
-                    connection.Open();
-                    var command = connection.CreateCommand();
+                    var arr = db.Query<ShortPassage>($"select p.card, p.control_point_type_id, p.timestampUTC, p.description, p.userguid, p.isManual, p.toDelete from buffer_passage p where p.passageID=?", labelGreenEventID.Text).ToArray();
 
-                    command.CommandText = $"select w.card, w.tabnom, p.isOut, p.timestampUTC, p.description,w.userguid from buffer_passage p left join buffer_workers w on p.userguid=w.userguid  where p.passageID={labelGreenEventID.Text}";
-
-                    using (var reader = command.ExecuteReader())
+                    foreach(ShortPassage sp in arr)
                     {
-                        while (reader.Read())
+                        string prefix_comment = "";
+                        if (sp.isManual==1)
                         {
-
-
-                            /*
-
-                            [JsonProperty("id")] public string bit1_id { get; set; }
-                            [JsonProperty("system")] public string bit1_system { get; set; }
-                            [JsonProperty("timestamp")] public long bit1_timestampUTC { get; set; }
-                            [JsonProperty("card_number")] public string bit1_card_number { get; set; }
-                            [JsonProperty("card_guid")] public string bit1_card_guid { get; set; }
-                            [JsonProperty("position_guid")] public string bit1_position_guid { get; set; }
-                            [JsonProperty("individual_guid")] public string bit1_individual_guid { get; set; }
-                            [JsonProperty("reader_id")] public string bit1_reader_id { get; set; }
-                            [JsonProperty("description")] public string bit1_comment { get; set; }
-                            [JsonProperty("personnel_number")] public string bit1_tabnom { get; set; }
-                            [JsonProperty("type")] public string bit1_opercode { get; set; }
-                            [JsonProperty("control_point_type_id")] public int bit1_control_point_type_id { get; set; }
-                                "id": "98ac5735-68af-47d1-8d25-3edc311632a0-1",
-    "system": "stop-covid",
-    "timestamp": 1650440387,
-    "card_number": "47 3354",
-    "card_guid": "47 3354",
-    "position_guid": "101",
-    "reader_id": 101,
-    "description": "[111111]-ok477ewk-1bit",
-    "personnel_number": "674",
-     "individual_guid":"0aa46cdd-9bd2-11ea-912c-00505684313d",
-    "type": "input",
-    "control_point_type_id": 3
-                            */
-                            // формируется мной
-                            bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
-                            // не
-                            bit.bit1_system = "stop-covid";
-                            bit.bit1_timestampUTC = (int)reader.GetDouble(3);
-                            bit.bit1_card_number = reader.IsDBNull(0) ? "" : reader.GetString(0);
-                            bit.bit1_card_guid = reader.IsDBNull(0) ? "" : reader.GetString(0);
-                            bit.bit1_position_guid = "101";
-                            bit.bit1_individual_guid = "0aa46cdd-9bd2-11ea-912c-00505684313d";
-                            bit.bit1_reader_id = 101;
-                            bit.bit1_comment = "[" + (reader.IsDBNull(4) ? "" : reader.GetString(4)) + "]-" + (reader.IsDBNull(5) ? "" : reader.GetString(5));
-                            if (!reader.IsDBNull(1)) { 
-                                bit.bit1_tabnom = $"{reader.GetInt64(1)}";
-                            }
-                            //bit.bit1_opercode = $"{reader.GetInt64(2)}";
-                            bit.bit1_opercode = "input";
-                            bit.bit1_control_point_type_id = 3;
-                            break;
+                            prefix_comment += "[Manual]";
                         }
+                        if (sp.toDelete == 1)
+                        {
+                            prefix_comment += "[Deleted]";
+                        }
+                        bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
+                        // не
+                        bit.bit1_system = "KPP";
+                        bit.bit1_timestampUTC = sp.timestampUTC;
+                        bit.bit1_card_number = sp.card;
+                        bit.bit1_individual_guid = sp.userguid;
+                        bit.bit1_reader_id = this.reader_id;
+
+                        bit.bit1_comment = prefix_comment + sp.description;
+
+                        bit.bit1_opercode = this.passageDirection;
+                        bit.bit1_control_point_type_id = 3;
+
+                        break;
                     }
                 }
             }
             catch (Exception ex)
             {
+                logger.Error("Подготовка формата отправки", ex);
                 MessageBox.Show("Подготовка формата отправки:\n" + ex.Message);
                 return;
             }
@@ -2069,15 +2423,16 @@ namespace kppApp
                 }
                 else
                 {
+                    logger.Error("Неудачная авторизация " + $"{restServerAddr}/auth/login/");
                     MessageBox.Show("Неудачная авторизация!");
                     return;
                 }
             }
             catch (Exception ex)
             {
+                logger.Error("Авторизация " + $"{restServerAddr}/auth/login/", ex);
                 MessageBox.Show("Авторизация:\n"+ex.Message);
             }
-
 
             //            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
 
@@ -2098,31 +2453,33 @@ namespace kppApp
                 request.AddHeader("Accept-Encoding", "gzip, deflate, br");
                 request.AddHeader("Content-Type", "application/json");
                 var body = JsonConvert.SerializeObject(bit);
+                
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
                 IRestResponse response = client.Execute(request);
-                if (true)
+                if (response.IsSuccessful)
                 {
 
-                    string qry_update_mark_id_asdelivered = $"update buffer_passage set isDelivered=1 where (isDelivered=0 or isDelivered=2) and passageID={labelGreenEventID.Text}";
-                    using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                    string qry_update_mark_id_asdelivered = $"update buffer_passage set isDelivered=1, remoteID='{bit.bit1_id}' where (isDelivered=0 or isDelivered=2) and passageID={labelGreenEventID.Text}";
+                    using (var db = new SQLiteConnection(sqlite_connectionstring))
                     {
-                        connection.Open();
-                        var command = connection.CreateCommand();
-                        command.CommandText = qry_update_mark_id_asdelivered;
+                        var command = db.CreateCommand(qry_update_mark_id_asdelivered);
                         command.ExecuteNonQuery();
-
                         send_cnt++;
                     }
+                    
                     MessageBox.Show("Доставлено успешно!");
+                    logger.Info($"Успешно доставлено {send_cnt} событий");
                 }
                 else
                 {
-                    MessageBox.Show("Не доставлено!\nСм. Error.txt");
+                    logger.Error($"НЕ доставлено на {send_cnt} событии");
                     File.WriteAllText("Error.txt", body + "\n" + response.Content.ToString());
+                    MessageBox.Show("Не доставлено!\nСм. Error.txt");
                 }
             }
             catch (Exception ex)
             {
+                logger.Error($"POST {restServerAddr}/reading-event/", ex);
                 MessageBox.Show($"POST {restServerAddr}/reading-event/:\n" + ex.Message);
             }
 
@@ -2287,10 +2644,199 @@ namespace kppApp
             MainTableReload(sender, e);
         }
 
-        private void timer2_Tick(object sender, EventArgs e)
+        private void XForm1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            logger.Info("Завершение приложения");
+            NLog.LogManager.Shutdown();
+        }
+
+        #region seed
+        private static byte[] seedPassword(string pass)
+        {
+            Random r = new Random();
+            byte[] buffer = new byte[98765];
+            byte[] asciiBytes = Encoding.ASCII.GetBytes(pass);
+            int glob_pointer = 110;
+            byte rnd_offset;
+            r.NextBytes(buffer);
+            //Console.WriteLine("1>>>>>>>>>");
+            for (int i = 0; i < asciiBytes.Length; i++)
+            {
+                glob_pointer += 3; // сдвигаем указатель сеяния на позицию хранения сдвига до сл элемента
+                rnd_offset = (byte)(r.Next(10, 250)); // вычисляем сдвиг
+                buffer[glob_pointer] = rnd_offset; // записываем сдвиг в позицию указателя сеяния
+                glob_pointer += rnd_offset; // сдвигаем указателя сеяния в позицию хранения элемента пароля 
+                buffer[glob_pointer] = asciiBytes[i]; // записываем код символа элемента в позицию указателя сеяния
+              //  Console.Write(asciiBytes[i]);
+//                Console.Write(" ");
+            }
+            //Console.WriteLine("1<<<<<<<<<<<<<<");
+            // пароль посеян, сеем завершение.
+            glob_pointer += 3; // сдвигаем указатель сеяния на позицию хранения сдвига до сл элемента
+            rnd_offset = (byte)(r.Next(10, 250)); // вычисляем сдвиг
+            buffer[glob_pointer] = rnd_offset; // записываем сдвиг в позицию указателя сеяния
+            glob_pointer += rnd_offset; // сдвигаем указателя сеяния в позицию хранения элемента пароля 
+            buffer[glob_pointer] = 255; // записываем код завершения пароля в позицию указателя сеяния
+            return buffer;
+        }
+
+        private static string unseedPassword(byte[] asciiBytes)
+        {
+            Random r = new Random();
+            string unhidden = "";
+            byte aschar;
+            int glob_pointer = 110;
+  //          Console.WriteLine("2>>>>>>>>>");
+            while (glob_pointer < asciiBytes.Length)
+            {
+                glob_pointer += 3; // сдвигаем указатель сеяния на позицию хранения сдвига до сл элемента
+                var el_pos = asciiBytes[glob_pointer];
+                glob_pointer += el_pos;
+//                Console.Write(asciiBytes[glob_pointer]);
+//                Console.Write(" ");
+                aschar = asciiBytes[glob_pointer]; // записываем сдвиг в позицию указателя сеяния
+                if (aschar == 255)
+                {
+                    break;
+                }
+                unhidden += (char)aschar;
+            };
+//            Console.WriteLine("2<<<<<<<<<<<<<<");
+            return unhidden;
+        }
+        #endregion seed
+
+        private void timerWaitMode_Tick(object sender, EventArgs e)
+        {
+            timerWaitMode.Enabled = false;
+            if (operCheck.Checked && peopleCheck.Checked)
+            {
+                WaitModeDisable();
+                return;
+            }
+                
+            try
+            {
+                if (!operCheck.Checked){
+                    operCheck.Checked = RestLoadOperations(OperationsJSONFile);
+                }
+                if (!peopleCheck.Checked)
+                {
+                    List<WorkerPersonX> xlist = RestLoadPeople(restServerAddr, 0, (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
+                    peopleCheck.Checked = xlist.Count > 0;
+                    peopleCheck.Checked = CreateInfoDatabase();
+                    peopleCheck.Checked = UpdateInfoFile(xlist);
+                }
+            }
+            finally {
+                timerWaitMode.Enabled = true;
+            }
+        }
+
+
+        private bool UpdateInfoFile(List<WorkerPersonX> xlist)
+        {
+            // пишем в подготовленную БД
+            CipherManager cfm = new CipherManager(InfoPluginFile);
+            var pword = cfm.getFullPassword(RightPart, InfoPluginFile);
+            var options = new SQLiteConnectionString(InfoDatabaseFile, true, pword);
+            try
+            {
+                // var options = new SQLiteConnectionString(dbconst, true, key: "0000");
+                using (var db = new SQLiteConnection(options))
+                {
+                    foreach (WorkerPersonX wp in xlist)
+                    {
+                        WorkerPersonPure wpx = new WorkerPersonPure() { asup_guid = wp.asup_guid, id = wp.id, first_name = wp.first_name, last_name = wp.last_name, second_name = wp.second_name };
+                        db.Insert(wpx);
+                        foreach (PositionX po in wp.positions)
+                        {
+                            Position pox = new Position() { ownerid = wp.id, id = po.id, active = po.active, name = po.name, personnel_number = po.personnel_number };
+                            db.Insert(pox);
+
+                            foreach (Card rd in po.cards)
+                            {
+                                rd.ownerid = po.id;
+                                db.Insert(rd);
+                            }
+
+                        }
+                    }
+                }
+                logger.Error($"Успех при заполнении БД {InfoDatabaseFile} из rest json ");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"БД {InfoDatabaseFile} при заполнении из rest json", ex);
+                return false;
+            }
+
 
         }
-    }
 
+        private List<WorkerPersonX> RestLoadPeople(string urlbegin, long start, long finish)
+        {
+            List<WorkerPersonX> myResult = new List<WorkerPersonX>();
+
+            string operurl = urlbegin + $"individuals?date_from={start}&date_to={finish}&page=";
+
+            
+            var client = new RestClient();
+            client.Timeout = 5000;
+            int pageNumberValue = 1;
+            List<WorkerPersonX> xlist;
+            while (pageNumberValue < 10000 )
+            {
+                var request = new RestRequest($"{operurl}{pageNumberValue}", Method.GET);
+                var response = client.Execute<AllPersons>(request);
+                try
+                {
+                    if (response.Data.data.Count < 1)
+                    {
+                        break;
+                    }
+
+                    xlist = response.Data.data;
+                    myResult.AddRange(xlist);
+                    logger.Info($"{operurl}{pageNumberValue} IsSuccessful = {response.IsSuccessful}");
+                    regbb($"Получено {xlist.Count} человек");
+                    logger.Info($"Получено {xlist.Count} человек");
+                    logger.Info($"[0] = {response.Data.data[0].last_name} {response.Data.data[0].first_name[0]} {response.Data.data[0].second_name[0]}");
+                }
+                catch (Exception ex)
+                {
+                    regbb($"Получено {response.Data.data.Count} человек [{ex.Message}]");
+                    logger.Error($"Ошибка получения человек {operurl}{pageNumberValue}", ex);
+                    break;
+                }
+                pageNumberValue += 1;
+            }
+            return myResult;           
+
+        }
+
+        private void regbb(string mess)
+        {
+            if (InvokeRequired)
+            {
+                try
+                {
+                    Invoke(new Action(() =>
+                    {
+                        blockingBox.AppendText($"{DateTime.Now.ToString("HH:mm:ss")} {mess}\r\n");
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+            else
+            {
+                blockingBox.AppendText($"{DateTime.Now.ToString("HH:mm:ss")} {mess}\r\n");
+            }
+        }
+
+    }
 }

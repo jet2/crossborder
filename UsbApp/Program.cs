@@ -68,7 +68,7 @@ namespace kppApp
                 {
                     Application.EnableVisualStyles();
                     //Application.SetCompatibleTextRenderingDefault(false);
-                    Application.Run(new XForm1());
+                    Application.Run(new MainFormKPP());
                 }
             }
         }

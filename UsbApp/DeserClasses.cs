@@ -18,6 +18,17 @@ namespace kppApp
         [JsonProperty("timestampUTC")] public double timestampUTC { get; set; }
     }
 
+
+    public class Val
+    {
+        [JsonProperty("str")] public string str { get; set; }
+    }
+
+    public class ValCnt
+    {
+        [JsonProperty("cnt")] public int cnt { get; set; }
+    }
+
     public class WorkerPerson
     {
         [JsonProperty("f")] public string fio { get; set; }
@@ -27,8 +38,8 @@ namespace kppApp
         [JsonProperty("g")] public int isGuardian { get; set; }
         [JsonProperty("j")] public string jobDescription { get; set; }
     }
-
-    public class perimeterOperation
+    
+    public class PerimeterOperation
     {
         [JsonProperty("operid")] public int operid { get; set; }
         [JsonProperty("operdesc")] public string operdesc { get; set; }
@@ -66,6 +77,17 @@ namespace kppApp
         [JsonProperty("fio")] public string fio { get; set; }
     }
 
+    public class ShortPassage
+    {
+        public string card { get; set; }
+        public string tabnom { get; set; }
+        public int control_point_type_id { get; set; }
+        public int timestampUTC { get; set; }
+        public string description { get; set; }
+        public string userguid { get; set; }
+        public int isManual { get; set; }
+        public int toDelete { get; set; }
+    };
 
     internal class Passage1bitExt
     {
@@ -99,4 +121,55 @@ namespace kppApp
         [JsonProperty("type")] public string bit1_opercode { get; set; }
     }
 
+    public class Card
+    {
+        public int ownerid { get; set; }
+        public int id { get; set; }
+        public string number { get; set; }
+    }
+
+    public class Position
+    {
+        public int ownerid { get; set; }
+        public int id { get; set; }
+        public bool active { get; set; }
+        public string name { get; set; }
+        public string personnel_number { get; set; }
+        //public List<Card> cards { get; set; }
+    }
+
+    public class PositionX : Position
+    {
+        public List<Card> cards { get; set; }
+    }
+
+    public class WorkerPersonPure
+    {
+        public int id { get; set; }
+        public string first_name { get; set; }
+        public string second_name { get; set; }
+        public string last_name { get; set; }
+        public string asup_guid { get; set; }
+    }
+
+    public class WorkerPersonX : WorkerPersonPure
+    {
+        public List<PositionX> positions { get; set; }
+
+    }
+
+    public class AllPersons
+    {
+        public List<WorkerPersonX> data { get; set; }
+    }
+
+    public class ControlPoint
+    {
+        public int id;
+        public string title;
+    }
+    public class AppControlPoints
+    {
+        public List<ControlPoint> data { get; set; }
+    }
 }
