@@ -52,11 +52,6 @@
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "🖉   💬", System.Drawing.Color.Teal, System.Drawing.Color.White, new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "55555"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "123")}, -1);
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new string[] {
-            "1",
-            "2",
-            "3",
-            "4"}, -1);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -196,6 +191,7 @@
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.labelManualTabnomKeeper = new System.Windows.Forms.Label();
             this.labelManualEventOperation = new System.Windows.Forms.Label();
             this.labelManualEventCard = new System.Windows.Forms.Label();
             this.hintsManualEventCard = new System.Windows.Forms.ListBox();
@@ -768,12 +764,14 @@
             this.listViewHotBuffer.TabIndex = 5;
             this.listViewHotBuffer.UseCompatibleStateImageBehavior = false;
             this.listViewHotBuffer.View = System.Windows.Forms.View.Details;
+            this.listViewHotBuffer.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewHotBuffer_MouseDoubleClick);
+            this.listViewHotBuffer.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listViewHotBuffer_MouseUp);
             // 
             // columnHeader16
             // 
             this.columnHeader16.DisplayIndex = 6;
             this.columnHeader16.Text = "Статус";
-            this.columnHeader16.Width = 87;
+            this.columnHeader16.Width = 89;
             // 
             // columnHeader2
             // 
@@ -826,7 +824,7 @@
             // 
             this.columnToDelete.Text = "⌫";
             this.columnToDelete.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnToDelete.Width = 41;
+            this.columnToDelete.Width = 58;
             // 
             // splitter1
             // 
@@ -926,7 +924,6 @@
             this.labelShomItem.Size = new System.Drawing.Size(102, 15);
             this.labelShomItem.TabIndex = 9;
             this.labelShomItem.Text = "DO NOT DELETE";
-            this.labelShomItem.Visible = false;
             // 
             // label33
             // 
@@ -1830,7 +1827,7 @@
             this.buttonHistoryReload.TabIndex = 20;
             this.buttonHistoryReload.Text = "Загрузить";
             this.buttonHistoryReload.UseVisualStyleBackColor = false;
-            this.buttonHistoryReload.Click += new System.EventHandler(this.buttonHistoryFilterHide_Click);
+            this.buttonHistoryReload.Click += new System.EventHandler(this.buttonHistoryReload_Click);
             // 
             // panel1
             // 
@@ -1965,6 +1962,7 @@
             // panel5
             // 
             this.panel5.BackColor = System.Drawing.Color.White;
+            this.panel5.Controls.Add(this.labelManualTabnomKeeper);
             this.panel5.Controls.Add(this.labelManualEventOperation);
             this.panel5.Controls.Add(this.labelManualEventCard);
             this.panel5.Controls.Add(this.hintsManualEventCard);
@@ -1990,8 +1988,19 @@
             this.panel5.Location = new System.Drawing.Point(20, 45);
             this.panel5.Margin = new System.Windows.Forms.Padding(1);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(1018, 421);
+            this.panel5.Size = new System.Drawing.Size(1044, 421);
             this.panel5.TabIndex = 29;
+            // 
+            // labelManualTabnomKeeper
+            // 
+            this.labelManualTabnomKeeper.AutoSize = true;
+            this.labelManualTabnomKeeper.Location = new System.Drawing.Point(19, 298);
+            this.labelManualTabnomKeeper.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelManualTabnomKeeper.Name = "labelManualTabnomKeeper";
+            this.labelManualTabnomKeeper.Size = new System.Drawing.Size(164, 15);
+            this.labelManualTabnomKeeper.TabIndex = 82;
+            this.labelManualTabnomKeeper.Text = "labelManualTabnomKeeper";
+            this.labelManualTabnomKeeper.Visible = false;
             // 
             // labelManualEventOperation
             // 
@@ -2088,6 +2097,7 @@
             // lvManualEventSearch
             // 
             this.lvManualEventSearch.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.lvManualEventSearch.BackColor = System.Drawing.SystemColors.Window;
             this.lvManualEventSearch.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.lvManualEventSearch.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
@@ -2104,7 +2114,7 @@
             this.lvManualEventSearch.MultiSelect = false;
             this.lvManualEventSearch.Name = "lvManualEventSearch";
             this.lvManualEventSearch.ShowGroups = false;
-            this.lvManualEventSearch.Size = new System.Drawing.Size(693, 372);
+            this.lvManualEventSearch.Size = new System.Drawing.Size(717, 372);
             this.lvManualEventSearch.SmallImageList = this.imageList2;
             this.lvManualEventSearch.TabIndex = 64;
             this.lvManualEventSearch.UseCompatibleStateImageBehavior = false;
@@ -2114,7 +2124,7 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "№ карты";
-            this.columnHeader1.Width = 117;
+            this.columnHeader1.Width = 157;
             // 
             // columnHeader15
             // 
@@ -2811,7 +2821,7 @@
             // labelGreenTabnom
             // 
             this.labelGreenTabnom.AutoSize = true;
-            this.labelGreenTabnom.Location = new System.Drawing.Point(129, 400);
+            this.labelGreenTabnom.Location = new System.Drawing.Point(20, 347);
             this.labelGreenTabnom.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelGreenTabnom.Name = "labelGreenTabnom";
             this.labelGreenTabnom.Size = new System.Drawing.Size(116, 15);
@@ -3097,8 +3107,6 @@
             this.lvGreenEventSearch.GridLines = true;
             this.lvGreenEventSearch.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lvGreenEventSearch.HideSelection = false;
-            this.lvGreenEventSearch.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem5});
             this.lvGreenEventSearch.Location = new System.Drawing.Point(313, 21);
             this.lvGreenEventSearch.Margin = new System.Windows.Forms.Padding(1);
             this.lvGreenEventSearch.MultiSelect = false;
@@ -3114,7 +3122,7 @@
             // columnHeader19
             // 
             this.columnHeader19.Text = "№ карты";
-            this.columnHeader19.Width = 119;
+            this.columnHeader19.Width = 128;
             // 
             // columnHeader20
             // 
@@ -3552,5 +3560,6 @@
         private System.Windows.Forms.TextBox blockingBox;
         private System.Windows.Forms.Label label46;
         private System.Windows.Forms.ToolStripStatusLabel needRestartlabel;
+        private System.Windows.Forms.Label labelManualTabnomKeeper;
     }
 }

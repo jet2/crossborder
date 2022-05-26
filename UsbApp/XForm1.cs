@@ -81,7 +81,7 @@ namespace kppApp
         private int reader_id = 777;
         private string restServerAddr = "http://localhost:3002";
         private string restapiAuthEnabled = "1";
-        internal string sqlite_connectionstring = "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False";
+        //internal string sqlite_connectionstring = "Data Source=c:\\appkpp\\kppbuffer.db;Version=3;New=False";
 
         private string statusCodeOK = "201";
         private int prev_passageID = -2;
@@ -92,6 +92,7 @@ namespace kppApp
 
         public bool useRest = false;
 
+        #region scaling
         public static float GetWindowsScaling()
         {
             return (float)(Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth);
@@ -115,6 +116,8 @@ namespace kppApp
             Kit.ScaleControlElements(listViewHistory, currentScaleFactor);
             Kit.ScaleControlElements(listViewHotBuffer, currentScaleFactor);
         }
+        #endregion scaling
+
         public MainFormKPP()
         {
 
@@ -470,12 +473,11 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             //bool sqlite_in_settings = INI.KeyExists("sqlite_connectionstring", "settings");
             bool direction_in_settings = INI.KeyExists("passage_direction", "settings");
             bool readerid_in_settings = INI.KeyExists("reader_id", "settings");
-            bool auth_enabled_in_settings = INI.KeyExists("restapi_auth_enabled", "settings");
+            //bool auth_enabled_in_settings = INI.KeyExists("restapi_auth_enabled", "settings");
             
-            if (rest_in_settings & direction_in_settings & readerid_in_settings & auth_enabled_in_settings)
+            if (rest_in_settings & direction_in_settings & readerid_in_settings )
             {
                 restServerAddr = INI.Read("restapi_path", "settings");
-                restapiAuthEnabled = INI.Read("restapi_auth_enabled", "settings");
                 passageDirection = INI.Read("passage_direction", "settings");
                 try
                 {
@@ -492,15 +494,12 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             }
             else
             {
-                logger.Info("Настройки в appkpp.ini не полные, заполнены примерами");
+                logger.Info("Настройки в appkpp.ini не полные, заполнены примерами необходимых ключей");
                 // заполняем примерами значений важных ключей
-                if (!rest_in_settings) INI.Write("restapi_path", "http://www.google.com", "settings");
-              //  if (!sqlite_in_settings) INI.Write("sqlite_connectionstring", $"Data Source={AppDomain.CurrentDomain.BaseDirectory}kppbuffer.db;Version=3;New=False;", "settings");
+                if (!rest_in_settings) INI.Write("restapi_path", "http://www.google.com/restapi/v1", "settings");
                 if (!direction_in_settings) INI.Write("passage_direction", "input", "settings");
                 if (!readerid_in_settings) INI.Write("reader_id", "777", "settings");
-                if (!readerid_in_settings) INI.Write("reader_id", "777", "settings");
-                if (!auth_enabled_in_settings) INI.Write("restapi_auth_enabled", "1", "settings");
-                //sqlite_connectionstring =  $"Data Source={AppDomain.CurrentDomain.BaseDirectory}kppbuffer.db;Version=3;New=False;";
+
                 restapi_path_label.Text = "Неизвестно";
                 result = false;
             }
@@ -741,9 +740,9 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             base.WndProc(ref m);	// pass message on to base form
         }
 
-        private WorkerPerson getWorkerByGUID(string userguid)
+        private PrettyWorker getWorkerByGUID(string userguid)
         {
-            WorkerPerson myWP = new WorkerPerson();
+            PrettyWorker myWP = new PrettyWorker();
             myWP.userguid = "";
             myWP.fio = "";
             ManRest.getGUIDOwnerWorker(userguid,ref myWP);
@@ -973,6 +972,14 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                     {
                         useRest = true;
                     }
+                }
+                if (arguments.Length > 3)
+                {
+                    if (arguments[3] == "-noauth")
+                    {
+                        restapiAuthEnabled = "0";
+                    }
+                    
                 }
             }
 
@@ -1627,6 +1634,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
         {
             tabControl1.SelectTab(2);
             comboManualEventOperation.SelectedIndex = comboBoxOperationsMain.SelectedIndex;
+            labelManualTabnomKeeper.Text = "";
         }
 
         private void buttonCancelRedEvent_Click(object sender, EventArgs e)
@@ -1637,6 +1645,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
         private void buttonCancelManualEvent_Click(object sender, EventArgs e)
         {
             tabControl1.SelectTab(0);
+            labelManualTabnomKeeper.Text = "";
             //editManualEventTabnom.Value = 0;
             editManualEventGUID.Text = "";
             editManualEventFIO.Text = "";
@@ -1656,7 +1665,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             editGreenEventFIO.Text = "";
             editGreenEventCard.Text = "";
             editGreenEventComment.Text = "";
-
+            labelGreenTabnom.Text = "";
             buttonOkGreenEvent.Enabled = false;
             buttonOkGreenEvent.BackColor = false ? Color.Teal : Color.Gainsboro;
             while (lvGreenEventSearch.Items.Count > 0) { lvGreenEventSearch.Items.RemoveAt(0); };
@@ -1669,13 +1678,14 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
         private string getWorkerByHint(string entityName, string entityValue)
         {
 
-            List<WorkerPerson> workerPersons = new List<WorkerPerson>();
+            List<PrettyWorker> workerPersons = new List<PrettyWorker>();
             workerPersons.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityValue,useRest));
 
             string result = "";
             if (workerPersons.Count > 0)
             {
-                result = workerPersons[0].card + "@" + workerPersons[0].fio.Replace("@", " ") + "@" + workerPersons[0].userguid;
+                result = workerPersons[0].card + "@" + workerPersons[0].fio.Replace("@", " ") + "@" + workerPersons[0].userguid+ 
+                        "@" + workerPersons[0].tabnom;
             }
 
 /*            
@@ -1704,10 +1714,10 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             string entityValue;
             hintsListBox.Items.Clear();
             hintsListBox.Visible = true;
-            List<WorkerPerson> workerPersons = new List<WorkerPerson>();
+            List<PrettyWorker> workerPersons = new List<PrettyWorker>();
             workerPersons.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityTemplate,useRest));
 
-            foreach (WorkerPerson worker in workerPersons)
+            foreach (PrettyWorker worker in workerPersons)
             {
                 if (entityName == "fio")
                 {
@@ -1795,6 +1805,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             editManualEventFIO.Text = arr2[1];
             editManualEventGUID.Text = arr2[2];
             editManualEventCard.Text = arr2[0];
+            labelManualTabnomKeeper.Text = arr2[3];
             HideMyHint(hintsManualEventCard);
         }
 
@@ -1805,6 +1816,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             editManualEventFIO.Text = arr2[1];
             editManualEventGUID.Text = arr2[2];
             editManualEventCard.Text = arr2[0];
+            labelManualTabnomKeeper.Text = arr2[3];
             HideMyHint(hintsManualEventFIO);
         }
 
@@ -1815,6 +1827,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             editManualEventFIO.Text = arr2[1];
             editManualEventGUID.Text = arr2[2];
             editManualEventCard.Text = arr2[0];
+            labelManualTabnomKeeper.Text = arr2[3];
             HideMyHint(hintsManualEventGUID);
         }
 
@@ -1829,7 +1842,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             Passage p = new Passage();
             p.isManual = 1;
             p.card = editManualEventCard.Text;
-            //p.tabnom = (int)editManualEventTabnom.Value;
+            p.tabnom = labelManualTabnomKeeper.Text;
             p.userguid = editManualEventGUID.Text;
             p.description = editManualEventComment.Text;
             //object xxx = comboManualEventOperation.SelectedItem;
@@ -1839,7 +1852,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             p.rowID = "";
             write2sqlite(p);
             clearDetectionView();
-            WorkerPerson wp = getWorkerByGUID(p.userguid);
+            PrettyWorker wp = getWorkerByGUID(p.userguid);
 
             string[] stmp = wp.fio.Split('@');
             if (stmp.Length > 0) {
@@ -1855,7 +1868,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             }
 
             labelEventCard.Text = wp.card;
-            labelEventJobDescription.Text = wp.jobDescription;
+            labelEventJobDescription.Text = wp.job;
             labelEventUserguid.Text = wp.userguid;
             System.DateTime dtDateTime = DateTime.Now;
             labelEventDate.Text = dtDateTime.ToShortDateString() + " " + dtDateTime.ToShortTimeString();
@@ -1866,7 +1879,6 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
         private void editRedEventComment_TextChanged(object sender, EventArgs e)
         {
-            buttonOkRedEvent.Enabled = editRedEventComment.Text.Length > 0;
             buttonOkRedEvent.Enabled = editRedEventComment.Text.Length > 0;
             buttonOkRedEvent.BackColor = editRedEventComment.Text.Length > 0 ? Color.Teal : Color.Gainsboro;
         }
@@ -2077,7 +2089,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             Passage p = new Passage();
             p.isManual = 1;
             p.card = editGreenEventCard.Text;
-            //p.tabnom = (int)editGreenEventTabnom.Value;
+            p.tabnom = labelGreenTabnom.Text;
             p.userguid = editGreenEventGUID.Text;
             p.description = editGreenEventComment.Text;
             //object xxx = comboManualEventOperation.SelectedItem;
@@ -2096,6 +2108,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             editGreenEventFIO.Text = arr2[1];
             editGreenEventGUID.Text = arr2[2];
             editGreenEventCard.Text = arr2[0];
+            labelGreenTabnom.Text = arr2[3];
             HideMyHint(hintsGreenEventCard);
 
         }
@@ -2107,6 +2120,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             editGreenEventFIO.Text = arr2[1];
             editGreenEventGUID.Text = arr2[2];
             editGreenEventCard.Text = arr2[0];
+            labelGreenTabnom.Text = arr2[3];
             HideMyHint(hintsGreenEventFIO);
 
         }
@@ -2118,13 +2132,14 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             editGreenEventFIO.Text = arr2[1];
             editGreenEventGUID.Text = arr2[2];
             editGreenEventCard.Text = arr2[0];
+            labelGreenTabnom.Text = arr2[3];
             HideMyHint(hintsGreenEventGUID);
 
         }
 
         private void fillWorkersBy(string entityName, string entityValue, ListView LV)
         {
-            List<WorkerPerson> workers = new List<WorkerPerson>();
+            List<PrettyWorker> workers = new List<PrettyWorker>();
 
             if (entityValue.Length < 3) return;
             LV.Visible = false;
@@ -2133,7 +2148,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             // заполнение
             workers.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityValue,useRest));
 
-            foreach (WorkerPerson worker in workers)
+            foreach (PrettyWorker worker in workers)
             {
                 ListViewItem lvi = new ListViewItem();
                 lvi.Text = worker.card;
@@ -2187,7 +2202,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 editManualEventFIO.Text = lvManualEventSearch.SelectedItems[0].SubItems[3].Text;
                 editManualEventCard.Text = "";
                 editManualEventCard.Text = lvManualEventSearch.SelectedItems[0].Text;
-
+                labelManualTabnomKeeper.Text = "";
+                labelManualTabnomKeeper.Text = lvManualEventSearch.SelectedItems[0].SubItems[1].Text;
             }
         }
 
@@ -2199,6 +2215,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 editGreenEventFIO.Text = lvGreenEventSearch.SelectedItems[0].SubItems[3].Text;
                 editGreenEventCard.Text = "";
                 editGreenEventCard.Text = lvGreenEventSearch.SelectedItems[0].Text;
+                labelGreenTabnom.Text = "";
+                labelGreenTabnom.Text = lvGreenEventSearch.SelectedItems[0].SubItems[1].Text;
             }
 
         }
@@ -2221,7 +2239,21 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
         private void buttonMarkToDelete_Click(object sender, EventArgs e)
         {
+            if (listViewHotBuffer.SelectedItems.Count > 0)
+            {
+                string[] spl = labelShomItem.Text.Split('-');
+                if (spl.Length > 1)
+                {
+                    var p = new Passage();
+                    p.passageID = int.Parse(spl[0]);
 
+
+                    ManRest.updatePassage("markdelete", p, useRest);
+
+
+                    MainTableReload(sender, e);
+                }
+            }
         }
 
         private void PaintByColor(Color col)
@@ -2306,7 +2338,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                         editGreenEventGUID.Text = myGUID;
                         editGreenEventComment.Text = myComment;
                         comboGreenEventOperation.SelectedValue = int.Parse(spl[2]);
-
+                        labelGreenTabnom.Text = "";
+                        labelGreenTabnom.Text = myTabnom=="-"?"": myTabnom;
                         labelGreenEventID.Text = spl[0];
                         editGreenEventCard.Text = myCard;
                         tabControl1.SelectTab(4);
@@ -2391,7 +2424,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             if (editManualEventGUID.Text.Length < sensibleTextLenght) { return; };
             if (comboManualEventOperation.Text == "") { return; };
             string userguid = editManualEventGUID.Text;
-            WorkerPerson workerPerson = new WorkerPerson();
+            PrettyWorker workerPerson = new PrettyWorker();
             workerPerson.userguid = "";
             workerPerson.fio = "";
             workerPerson = getWorkerByGUID(userguid);  
@@ -2411,7 +2444,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             if (editGreenEventGUID.Text.Length < sensibleTextLenght) { return; };
             if (comboGreenEventOperation.Text == "") { return; };
             string userguid = editGreenEventGUID.Text;
-            WorkerPerson workerPerson = new WorkerPerson();
+            PrettyWorker workerPerson = new PrettyWorker();
             workerPerson.userguid = "";
             workerPerson.fio = "";
             workerPerson = getWorkerByGUID(userguid);
@@ -2435,37 +2468,37 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
             try
             {
-                using (var db = new SQLiteConnection(BufferDatabaseFile))
+                var db = new SQLiteConnection(BufferDatabaseFile);
+                 
+                var arr = db.Query<ShortPassage>($"select p.card, p.opercode, p.timestampUTC, p.description, p.userguid, p.isManual, p.toDelete from passage p where p.passageID=?", labelGreenEventID.Text).ToArray();
+
+                foreach(ShortPassage sp in arr)
                 {
-                    var arr = db.Query<ShortPassage>($"select p.card, p.control_point_type_id, p.timestampUTC, p.description, p.userguid, p.isManual, p.toDelete from buffer_passage p where p.passageID=?", labelGreenEventID.Text).ToArray();
-
-                    foreach(ShortPassage sp in arr)
+                    string prefix_comment = "";
+                    if (sp.isManual==1)
                     {
-                        string prefix_comment = "";
-                        if (sp.isManual==1)
-                        {
-                            prefix_comment += "[Manual]";
-                        }
-                        if (sp.toDelete == 1)
-                        {
-                            prefix_comment += "[Deleted]";
-                        }
-                        bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
-                        // не
-                        bit.bit1_system = "KPP";
-                        bit.bit1_timestampUTC = sp.timestampUTC;
-                        bit.bit1_card_number = sp.card;
-                        bit.bit1_individual_guid = sp.userguid;
-                        bit.bit1_reader_id = this.reader_id;
-
-                        bit.bit1_comment = prefix_comment + sp.description;
-
-                        bit.bit1_opercode = this.passageDirection;
-                        bit.bit1_control_point_type_id = 3;
-
-                        break;
+                        prefix_comment += "[Manual]";
                     }
+                    if (sp.toDelete == 1)
+                    {
+                        prefix_comment += "[Deleted]";
+                    }
+                    bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
+                    // не
+                    bit.bit1_system = "stop-covid";
+                    bit.bit1_timestampUTC = sp.timestampUTC;
+                    bit.bit1_card_number = sp.card!=null? sp.card : "";
+                    bit.bit1_individual_guid = sp.userguid!=null? sp.userguid : "";
+                    bit.bit1_reader_id = this.reader_id;
+
+                    bit.bit1_comment = prefix_comment + sp.description;
+
+                    bit.bit1_opercode = this.passageDirection;
+                    bit.bit1_control_point_type_id = sp.control_point_type_id;
+                    bit.timezone_seconds = TimeLord.timezone_seconds();
+                    break;
                 }
+                
             }
             catch (Exception ex)
             {
@@ -2482,6 +2515,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             // оценить результат
             // обновить состояние или не обновлять
             // удаление доставленных - другим методом
+            tryUpdateBearer(false);
+            /*
             string tokentoken = "";
             try { 
                 var client0 = new RestClient($"{restServerAddr}/auth/login/");
@@ -2512,21 +2547,25 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 logger.Error(ex, "Авторизация " + $"{restServerAddr}/auth/login/");
                 MessageBox.Show("Авторизация:\n"+ex.Message);
             }
-
+            */
             //            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
 
             try
             {
                 //var client = new RestClient($"{restServerAddr}/reading-event/");
-                var client = new RestClient($"{restServerAddr}/reading-event/");
+                var url = $"{restServerAddr}reading-event/";
+                var client = new RestClient();
                 client.Timeout = 5000;
-                var request = new RestRequest(Method.POST);
+                var request = new RestRequest(url,Method.POST);
 
                 //            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
 
                 //          request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
 
-                request.AddHeader("Authorization", $"Bearer {tokentoken}");
+                if (restapiAuthEnabled == "1")
+                {
+                    request.AddHeader("Authorization", $"Bearer {this.BearerToken}");
+                }
 
                 request.AddHeader("Accept", "*" + "/" + "*");
                 request.AddHeader("Accept-Encoding", "gzip, deflate, br");
@@ -2538,11 +2577,10 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 if (response.IsSuccessful)
                 {
 
-                    string qry_update_mark_id_asdelivered = $"update buffer_passage set isDelivered=1, remoteID='{bit.bit1_id}' where (isDelivered=0 or isDelivered=2) and passageID={labelGreenEventID.Text}";
-                    using (var db = new SQLiteConnection(sqlite_connectionstring))
+                    string qry_update_mark_id_asdelivered = $"update passage set isDelivered=1, rowID='{bit.bit1_id}' where (isDelivered=0 or isDelivered=2) and passageID={labelGreenEventID.Text}";
+                    using (var dbdisk = new SQLiteConnection(new SQLiteConnectionString(BufferDatabaseFile)))
                     {
-                        var command = db.CreateCommand(qry_update_mark_id_asdelivered);
-                        command.ExecuteNonQuery();
+                        dbdisk.CreateCommand(qry_update_mark_id_asdelivered).ExecuteNonQuery();
                         send_cnt++;
                     }
                     

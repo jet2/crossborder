@@ -12,5 +12,10 @@ namespace kppApp
         {
             return (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
         }
+        public static int timezone_seconds()
+        {
+            DateTime localtime = DateTime.Now;
+            return (int)(localtime - localtime.ToUniversalTime()).TotalSeconds;
+        }
     }
 }

@@ -123,62 +123,55 @@ namespace kppApp
         }
         public void updatePassageDB(string mode, Passage p)
         {
-            /*
+            
             if (mode == "good")
             {
-                using (SQLiteConnection Connect = new SQLiteConnection(CString))
+                using (SQLiteConnection dbdisk = new SQLiteConnection(new SQLiteConnectionString(CString)))
                 {
                     // ожидающие isDelivery=0 доставляются через POST
-                    string commandText = $"update buffer_passage set card='{p.card}', IsOUT={p.operCode}, userguid='{p.userguid}', description='{p.description}' where passageId={p.passageID} and isDelivered=0";
-                    SQLiteCommand Command = new SQLiteCommand(commandText, Connect);
-                    Connect.Open();
-                    Command.ExecuteNonQuery();
+                    string commandText = $"update passage set card='{p.card}', tabnom='{p.tabnom}', operCode={p.operCode}, userguid='{p.userguid}', description='{p.description}' where passageId={p.passageID} and isDelivered=0";
+                    dbdisk.CreateCommand(commandText).ExecuteNonQuery();
+
                     // доставленные isDelivery=1 обновляются через PUT
-                    commandText = $"update buffer_passage set card='{p.card}', IsOUT={p.operCode}, userguid='{p.userguid}', description='{p.description}', isDelivered=2 where passageId={p.passageID} and isDelivered>0";
-                    Command = new SQLiteCommand(commandText, Connect);
-                    Command.ExecuteNonQuery();
+                    commandText = $"update passage set card='{p.card}', tabnom='{p.tabnom}', operCode={p.operCode}, userguid='{p.userguid}', description='{p.description}', isDelivered=2 where passageId={p.passageID} and isDelivered>0";
+                    dbdisk.CreateCommand(commandText).ExecuteNonQuery();
                 }
             }
             if (mode == "red")
             {
-                using (var connection = new SQLiteConnection(CString))
+                using (SQLiteConnection dbdisk = new SQLiteConnection(new SQLiteConnectionString(CString)))
                 {
-                    connection.Open();
-                    var command = connection.CreateCommand();
-                    command.CommandText = $"update buffer_passage set description='{p.description}', isOut={p.operCode} where passageID = {p.passageID} and isDelivered=0";
-                    command.ExecuteNonQuery();
-                    command.CommandText = $"update buffer_passage set description='{p.description}', isOut={p.operCode}, isDelivered=2 where passageID = {p.passageID} and isDelivered>0";
-                    command.ExecuteNonQuery();
+                    string commandText = $"update passage set description='{p.description}', operCode={p.operCode} where passageID = {p.passageID} and isDelivered=0";
+                    dbdisk.CreateCommand(commandText).ExecuteNonQuery();
+
+                    commandText = $"update passage set description='{p.description}', operCode={p.operCode}, isDelivered=2 where passageID = {p.passageID} and isDelivered>0";
+                    dbdisk.CreateCommand(commandText).ExecuteNonQuery();
+
                 }
 
             }
             if (mode == "check")
             {
-                using (var connection = new SQLiteConnection(CString))
+                using (SQLiteConnection dbdisk = new SQLiteConnection(new SQLiteConnectionString(CString)))
                 {
-                    connection.Open();
-                    var command = connection.CreateCommand();
-                    command.CommandText = @"update buffer_passage set isСhecked=1 where isСhecked=0";
-                    command.ExecuteNonQuery();
+                    string commandText = @"update passage set isChecked=1 where isChecked=0";
+                    dbdisk.CreateCommand(commandText).ExecuteNonQuery();
                 }
             }
  
             if (mode == "markdelete")
             {
-                using (var connection = new SQLiteConnection(CString))
+                using (SQLiteConnection dbdisk = new SQLiteConnection(new SQLiteConnectionString(CString)))
                 {
-                    connection.Open();
-                    var command = connection.CreateCommand();
-                    command.CommandText = $"update buffer_passage set toDelete=1 where passageID = {p.passageID} and isDelivered=0";
-                    command.ExecuteNonQuery();
-                    // просим обновить доставленное, и в БД УЯ тоже
-                    command.CommandText = $"update buffer_passage set toDelete=1, isDelivered=2 where passageID = {p.passageID} and isDelivered>0";
-                    command.ExecuteNonQuery();
-                    Console.WriteLine("Delete marked!!!!!!!!!!!!!!");
+                    string commandText = $"update passage set toDelete=1 where passageID = {p.passageID} and isDelivered=0";
+                    dbdisk.CreateCommand(commandText).ExecuteNonQuery();
 
+                    commandText = $"update passage set toDelete=1, isDelivered=2 where passageID = {p.passageID} and isDelivered>0"; 
+                    dbdisk.CreateCommand(commandText).ExecuteNonQuery();
+                    Console.WriteLine("Delete marked!!!!!!!!!!!!!!");
                 }
             }
-            */
+            
         }
         #endregion passage insert update table.db 
 
@@ -195,14 +188,18 @@ namespace kppApp
 
             using (var db = new SQLiteConnection(new SQLiteConnectionString(CString)))
             {
-                memdb.DropTable<Passage>();
-                memdb.CreateTable<Passage>();
-                memdb.InsertAll(db.Query<Passage>($"select p.* from Passage p {where_clause}"));
-                lwp.AddRange(memdb.Query<PassageFIO>($"select p.*, w.second_name||' '||w.first_name||' '||w.last_name as fio from Passage p left join workerpersonpure w on w.asup_guid = p.userguid"));
+                // Преливаем dbdisk.Passage с сохранением PassageID в dbmem.PassageMem тогда PassageID останется как в дисковой
+                memdb.DropTable<PassageMem>();
+                memdb.CreateTable<PassageMem>();
+                memdb.InsertAll(db.Query<PassageMem>($"select p.* from Passage p {where_clause}"));
+                lwp.AddRange(memdb.Query<PassageFIO>(@"select p.*, w.second_name||' '||w.first_name||' '||w.last_name as fio
+                                                       from PassageMem p 
+                                                       left join workerpersonpure w on w.asup_guid = p.userguid"));
                 for(int i = 0; i < lwp.Count; i++)
                 {
                      if (lwp[i].description == null) { lwp[i].description = ""; };
                      if (lwp[i].tabnom == null) { lwp[i].tabnom = ""; };
+                     if (lwp[i].fio == null) { lwp[i].fio = ""; };
                 }
             }
             return lwp;
@@ -262,7 +259,7 @@ namespace kppApp
         {
             List<PassageFIO> lwp = new List<PassageFIO>();
             List<string> filters_array = new List<string>();
-            string from_clause = " FROM buffer_passage p left join buffer_workers w on p.userguid = w.userguid ";
+            string from_clause = " FROM passage p left join buffer_workers w on p.userguid = w.userguid ";
 
             if (filters.ContainsKey("tsbeg") && filters.ContainsKey("tsend")){
                 filters_array.Add($" p.timestampUTC >= {filters["tsbeg"]} and p.timestampUTC <= {filters["tsend"]} ");
@@ -281,7 +278,7 @@ namespace kppApp
             }
             if (filters.ContainsKey("operation"))
             {
-                filters_array.Add($" p.isOut = {filters["operation"]} ");
+                filters_array.Add($" p.operCode = {filters["operation"]} ");
             }
             if (filters.ContainsKey("delivered"))
             {
@@ -304,6 +301,26 @@ namespace kppApp
         private List<PassageFIO> getPassageFIOByPassageIdDB(string id)
         {
             List<PassageFIO> lwp = new List<PassageFIO>();
+            long timestampUTC = TimeLord.UTCNow();
+            string where_clause = $" where p.passageID={id} ";
+
+            using (var db = new SQLiteConnection(new SQLiteConnectionString(CString)))
+            {
+                memdb.DropTable<Passage>();
+                memdb.CreateTable<Passage>();
+                memdb.InsertAll(db.Query<Passage>($"select p.* from Passage p {where_clause} order by passageID desc LIMIT 1"));
+                lwp.AddRange(memdb.Query<PassageFIO>($"select p.*, w.second_name||' '||w.first_name||' '||w.last_name as fio from Passage p left join workerpersonpure w on w.asup_guid = p.userguid"));
+                for (int i = 0; i < lwp.Count; i++)
+                {
+                    if (lwp[i].description == null) { lwp[i].description = ""; };
+                    if (lwp[i].tabnom == null) { lwp[i].tabnom = ""; };
+                }
+            }
+            return lwp;
+
+            /*
+
+            List<PassageFIO> lwp = new List<PassageFIO>();
             string from_clause = " FROM buffer_passage p left join buffer_workers w on p.userguid = w.userguid";
 
             string where_clause = $" where p.passageID={id} ";
@@ -315,6 +332,7 @@ namespace kppApp
             }
             catch { }
             return lwp;
+            */
         }
         private List<PassageFIO> getLastPassageFIOByCardDB(string card)
         {
@@ -459,10 +477,10 @@ namespace kppApp
 
             using (var connection = new SQLiteConnection(DBString))
             {
-                var command = connection.CreateCommand($"delete from buffer_passage where passageID = {id} and isDelivered=0");
+                var command = connection.CreateCommand($"delete from passage where passageID = {id} and isDelivered=0");
                 //command.CommandText = $"delete from buffer_passage where passageID = {id} and isDelivered=0";
                 command.ExecuteNonQuery();
-                var command2 = connection.CreateCommand($"update buffer_passage set toDelete=1 and description = '[deleted manually]' + description where passageID = {id} and isDelivered>0");
+                var command2 = connection.CreateCommand($"update passage set toDelete=1, isDelivered=2 where passageID = {id} and isDelivered>0");
                 command2.ExecuteNonQuery();
             }
             
@@ -486,12 +504,12 @@ namespace kppApp
             return xlist;
 
          */
-        public List<WorkerPerson> getGUIDOwnerWorker(string userguid, bool useRest)
+        public List<PrettyWorker> getGUIDOwnerWorker(string userguid, bool useRest)
         {
-            List<WorkerPerson> xlist = new List<WorkerPerson>();
+            List<PrettyWorker> xlist = new List<PrettyWorker>();
             if (useRest)
             {
-                xlist.AddRange(getGUIDOwnerWorker_REST(userguid));
+                //xlist.AddRange(getGUIDOwnerWorker_REST(userguid));
             }
             else
             {
@@ -516,12 +534,12 @@ namespace kppApp
 
         }
 
-        public List<WorkerPerson> getFilteredWorkersByEntity(string entityName, string entityValue, bool useRest)
+        public List<PrettyWorker> getFilteredWorkersByEntity(string entityName, string entityValue, bool useRest)
         {
-            List<WorkerPerson> xlist = new List<WorkerPerson>();
+            List<PrettyWorker> xlist = new List<PrettyWorker>();
             if (useRest)
             {
-                xlist.AddRange(getFilteredWorkersByEntity_REST(entityName, entityValue));
+                //xlist.AddRange(getFilteredWorkersByEntity_REST(entityName, entityValue));
             }
             else
             {
@@ -547,9 +565,12 @@ namespace kppApp
             return xlist;
 
         }
-        public List<WorkerPerson> getFilteredWorkersByEntityDB(string entityName, string entityValue) 
+        public List<PrettyWorker> getFilteredWorkersByEntityDB(string entityName, string entityValue) 
         {
-            List<WorkerPerson> results = new List<WorkerPerson>();
+            List<PrettyWorker> results = new List<PrettyWorker>();
+
+            results.AddRange(memdb.Query<PrettyWorker>($"select card, tabnom, userguid, fio  from prettyworker where {entityName} LIKE '%{entityValue}%'"));
+
             /*
             using (var connection = new SQLiteConnection(CString))
             {
@@ -588,9 +609,10 @@ namespace kppApp
             catch { }
             return xlist;
         }
-        public List<WorkerPerson> getGUIDOwnerWorkerDB(string userguid)
+        public List<PrettyWorker> getGUIDOwnerWorkerDB(string userguid)
         {
-            List<WorkerPerson> results = new List<WorkerPerson>();
+            List<PrettyWorker> results = new List<PrettyWorker>();
+            results.AddRange(memdb.Query<PrettyWorker>($"select card, tabnom, userguid, fio,job  from prettyworker where userguid='{userguid}' LIMIT 1"));
             /*
             using (var connection = new SQLiteConnection(CString))
             {
@@ -704,16 +726,16 @@ namespace kppApp
             return myGUID;
         }
         */
-        public void getGUIDOwnerWorker(string userguid, ref WorkerPerson wp)
+        public void getGUIDOwnerWorker(string userguid, ref PrettyWorker wp)
         {
-            List<WorkerPerson> xlist = getGUIDOwnerWorker(userguid,useRest);
+            List<PrettyWorker> xlist = getGUIDOwnerWorker(userguid,useRest);
             if (xlist.Count > 0)
             {
                 wp.userguid = xlist[0].userguid;
                 wp.card = xlist[0].card;
                 wp.fio = xlist[0].fio;
                 wp.tabnom = xlist[0].tabnom;
-                wp.jobDescription = xlist[0].jobDescription;    
+                wp.job = xlist[0].job;    
             }
         }
         public void getCardOwnerWorker(string card, ref PrettyWorker wp)

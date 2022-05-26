@@ -71,12 +71,18 @@ namespace kppApp
     isManual INTEGER DEFAULT 0 NOT NULL,
     */
     
+    internal class Passage: PassageBase {
+        [PrimaryKey, AutoIncrement] public long passageID { get; set; }
+    }
 
-    internal class Passage
+    internal class PassageMem : PassageBase
+    {
+        [JsonProperty("passageID")] public long passageID { get; set; }
+    }
+
+    internal class PassageBase
     {
         [JsonProperty("rowID")] public string rowID { get; set; }
-       
-        [PrimaryKey, AutoIncrement] public long passageID { get; set; }
         [JsonProperty("timestampUTC")] public double timestampUTC { get; set; }
         [JsonProperty("card")] public string card { get; set; }
         [JsonProperty("operCode")] public int operCode { get; set; }
@@ -113,14 +119,15 @@ namespace kppApp
         [JsonProperty("system")] public string bit1_system { get; set; }
         [JsonProperty("timestamp")] public long bit1_timestampUTC { get; set; }
         [JsonProperty("card_number")] public string bit1_card_number { get; set; }
-        [JsonProperty("card_guid")] public string bit1_card_guid { get; set; }
-        [JsonProperty("position_guid")] public string bit1_position_guid { get; set; }
+        //[JsonProperty("card_guid")] public string bit1_card_guid { get; set; }
+        //[JsonProperty("position_guid")] public string bit1_position_guid { get; set; }
         [JsonProperty("individual_guid")] public string bit1_individual_guid { get; set; }
         [JsonProperty("reader_id")] public int bit1_reader_id { get; set; }
         [JsonProperty("description")] public string bit1_comment { get; set; }
-        [JsonProperty("personnel_number")] public string bit1_tabnom { get; set; }
+        //[JsonProperty("personnel_number")] public string bit1_tabnom { get; set; }
         [JsonProperty("type")] public string bit1_opercode { get; set; }
         [JsonProperty("control_point_type_id")] public int bit1_control_point_type_id { get; set; }
+        [JsonProperty("timezone_seconds")] public int timezone_seconds { get; set; }
 
     }
 
