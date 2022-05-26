@@ -2686,7 +2686,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                     //lvi.Text = "";
                     lvi.SubItems.Add(history_pass.card);
 
-                    if (history_pass.fio != "")
+                    if (history_pass.fio != "" && history_pass.fio != null)
                     {
                         if (history_pass.tabnom != "") { lvi.SubItems.Add($"{history_pass.tabnom}"); }
                         else { lvi.SubItems.Add($""); }

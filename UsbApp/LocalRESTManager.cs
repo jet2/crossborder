@@ -259,7 +259,7 @@ namespace kppApp
         {
             List<PassageFIO> lwp = new List<PassageFIO>();
             List<string> filters_array = new List<string>();
-            string from_clause = " FROM passage p left join buffer_workers w on p.userguid = w.userguid ";
+            string from_clause = " FROM passage p left join workerpersonpure w on p.userguid = w.asup_guid ";
 
             if (filters.ContainsKey("tsbeg") && filters.ContainsKey("tsend")){
                 filters_array.Add($" p.timestampUTC >= {filters["tsbeg"]} and p.timestampUTC <= {filters["tsend"]} ");
@@ -270,11 +270,11 @@ namespace kppApp
             }
             if (filters.ContainsKey("tabnom"))
             {
-                filters_array.Add($" w.tabnom='{filters["tabnom"]}' ");
+                filters_array.Add($" p.tabnom='{filters["tabnom"]}' ");
             }
             if (filters.ContainsKey("fio"))
             {
-                filters_array.Add($" w.fio LIKE '%{filters["fio"]}%'");
+                filters_array.Add($" w.first_name||'@'||w.second_name||'@'||w.last_name LIKE '%{filters["fio"]}%'");
             }
             if (filters.ContainsKey("operation"))
             {
@@ -290,7 +290,7 @@ namespace kppApp
             
             try
             {
-                string qry_select = "SELECT p.passageID, p.timestampUTC, p.card, p.isOut, p.kppId, w.tabnom, p.isManual, p.isDelivered, p.description, p.isСhecked, p.toDelete, w.fio, w.userguid " +
+                string qry_select = "SELECT p.passageID, p.timestampUTC, p.card, p.operCode, p.kppId, p.tabnom, p.isManual, p.isDelivered, p.description, p.isChecked, p.toDelete, w.second_name||' '||w.first_name||' '||w.last_name as fio, p.userguid " +
                 $" {from_clause} {where_clause} order by p.timestampUTC";
                 lwp.AddRange(selectPassagesFIO(qry_select));
             }
@@ -374,6 +374,7 @@ namespace kppApp
         private List<PassageFIO> selectPassagesFIO(string qry_select)
         {
             List<PassageFIO> myPassages = new List<PassageFIO>();
+            myPassages.AddRange(memdb.Query<PassageFIO>(qry_select));
             /*
             using (var connection = new SQLiteConnection(CString))
             {

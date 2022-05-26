@@ -80,6 +80,8 @@ namespace kppApp
         [JsonProperty("passageID")] public long passageID { get; set; }
     }
 
+    
+
     internal class PassageBase
     {
         [JsonProperty("rowID")] public string rowID { get; set; }
