@@ -182,6 +182,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite, Version=1.0.115.5, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\lib\net451\System.Data.SQLite.dll</HintPath>
@@ -229,6 +230,10 @@
     <Compile Include="DeserClasses.cs" />
     <Compile Include="DataReceivedEventArgs.cs" />
     <Compile Include="inifiles.cs" />
+    <Compile Include="Install\CustomParameters.cs" />
+    <Compile Include="Install\InstallerCustomActions.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ipcsrv.cs" />
     <Compile Include="kit.cs" />
     <Compile Include="Program.cs" />
