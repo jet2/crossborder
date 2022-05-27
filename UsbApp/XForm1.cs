@@ -509,7 +509,14 @@ namespace kppApp
             }
             if (File.Exists(InitJsonFile))
             {
-                InitJson jresult = JsonConvert.DeserializeObject<InitJson>(File.ReadAllText(InitJsonFile));
+                InitJson jresult = null;
+                try
+                {
+                    jresult = JsonConvert.DeserializeObject<InitJson>(File.ReadAllText(InitJsonFile));
+                }catch (Exception ex)
+                {
+                    logger.Error(ex,$"Json из установки, {InitJsonFile}");
+                }
                 if (jresult != null)
                 {
 

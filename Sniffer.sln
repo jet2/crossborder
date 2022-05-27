@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rest10", "rest10\rest10.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersLoader", "PersLoader\PersLoader.csproj", "{6FF1D155-76A5-47EE-96E0-F4627400C6ED}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup7", "Setup7\Setup7.vdproj", "{EC70C609-F1BA-4E12-A361-CAF163F7250F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,8 @@ Global
 		{6FF1D155-76A5-47EE-96E0-F4627400C6ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FF1D155-76A5-47EE-96E0-F4627400C6ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FF1D155-76A5-47EE-96E0-F4627400C6ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC70C609-F1BA-4E12-A361-CAF163F7250F}.Debug|Any CPU.ActiveCfg = Debug
+		{EC70C609-F1BA-4E12-A361-CAF163F7250F}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
