@@ -867,10 +867,10 @@ namespace kppApp
                         }
                         labelEventFamOtc.Text = s;
                     }
+                    lastPassage.rowID = runningInstanceGuid + $"-{lastPassage.timestampUTC}"; 
                     lastPassage.userguid = myWorkerPerson.userguid;
                     lastPassage.card = myWorkerPerson.card;
                     lastPassage.tabnom = myWorkerPerson.tabnom;
-                    lastPassage.rowID = "";
                     if (comboBoxOperationsMain.SelectedIndex != -1)
                     {
                         //string key = ((KeyValuePair<int, string>)comboBox1.SelectedItem).Key;
@@ -1833,16 +1833,17 @@ namespace kppApp
         {
             panelSignal2.BackColor = Color.Transparent;
             Passage p = new Passage();
+            p.timestampUTC = TimeLord.UTCNow();
+            p.rowID = runningInstanceGuid + $"-{p.timestampUTC}";
             p.isManual = 1;
             p.card = editManualEventCard.Text;
             p.tabnom = labelManualTabnomKeeper.Text;
             p.userguid = editManualEventGUID.Text;
             p.description = editManualEventComment.Text;
             //object xxx = comboManualEventOperation.SelectedItem;
-            p.timestampUTC = TimeLord.UTCNow();
+            
             p.operCode = ((KeyValuePair<int, string>)comboManualEventOperation.SelectedItem).Key;
             p.kppId = Environment.MachineName;
-            p.rowID = "";
             write2sqlite(p);
             clearDetectionView();
             PrettyWorker wp = getWorkerByGUID(p.userguid);
@@ -3137,6 +3138,10 @@ namespace kppApp
         private void threadPassageSender_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             timerPassageSender.Enabled = true;
+            if ((int)e.Result > 0)
+            {
+                MainTableReload(sender, e);
+            }
         }
 
 
@@ -3203,6 +3208,7 @@ namespace kppApp
             Passage1bitExt bit = new Passage1bitExt();
             int deliveryFlag = 0;
             int goodCounter = 0;
+            e.Result = 0;
             try
             {
                 var db = new SQLiteConnection(BufferDatabaseFile);
@@ -3224,13 +3230,10 @@ namespace kppApp
                             prefix_comment += "[Deleted]";
                         }
                         bit.bit1_timestampUTC = sp.timestampUTC;
-                        bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
-                        if (sp.rowID != null)
+                        bit.bit1_id = sp.rowID;
+                        if (bit.bit1_id == null || bit.bit1_id == "")
                         {
-                            if (sp.rowID != "")
-                            {
-                                bit.bit1_id = sp.rowID;
-                            }
+                            bit.bit1_id = runningInstanceGuid + $"-{sp.timestampUTC}";
                         }
                         // не
                         bit.bit1_system = "stop-covid";
@@ -3250,6 +3253,7 @@ namespace kppApp
                         }
                     }
                     logger.Info($"Отправлено успешно {goodCounter} из {arr.Length}");
+                    e.Result = goodCounter;
                 }
             }
             catch (Exception ex)
