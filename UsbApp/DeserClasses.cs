@@ -4,6 +4,13 @@ using System.Collections.Generic;
 
 namespace kppApp
 {
+
+    public class InitJson
+    {
+        [JsonProperty("restapi_path")] public string restapi_path { get; set; }
+        [JsonProperty("passage_direction")] public string passage_direction { get; set; }
+        [JsonProperty("reader_id")] public int reader_id { get; set; }
+    }
     /*
     class Passage
     {

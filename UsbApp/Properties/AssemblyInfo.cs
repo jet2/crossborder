@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Контроль доступа")]
 [assembly: AssemblyDescription("Контроль доступа по картам ID")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("*")]
+[assembly: AssemblyCompany("PSI Software")]
 [assembly: AssemblyProduct("kppApp")]
 [assembly: AssemblyCopyright("PSI Software")]
 [assembly: AssemblyTrademark("")]

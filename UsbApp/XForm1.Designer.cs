@@ -743,7 +743,7 @@
             this.panel13.Location = new System.Drawing.Point(0, 24);
             this.panel13.Margin = new System.Windows.Forms.Padding(1);
             this.panel13.Name = "panel13";
-            this.panel13.Padding = new System.Windows.Forms.Padding(5);
+            this.panel13.Padding = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.panel13.Size = new System.Drawing.Size(1266, 452);
             this.panel13.TabIndex = 6;
             // 
@@ -942,6 +942,7 @@
             this.labelShomItem.Size = new System.Drawing.Size(102, 15);
             this.labelShomItem.TabIndex = 9;
             this.labelShomItem.Text = "DO NOT DELETE";
+            this.labelShomItem.Visible = false;
             // 
             // label33
             // 
@@ -966,7 +967,7 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(164, 2);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(3);
+            this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.flowLayoutPanel1.Size = new System.Drawing.Size(968, 148);
             this.flowLayoutPanel1.TabIndex = 15;
             this.flowLayoutPanel1.WrapContents = false;
@@ -1128,7 +1129,7 @@
             this.panelSignal2.Location = new System.Drawing.Point(616, 3);
             this.panelSignal2.Margin = new System.Windows.Forms.Padding(0);
             this.panelSignal2.Name = "panelSignal2";
-            this.panelSignal2.Padding = new System.Windows.Forms.Padding(3);
+            this.panelSignal2.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.panelSignal2.Size = new System.Drawing.Size(352, 145);
             this.panelSignal2.TabIndex = 7;
             // 
@@ -1401,7 +1402,7 @@
             this.panel18.Location = new System.Drawing.Point(1, 1);
             this.panel18.Margin = new System.Windows.Forms.Padding(1);
             this.panel18.Name = "panel18";
-            this.panel18.Padding = new System.Windows.Forms.Padding(15);
+            this.panel18.Padding = new System.Windows.Forms.Padding(15, 15, 15, 15);
             this.panel18.Size = new System.Drawing.Size(1290, 693);
             this.panel18.TabIndex = 18;
             // 
@@ -1565,6 +1566,7 @@
             this.label36.Size = new System.Drawing.Size(48, 15);
             this.label36.TabIndex = 23;
             this.label36.Text = "label36";
+            this.label36.Visible = false;
             // 
             // panel17
             // 

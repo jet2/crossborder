@@ -41,6 +41,8 @@ namespace kppApp
         private static readonly string InfoTickFile = Path.Combine(SpecialDataFolder, "infotick.txt");
         private static readonly string InfoPluginFile = Path.Combine(SpecialDataFolder, "httpsrest.dll");
         private static readonly string OperationsJSONFile = Path.Combine(SpecialDataFolder, "operations.json");
+        private static readonly string InitJsonFile = Path.Combine(SpecialDataFolder, "presettings.json");
+        
         internal Dictionary<string, int> ParamsIndexes = new Dictionary<string, int>
         {
             { "card", 0 },
@@ -285,6 +287,21 @@ namespace kppApp
             listView1.Enabled = true;
             tabControl1.SelectTab(0);
             timerWaitMode.Enabled = false;
+            if (File.Exists(OperationsJSONFile))
+            {
+                try
+                {
+                    InitOperationsViews(OperationsJSONFile);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, $"Загрузка операций из файла {OperationsJSONFile}");
+                }
+            }
+            else
+            {
+                logger.Error($"Загрузка операций из файла {OperationsJSONFile}");
+            }
         }
 
         private bool PrepareDataFolder()
@@ -490,13 +507,47 @@ namespace kppApp
                 restapi_path_label.Text = "Неизвестно";
                 result = false;
             }
+            if (File.Exists(InitJsonFile))
+            {
+                InitJson jresult = JsonConvert.DeserializeObject<InitJson>(File.ReadAllText(InitJsonFile));
+                if (jresult != null)
+                {
 
+                    if (jresult.passage_direction == "input" || jresult.passage_direction == "output")
+                    {
+                        logger.Info($"Настройка passage_direction в appkpp.ini заменяется из ключом из установки {jresult.passage_direction}");
+                        INI.Write("passage_direction", jresult.passage_direction, "settings");
+                        passageDirection = jresult.passage_direction;
+                    }
+
+                    if (jresult.reader_id > 0)
+                    {
+                        logger.Info($"Настройка reader_id в appkpp.ini заменяется из ключом из установки {jresult.reader_id}");
+                        INI.Write("reader_id", $"{jresult.reader_id}", "settings");
+                    }
+                    if (jresult.restapi_path != "")
+                    {
+                        logger.Info($"Настройка reader_id в appkpp.ini заменяется из ключом из установки {jresult.restapi_path}");
+                        INI.Write("restapi_path", jresult.restapi_path, "settings");
+                        restServerAddr = jresult.restapi_path;
+                        restapi_path_label.Text = restServerAddr;
+                    }
+                }
+            
+                try
+                {
+                    File.Delete(InitJsonFile);
+                }catch(Exception ex)
+                {
+                    logger.Error(ex, $" Удаление установочного {InitJsonFile}");
+                }
+            }
             //if (!File.Exists(OperationsJSONFile)){
             //    RestLoadOperations(OperationsJSONFile);
             //}
 
-            // read JSON directly from a file
-            //            string mypath = AppDomain.CurrentDomain.BaseDirectory  + @"operations.json";
+                // read JSON directly from a file
+                //            string mypath = AppDomain.CurrentDomain.BaseDirectory  + @"operations.json";
             if (File.Exists(OperationsJSONFile))
             {
                 try
@@ -2797,7 +2848,7 @@ namespace kppApp
                     List<WorkerPersonX> xlist = RestLoadPeople(restServerAddr, 0, TimeLord.UTCNow());
                     peopleCheck.Checked = xlist.Count > 0;
                     peopleCheck.Checked = CreateInfoDatabase();
-                    peopleCheck.Checked = UpdateInfoFile(xlist,false);
+                    peopleCheck.Checked = UpdateInfoFile(xlist,false,true);
                     if (peopleCheck.Checked)
                     {
                         File.WriteAllText(InfoTickFile, $"{finish}");
@@ -2846,9 +2897,13 @@ namespace kppApp
             return myResult;
         }
 
-        private bool UpdateInfoFile(List<WorkerPersonX> xlist, bool useOverwrite)
+        private bool UpdateInfoFile(List<WorkerPersonX> xlist, bool useOverwrite, bool waitmode)
         {
             // пишем в подготовленную БД
+            if (waitmode)
+            {
+                regbb($"Начато заполнение ИнфоБД из rest json ");
+            }
             CipherManager cfm = new CipherManager(InfoPluginFile);
             var pword = cfm.getFullPword(RightPart);
             var options = new SQLiteConnectionString(InfoDatabaseFile, true, pword);
@@ -2899,6 +2954,10 @@ namespace kppApp
                     }
                 }
                 logger.Info($"Успех при заполнении БД {InfoDatabaseFile} из rest json ");
+                if (waitmode)
+                {
+                    regbb($"Успех при заполнении ИнфоБД из rest json ");
+                }
                 return true;
             }
             catch (Exception ex)
@@ -3073,7 +3132,7 @@ namespace kppApp
             {
                 logger.Info($"Найдено обновление справочника на {xlist.Count} человек");
                 // каждый человек полученный следующим методом удаляется в инфобазе и добавлется с новыми полями 
-                StatusOk = UpdateInfoFile(xlist, true);
+                StatusOk = UpdateInfoFile(xlist, true,false);
             }else
             { 
                 //logger.Info("Не найдено обновление справочника");
