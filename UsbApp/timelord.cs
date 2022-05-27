@@ -17,5 +17,12 @@ namespace kppApp
             DateTime localtime = DateTime.Now;
             return (int)(localtime - localtime.ToUniversalTime()).TotalSeconds;
         }
+
+        public static string TimestampAsDatetimeString(Int64 timestampUTC)
+        {
+            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddSeconds(timestampUTC).ToLocalTime();
+            return dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
+        }
     }
 }

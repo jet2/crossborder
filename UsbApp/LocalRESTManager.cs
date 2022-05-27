@@ -282,7 +282,14 @@ namespace kppApp
             }
             if (filters.ContainsKey("delivered"))
             {
-                filters_array.Add($" p.isDelivered = {filters["delivered"]} ");
+                if (filters["delivered"] == "0")
+                {
+                    filters_array.Add($" p.isDelivered <>1  ");
+                }
+                else
+                {
+                    filters_array.Add($" p.isDelivered = 1 ");
+                }
             }
 
             string assembly_filters = String.Join(" and ", filters_array);

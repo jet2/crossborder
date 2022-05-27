@@ -53,6 +53,14 @@ namespace kppApp
         [JsonProperty("j")] public string jobDescription { get; set; }
     }
     
+    public class WorkerPersonHierarhy
+    {
+        public int id_person { get; set; }
+        public int id_position { get; set; }
+        public int id_card { get; set; }
+    }
+
+
     public class PerimeterOperation
     {
         [JsonProperty("operid")] public int operid { get; set; }
@@ -113,6 +121,7 @@ namespace kppApp
         public string userguid { get; set; }
         public int isManual { get; set; }
         public int toDelete { get; set; }
+        public int isDelivered { get; set; }
     };
 
     internal class Passage1bitExt

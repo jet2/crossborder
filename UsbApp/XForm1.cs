@@ -22,7 +22,7 @@ namespace kppApp
     public partial class MainFormKPP : Form
     {
         private SignalRCover signaler;
-        
+
         private static SQLiteConnectionString memDBOptions = new SQLiteConnectionString(":memory:");
         private static SQLiteConnection memdb = new SQLiteConnection(memDBOptions);
         private static NLog.Logger logger;
@@ -33,10 +33,11 @@ namespace kppApp
         private SizeF currentScaleFactor = new SizeF(1f, 1f);
         private string RightPart = "[&B950:#$0F3F91210381]";
         private string LeftPart = "";
-        
+
         private static readonly string SpecialDataFolder = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments)).FullName, "PSISoftware", "AppKPP");
         private static readonly string BufferDatabaseFile = Path.Combine(SpecialDataFolder, "bufferkpp.db3");
         private static readonly string InfoDatabaseFile = Path.Combine(SpecialDataFolder, "paradox.db3");
+        private static readonly string InfoTickFile = Path.Combine(SpecialDataFolder, "infotick.txt");
         private static readonly string InfoPluginFile = Path.Combine(SpecialDataFolder, "httpsrest.dll");
         private static readonly string OperationsJSONFile = Path.Combine(SpecialDataFolder, "operations.json");
         internal Dictionary<string, int> ParamsIndexes = new Dictionary<string, int>
@@ -127,7 +128,9 @@ namespace kppApp
             // Targets where to log to: File and Console
 
 
-            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = Path.Combine(SpecialDataFolder, "appkpp-log-${shortdate}.txt"),
+            var logfile = new NLog.Targets.FileTarget("logfile")
+            {
+                FileName = Path.Combine(SpecialDataFolder, "appkpp-log-${shortdate}.txt"),
                 Layout = "${longdate}|${level:uppercase=true}|${logger}|${message:withException=true}",
                 ArchiveNumbering = NLog.Targets.ArchiveNumberingMode.Sequence,
                 ArchiveAboveSize = 5242880,
@@ -169,6 +172,7 @@ namespace kppApp
             listViewHistory.Columns[4].ImageIndex = 0;
             listViewHistory.Columns[5].ImageIndex = 0;
             listViewHistory.Columns[8].ImageIndex = 0;
+            while (listViewHistory.Items.Count > 0) { listViewHistory.Items.RemoveAt(0); };
             //            columnDelivery.ImageIndex = 0;
             tabControl1.ItemSize = new Size(1, 1);
             operCheck.Checked = checkOperations(OperationsJSONFile);
@@ -179,6 +183,7 @@ namespace kppApp
             }
             tryUpdateBearer(false);
             fillMemoryDB();
+            timerWorkersUpdate_Tick(null, new EventArgs());
         }
 
         private bool fillMemoryDB()
@@ -202,18 +207,18 @@ namespace kppApp
                 memdb.CreateTable<Card>();
                 memdb.InsertAll(diskdb.Table<Card>());
                 memdb.CreateCommand(@"create view prettyworker as select w.second_name||'@'||w.first_name||'@'||w.last_name as fio, w.asup_guid as userguid, p.name as job, p.personnel_number as tabnom,d.number as card
-from WorkerPersonPure w left
-join Position p on p.ownerid = w.id left
-join card d on d.ownerid = p.id;").ExecuteNonQuery();
+                                    from WorkerPersonPure w left
+                                    join Position p on p.ownerid = w.id left
+                                    join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 logger.Info($"БД {InfoDatabaseFile} -> mem копирование Card окончено");
                 //MessageBox.Show("Mem done!");
                 return true;
             }
             catch (Exception ex)
             {
-                logger.Fatal(ex,$"Ошибка копирования БД {InfoDatabaseFile} -> mem copy");
+                logger.Fatal(ex, $"Ошибка копирования БД {InfoDatabaseFile} -> mem copy");
                 return false;
-            }          
+            }
         }
 
         private bool checkOperations(string fullpathOperations)
@@ -263,7 +268,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 logger.Warn(ex, "InfoDatabaseFile испорчен");
                 myResult = false;
             }
-            
+
             return myResult;
         }
 
@@ -290,17 +295,18 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 try
                 {
                     Directory.CreateDirectory(SpecialDataFolder);
-//                    logger.Info($"Успех создания папки БД {SpecialDataFolder}");
-                } catch (Exception ex)
+                    //                    logger.Info($"Успех создания папки БД {SpecialDataFolder}");
+                }
+                catch (Exception ex)
                 {
-  //                  logger.Fatal("Ошибка создания папки БД", ex);
+                    //                  logger.Fatal("Ошибка создания папки БД", ex);
                     //reg($"Ошибка создания папки БД: {ex.Message}");
                     MessageBox.Show("Невозможно создать папку БД!\nРабота программы будет прекращена!\nОбратитесь в службу технической поддержки.");
-                    Close();
+                    //Close();
                 }
 
             }
-            
+
 
             try
             {
@@ -308,14 +314,14 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 {
                     logger.Info($"Успех создания тестового файла в папке БД {SpecialDataFolder}");
                 }
-                
+
             }
             catch (Exception ex)
             {
                 logger.Fatal($"Ошибка записи в папку { SpecialDataFolder}", ex);
                 //reg($"Ошибка записи в папку {SpecialDataFolder}: {ex.Message}");
                 MessageBox.Show($"Невозможно создать файл в папке {SpecialDataFolder}!\nРабота программы будет прекращена!\nОбратитесь в службу технической поддержки."); ;
-//                Close();
+                //                Close();
             }
             try
             {
@@ -331,7 +337,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             }
             if (!File.Exists(BufferDatabaseFile))
             {
-                if (!CreateBufferDatabase()){
+                if (!CreateBufferDatabase())
+                {
                     myResult = false;
                     MustClose = true;
                 }
@@ -341,14 +348,15 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 if (!CreateInfoDatabase())
                 {
                     myResult = false;
-                    MustClose= true;
+                    MustClose = true;
                 }
             }
 
             return myResult;
         }
 
-        private bool CreateBufferDatabase(){
+        private bool CreateBufferDatabase()
+        {
             bool myResult = false;
             try
             {
@@ -356,29 +364,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 using (var db = new SQLiteConnection(options))
                 {
                     db.CreateTable<Passage>();
-                    List<Passage> passages = new List<Passage>();   
-                  /*  for (int i = 0; i < 50000; i++)
-                    {
-                        
-                        var x = new Passage()
-                        {
-                            card = $"{i}",
-                            description = $"{i}" + $"{i}" + $"{i}",
-                            isDelivered = 0,
-                            isManual = 1,
-                            kppId = $"{i}",
-                            operCode = i,
-                            passageID = i,
-                            rowID = $"{i}",
-                            tabnom = i,
-                            timestampUTC = i,
-                            toDelete = 0,
-                            userguid = $"{i}"
-
-                        };
-                        passages.Add(x);
-                        
-                    }*/
+                    List<Passage> passages = new List<Passage>();
                     db.InsertAll(passages);
                 }
                 myResult = true;
@@ -393,18 +379,17 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             return myResult;
         }
 
-
-
         private bool CreateInfoDatabase()
         {
             Random r = new Random();
             bool myResult = false;
             LeftPart = new string(RightPart.Reverse().ToArray());
-            
+
 
             try
             {
                 File.Delete(InfoDatabaseFile);
+                File.Delete(InfoTickFile);
                 logger.Info($"Успех удаления инфоБД");
             }
             catch (Exception ex)
@@ -412,12 +397,12 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 logger.Info($"Сбой удаления инфоБД", ex);
             }
 
-            var cfm =new CipherManager(InfoPluginFile);
+            var cfm = new CipherManager(InfoPluginFile);
             try
             {
                 var pword = LeftPart + $"{r.Next(100000, 999999)}";
                 cfm.UpdatePStorage(pword);
-//                File.WriteAllBytes(InfoPluginFile, seedPassword(pword));
+                //                File.WriteAllBytes(InfoPluginFile, seedPassword(pword));
                 //pword = unseedPassword(File.ReadAllBytes(InfoPluginFile));
                 logger.Info($"Успех создания парольного хранилища");
             }
@@ -445,7 +430,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             }
             catch (Exception ex)
             {
-                logger.Fatal($"Ошибка создания справочной БД {InfoDatabaseFile}",ex);
+                logger.Fatal($"Ошибка создания справочной БД {InfoDatabaseFile}", ex);
                 File.Delete(InfoPluginFile);
                 MessageBox.Show($"Ошибка справочной БД {InfoDatabaseFile}: {ex.Message}!\nРабота программы будет прекращена!\nОбратитесь в службу технической поддержки."); ;
             }
@@ -468,21 +453,22 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             }
             */
             IniFile INI = new IniFile();
-            
+
             bool rest_in_settings = INI.KeyExists("restapi_path", "settings");
             //bool sqlite_in_settings = INI.KeyExists("sqlite_connectionstring", "settings");
             bool direction_in_settings = INI.KeyExists("passage_direction", "settings");
             bool readerid_in_settings = INI.KeyExists("reader_id", "settings");
             //bool auth_enabled_in_settings = INI.KeyExists("restapi_auth_enabled", "settings");
-            
-            if (rest_in_settings & direction_in_settings & readerid_in_settings )
+
+            if (rest_in_settings & direction_in_settings & readerid_in_settings)
             {
                 restServerAddr = INI.Read("restapi_path", "settings");
                 passageDirection = INI.Read("passage_direction", "settings");
                 try
                 {
                     reader_id = int.Parse(INI.Read("reader_id", "settings"));
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     reader_id = 777777;
                     logger.Error(ex, $"Ошибка преобразования reader_id из настроек");
@@ -515,7 +501,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 try
                 {
                     InitOperationsViews(OperationsJSONFile);
-                }catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     logger.Error(ex, $"Загрузка операций из файла {OperationsJSONFile}");
                 }
@@ -524,7 +511,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             {
                 logger.Error($"Загрузка операций из файла {OperationsJSONFile}");
             }
-            
+
 
             /*
                         List<WorkerPerson> remote_workers = JsonConvert.DeserializeObject<List<WorkerPerson>>(response2.Content);
@@ -557,17 +544,17 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
             string url = restServerAddr + "control-point?page=";
             AppControlPoints xlist = new AppControlPoints();
-            List<PerimeterOperation> polist= new List<PerimeterOperation>();
+            List<PerimeterOperation> polist = new List<PerimeterOperation>();
             var client = new RestClient();
             //var client2 = new RestClient();
             client.Timeout = 5000;
-            
+
             //client.Execute(request);
             //var response = client.Execute<AppControlPoints>(request);
             var pagecount = 1;
             while (pagecount < 1000)
             {
-                var request = new RestRequest(url+$"{pagecount}", Method.GET);
+                var request = new RestRequest(url + $"{pagecount}", Method.GET);
                 var response = client.Execute(request);
 
                 if (!response.IsSuccessful)
@@ -613,11 +600,11 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 myResult = false;
                 return myResult;
             }
-                
-             myResult = true;
-            
 
-            return myResult;    
+            myResult = true;
+
+
+            return myResult;
         }
 
         private void InitOperationsViews(string fullpathOperations)
@@ -672,13 +659,15 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
         private void SettingsOfReaderHandle(bool userest)
         {
-            if (!userest) {
+            if (!userest)
+            {
                 usb.OnDataRecieved += usb_OnDataRecieved;
                 usb.OnSpecifiedDeviceRemoved += usb_OnSpecifiedDeviceRemoved;
                 usb.OnSpecifiedDeviceArrived += usb_OnSpecifiedDeviceArrived;
             }
-            else {
-                signaler =new SignalRCover("http://localhost:5000/endpoint");
+            else
+            {
+                signaler = new SignalRCover("http://localhost:5000/endpoint");
                 signaler.OnDeviceArrived += usb_OnSpecifiedDeviceArrived;
                 signaler.OnDeviceRemoved += usb_OnSpecifiedDeviceRemoved;
                 signaler.OnDataRecieved += usb_OnDataRecieved;
@@ -693,7 +682,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
         private void showServiceState(int state)
         {
-            ServiceStateLabel.Text = state==1 ? "Доступна" : "Недоступна";
+            ServiceStateLabel.Text = state == 1 ? "Доступна" : "Недоступна";
         }
 
         private void Signaler_OnServiceUp(object source, MyEventArgs e)
@@ -714,7 +703,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
         private void usb_OnSpecifiedDeviceRemoved(object sender, EventArgs e)
         {
-             this.setRFIDLost();
+            this.setRFIDLost();
         }
 
         private void usb_OnDeviceArrived(object sender, EventArgs e)
@@ -745,7 +734,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             PrettyWorker myWP = new PrettyWorker();
             myWP.userguid = "";
             myWP.fio = "";
-            ManRest.getGUIDOwnerWorker(userguid,ref myWP);
+            ManRest.getGUIDOwnerWorker(userguid, ref myWP);
             return myWP;
         }
 
@@ -912,13 +901,13 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             if (tsUTC > 0)
             {
                 double tsnow = TimeLord.UTCNow();
-                double tmp =  tsnow - tsUTC ;
+                double tmp = tsnow - tsUTC;
                 if (tmp > 0)
                 {
-                    Result = (long)Math.Ceiling(tmp);  
+                    Result = (long)Math.Ceiling(tmp);
                 }
             }
-            return (Result>=InacceptebleInterval) ? 0 : Result;
+            return (Result >= InacceptebleInterval) ? 0 : Result;
         }
 
         private void dictionaryWorkersUpdater()
@@ -979,7 +968,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                     {
                         restapiAuthEnabled = "0";
                     }
-                    
+
                 }
             }
 
@@ -999,7 +988,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             }
             else
             {
-                
+
             }
 
 
@@ -1031,7 +1020,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
                 break;
             }
-            
+
             if (idx == 1)
             {
                 CopyPassageTable2Memory();
@@ -1077,12 +1066,12 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             threadWorkersUpdater.RunWorkerAsync();
         }
 
-  
+
         private void updateWorkers_ResultHandler(object sender, RunWorkerCompletedEventArgs e)
         {
             labelHostAccess.Text = restSrvState ? "Доступен" : "Недоступен";
             // обновляем словарь работников в памяти из локальной БД
-            dictionaryWorkersUpdater();
+            //dictionaryWorkersUpdater();
             timerWorkersUpdate.Enabled = true;
         }
 
@@ -1105,7 +1094,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             threadPassageSender.RunWorkerAsync();
         }
 
-        private Passage1bit bit1PassageByPassage(Passage firstUndelivered) {
+        private Passage1bit bit1PassageByPassage(Passage firstUndelivered)
+        {
             Passage1bit firstUndelivered1bit = new Passage1bit();
             firstUndelivered1bit.bit1_id = firstUndelivered.rowID;
             firstUndelivered1bit.bit1_reader_id = firstUndelivered.kppId;
@@ -1141,7 +1131,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 hotlist.AddRange(ManRest.getHotPassagesFIODB(isDaily));
             }
 
-            try { 
+            try
+            {
                 // очистка таблицы
                 while (listViewHotBuffer.Items.Count > 0) { listViewHotBuffer.Items.RemoveAt(0); };
                 // заполнение таблицы
@@ -1161,7 +1152,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                     {
                         lvi.SubItems.Add(first_pass.card);
                     }
-                    else {
+                    else
+                    {
                         lvi.SubItems.Add("-");
                     }
                     if (first_pass.fio != "")
@@ -1217,7 +1209,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                     }
                     if (eventType == "a") { cnt++; if (first_pass.toDelete == 1) { cnt--; }; };
                     if (eventType == "m") { cnt++; if (first_pass.toDelete == 1) { cnt--; }; };
-                    
+
 
                     lvi.SubItems.Add($"{finalManual}");
 
@@ -1387,7 +1379,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
         private void listView3_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             label36.Text = e.Column.ToString();
-            tabSubfilter.SelectedIndex = 0; 
+            tabSubfilter.SelectedIndex = 0;
             if (e.Column >= 1 && e.Column <= 8)
             {
                 listViewHistory.Columns[e.Column].ImageIndex = 1 - listViewHistory.Columns[e.Column].ImageIndex;
@@ -1417,181 +1409,181 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
         private void buttonHistoryFilterHide_Click(object sender, EventArgs e)
         {
-           // tabSubfilter.Visible = false;
-           // panelFilterSelect.Visible = false;
+            // tabSubfilter.Visible = false;
+            // panelFilterSelect.Visible = false;
         }
-/*
-        private void buttonHistorySelect_Click(object sender, EventArgs e)
-        {
-            List<PassageFIO> passages = new List<PassageFIO>();
-            listViewHistory.Columns[1].ImageIndex = 0;
-            listViewHistory.Columns[2].ImageIndex = 0;
-            listViewHistory.Columns[3].ImageIndex = 0;
-           // listViewHistory.Columns[4].ImageIndex = 0;
-            listViewHistory.Columns[5].ImageIndex = 0;
-            columnDelivery.ImageIndex = 0;
-
-            string filterName = "";
-            string filterValue = "";
-
-
-            bool withFilter = tabSubfilter.Visible;
-            tabSubfilter.Visible = false;
-           // panelFilterSelect.Visible = false;
-
-            #region history view update
-
-            if (withFilter)
-            {
-                listViewHistory.Columns[1].ImageIndex = 0;
-                listViewHistory.Columns[2].ImageIndex = 0;
-                listViewHistory.Columns[3].ImageIndex = 0;
-                //listViewHistory.Columns[4].ImageIndex = 0;
-                listViewHistory.Columns[5].ImageIndex = 0;
-                columnDelivery.ImageIndex = 0;
-                columnDate.ImageIndex = -1;
-                switch (tabSubfilter.SelectedIndex)
+        /*
+                private void buttonHistorySelect_Click(object sender, EventArgs e)
                 {
-                    case 0:
-                        columnCard.ImageIndex = 1;
-                        filterName = "card";
-                        filterValue = cardTextSelect.Text;
-                        //where_clause += $" and p.card='{cardTextSelect.Text}' ";
-                        break;
-                    case 1:
-                        columnTabnom.ImageIndex = 1;
-                        filterName = "tabnom";
-                        filterValue = tabnomTextSelect.Text;
-                        //                        where_clause += $" and p.tabnom={tabnomTextSelect.Text} ";
-                        break;
-                    case 2:
-                        columnFIO.ImageIndex = 1;
-                        filterName = "fio";
-                        filterValue = fioTextSelect.Text;
+                    List<PassageFIO> passages = new List<PassageFIO>();
+                    listViewHistory.Columns[1].ImageIndex = 0;
+                    listViewHistory.Columns[2].ImageIndex = 0;
+                    listViewHistory.Columns[3].ImageIndex = 0;
+                   // listViewHistory.Columns[4].ImageIndex = 0;
+                    listViewHistory.Columns[5].ImageIndex = 0;
+                    columnDelivery.ImageIndex = 0;
 
-                        //from_clause = " FROM buffer_passage p, buffer_workers w ";
-                        //where_clause += $" and p.tabnom=w.tabnom and w.fio is not null and w.fio LIKE '%{fioTextSelect.Text}%' ";
-                        break;
-                    case 3:
-                        columnOperation.ImageIndex = 1;
-                        if (comboBoxHistoryOperations.SelectedIndex != -1)
+                    string filterName = "";
+                    string filterValue = "";
+
+
+                    bool withFilter = tabSubfilter.Visible;
+                    tabSubfilter.Visible = false;
+                   // panelFilterSelect.Visible = false;
+
+                    #region history view update
+
+                    if (withFilter)
+                    {
+                        listViewHistory.Columns[1].ImageIndex = 0;
+                        listViewHistory.Columns[2].ImageIndex = 0;
+                        listViewHistory.Columns[3].ImageIndex = 0;
+                        //listViewHistory.Columns[4].ImageIndex = 0;
+                        listViewHistory.Columns[5].ImageIndex = 0;
+                        columnDelivery.ImageIndex = 0;
+                        columnDate.ImageIndex = -1;
+                        switch (tabSubfilter.SelectedIndex)
                         {
-                            object xxx = comboBoxHistoryOperations.SelectedItem;
+                            case 0:
+                                columnCard.ImageIndex = 1;
+                                filterName = "card";
+                                filterValue = cardTextSelect.Text;
+                                //where_clause += $" and p.card='{cardTextSelect.Text}' ";
+                                break;
+                            case 1:
+                                columnTabnom.ImageIndex = 1;
+                                filterName = "tabnom";
+                                filterValue = tabnomTextSelect.Text;
+                                //                        where_clause += $" and p.tabnom={tabnomTextSelect.Text} ";
+                                break;
+                            case 2:
+                                columnFIO.ImageIndex = 1;
+                                filterName = "fio";
+                                filterValue = fioTextSelect.Text;
 
-                            int ch = ((KeyValuePair<int, string>)xxx).Key;
+                                //from_clause = " FROM buffer_passage p, buffer_workers w ";
+                                //where_clause += $" and p.tabnom=w.tabnom and w.fio is not null and w.fio LIKE '%{fioTextSelect.Text}%' ";
+                                break;
+                            case 3:
+                                columnOperation.ImageIndex = 1;
+                                if (comboBoxHistoryOperations.SelectedIndex != -1)
+                                {
+                                    object xxx = comboBoxHistoryOperations.SelectedItem;
 
-                            filterName = "operation";
-                            filterValue = $"{ch}";
+                                    int ch = ((KeyValuePair<int, string>)xxx).Key;
 
-                            //where_clause += $" and isOut={ch} ";
-                        };
-                        break;
-                    case 4:
-                        columnDelivery.ImageIndex = 1;
-                        filterName = "delivered";
-                        filterValue = $"{(radioDelivered.Checked ? 1 : 0)}";
+                                    filterName = "operation";
+                                    filterValue = $"{ch}";
 
-                        break;
-                }
-            }
-            long timestampUTC = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-            //long timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-            listViewHistory.Visible = false;
-            int cnt = 1;
-            // очистка
-            while (listViewHistory.Items.Count > 0) { listViewHistory.Items.RemoveAt(0); };
-            // заполнение
-            try { 
-                
+                                    //where_clause += $" and isOut={ch} ";
+                                };
+                                break;
+                            case 4:
+                                columnDelivery.ImageIndex = 1;
+                                filterName = "delivered";
+                                filterValue = $"{(radioDelivered.Checked ? 1 : 0)}";
 
-                if (useRest)
-                {
-                   // passages.AddRange(ManRest.getFilteredPassagesFIO_REST(filterName, filterValue, timestampUTC, (int)numericHours.Value));
-                }
-                else
-                {
-
-                    var rng = ManRest.getFilteredPassagesFIODB(SQLFilters);
-                    
-                    passages.AddRange(rng);
-                }
-
-                foreach (var history_pass in passages)
-                {
-                    ListViewItem lvi = new ListViewItem();
-
-                    lvi.Text = "      ";
-
-                    //lvi.Text = "";
-                    lvi.SubItems.Add(history_pass.card);
-
-                    if (history_pass.fio != "")
-                    {
-                        if (history_pass.tabnom!=0) {lvi.SubItems.Add($"{history_pass.tabnom}");}
-                        else { lvi.SubItems.Add($""); }
-                        lvi.SubItems.Add($"{history_pass.fio}");
-                    }
-                    else
-                    {
-                        lvi.SubItems.Add("-");
-                        lvi.SubItems.Add("-");
-                        lvi.ForeColor = Color.Red;
-                        lvi.UseItemStyleForSubItems = false;
-                        lvi.Text += "💡";
-                    }
-
-                    System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-                    dtDateTime = dtDateTime.AddSeconds(history_pass.timestampUTC).ToLocalTime();
-                    string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
-                    lvi.SubItems.Add(timeText);
-
-                    string myOperation = "?";
-                    if (OperationsSelector4View.ContainsKey($"{history_pass.operCode}"))
-                    {
-                        myOperation = OperationsSelector4View[$"{history_pass.operCode}"];
-                    };
-                    lvi.SubItems.Add($"{myOperation}");
-
-                    string finalManual = "";
-                    if (history_pass.isManual == 1)
-                    {
-                        finalManual += symbol_pencil;
-                    }
-
-                    if (history_pass.description != "")
-                    {
-                        if (finalManual != "")
-                        {
-                            finalManual += " ";
+                                break;
                         }
-                        finalManual += symbol_comment;
                     }
+                    long timestampUTC = (long)begPickerSelect.Value.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                    //long timestampUTC = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                    listViewHistory.Visible = false;
+                    int cnt = 1;
+                    // очистка
+                    while (listViewHistory.Items.Count > 0) { listViewHistory.Items.RemoveAt(0); };
+                    // заполнение
+                    try { 
 
-                    lvi.SubItems.Add($"{finalManual}");
 
-                    lvi.SubItems.Add($"{cnt}");
+                        if (useRest)
+                        {
+                           // passages.AddRange(ManRest.getFilteredPassagesFIO_REST(filterName, filterValue, timestampUTC, (int)numericHours.Value));
+                        }
+                        else
+                        {
 
-                    if (history_pass.isDelivered == 0)
+                            var rng = ManRest.getFilteredPassagesFIODB(SQLFilters);
+
+                            passages.AddRange(rng);
+                        }
+
+                        foreach (var history_pass in passages)
+                        {
+                            ListViewItem lvi = new ListViewItem();
+
+                            lvi.Text = "      ";
+
+                            //lvi.Text = "";
+                            lvi.SubItems.Add(history_pass.card);
+
+                            if (history_pass.fio != "")
+                            {
+                                if (history_pass.tabnom!=0) {lvi.SubItems.Add($"{history_pass.tabnom}");}
+                                else { lvi.SubItems.Add($""); }
+                                lvi.SubItems.Add($"{history_pass.fio}");
+                            }
+                            else
+                            {
+                                lvi.SubItems.Add("-");
+                                lvi.SubItems.Add("-");
+                                lvi.ForeColor = Color.Red;
+                                lvi.UseItemStyleForSubItems = false;
+                                lvi.Text += "💡";
+                            }
+
+                            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+                            dtDateTime = dtDateTime.AddSeconds(history_pass.timestampUTC).ToLocalTime();
+                            string timeText = dtDateTime.ToShortDateString() + " " + dtDateTime.ToLongTimeString();
+                            lvi.SubItems.Add(timeText);
+
+                            string myOperation = "?";
+                            if (OperationsSelector4View.ContainsKey($"{history_pass.operCode}"))
+                            {
+                                myOperation = OperationsSelector4View[$"{history_pass.operCode}"];
+                            };
+                            lvi.SubItems.Add($"{myOperation}");
+
+                            string finalManual = "";
+                            if (history_pass.isManual == 1)
+                            {
+                                finalManual += symbol_pencil;
+                            }
+
+                            if (history_pass.description != "")
+                            {
+                                if (finalManual != "")
+                                {
+                                    finalManual += " ";
+                                }
+                                finalManual += symbol_comment;
+                            }
+
+                            lvi.SubItems.Add($"{finalManual}");
+
+                            lvi.SubItems.Add($"{cnt}");
+
+                            if (history_pass.isDelivered == 0)
+                            {
+                                lvi.SubItems.Add("⌛");
+                            }
+
+
+                            listViewHistory.Items.Insert(0, lvi);
+                            cnt++;
+                        }
+
+                    }
+                    finally
                     {
-                        lvi.SubItems.Add("⌛");
+                        listViewHistory.Visible = true;
                     }
+                    labelSelectedEventsCount.Text = $"Всего записей: {cnt - 1}";
 
+                    #endregion history update
 
-                    listViewHistory.Items.Insert(0, lvi);
-                    cnt++;
                 }
-
-            }
-            finally
-            {
-                listViewHistory.Visible = true;
-            }
-            labelSelectedEventsCount.Text = $"Всего записей: {cnt - 1}";
-
-            #endregion history update
-
-        }
-        */
+                */
         private void clearDetectionView()
         {
             labelEventName.Text = "-";
@@ -1610,7 +1602,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
         {
             clearDetectionView();
             ManRest.updatePassage("check", new Passage(), useRest);
-            
+
             MainTableReload(sender, e);
         }
 
@@ -1679,33 +1671,33 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
         {
 
             List<PrettyWorker> workerPersons = new List<PrettyWorker>();
-            workerPersons.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityValue,useRest));
+            workerPersons.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityValue, useRest));
 
             string result = "";
             if (workerPersons.Count > 0)
             {
-                result = workerPersons[0].card + "@" + workerPersons[0].fio.Replace("@", " ") + "@" + workerPersons[0].userguid+ 
+                result = workerPersons[0].card + "@" + workerPersons[0].fio.Replace("@", " ") + "@" + workerPersons[0].userguid +
                         "@" + workerPersons[0].tabnom;
             }
 
-/*            
-            using (var connection = new SQLiteConnection(sqlite_connectionstring))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
+            /*            
+                        using (var connection = new SQLiteConnection(sqlite_connectionstring))
+                        {
+                            connection.Open();
+                            var command = connection.CreateCommand();
 
-                command.CommandText = $"select card, fio, userguid from buffer_workers where {entityName}='{entityValue}'";
+                            command.CommandText = $"select card, fio, userguid from buffer_workers where {entityName}='{entityValue}'";
 
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        result = reader.GetString(0) + "@" + reader.GetString(1).Replace("@", " ") + "@" + reader.GetString(2);
-                        break;
-                    }
-                }
-            }
-*/
+                            using (var reader = command.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    result = reader.GetString(0) + "@" + reader.GetString(1).Replace("@", " ") + "@" + reader.GetString(2);
+                                    break;
+                                }
+                            }
+                        }
+            */
             return result;
         }
 
@@ -1715,7 +1707,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             hintsListBox.Items.Clear();
             hintsListBox.Visible = true;
             List<PrettyWorker> workerPersons = new List<PrettyWorker>();
-            workerPersons.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityTemplate,useRest));
+            workerPersons.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityTemplate, useRest));
 
             foreach (PrettyWorker worker in workerPersons)
             {
@@ -1855,7 +1847,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             PrettyWorker wp = getWorkerByGUID(p.userguid);
 
             string[] stmp = wp.fio.Split('@');
-            if (stmp.Length > 0) {
+            if (stmp.Length > 0)
+            {
                 labelEventName.Text = stmp[0];
             }
             if (stmp.Length > 1)
@@ -1892,8 +1885,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             p.operCode = int.Parse(operCode);
             p.passageID = int.Parse(labelRedEventID.Text);
             p.description = editRedEventComment.Text;
-            
-            ManRest.updatePassage("red",p, useRest);
+
+            ManRest.updatePassage("red", p, useRest);
 
             tabControl1.SelectTab(0);
             editRedEventComment.Text = "";
@@ -2115,7 +2108,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
         private void hintsGreenEventFIO_MouseClick(object sender, MouseEventArgs e)
         {
-            string selectString = getWorkerByHint("fio", hintsGreenEventFIO.GetItemText(hintsGreenEventFIO.SelectedItem).Replace(" ","@"));
+            string selectString = getWorkerByHint("fio", hintsGreenEventFIO.GetItemText(hintsGreenEventFIO.SelectedItem).Replace(" ", "@"));
             string[] arr2 = selectString.Split('@');
             editGreenEventFIO.Text = arr2[1];
             editGreenEventGUID.Text = arr2[2];
@@ -2146,7 +2139,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             // очистка
             while (LV.Items.Count > 0) { LV.Items.RemoveAt(0); };
             // заполнение
-            workers.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityValue,useRest));
+            workers.AddRange(ManRest.getFilteredWorkersByEntity(entityName, entityValue, useRest));
 
             foreach (PrettyWorker worker in workers)
             {
@@ -2231,9 +2224,9 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             listViewHistory.Columns[4].ImageIndex = 0;
             listViewHistory.Columns[5].ImageIndex = 0;
             listViewHistory.Columns[8].ImageIndex = 0;
-            begPickerSelect.Value = DateTime.Now.AddHours(-24*3);
+            begPickerSelect.Value = DateTime.Now.AddHours(-24 * 3);
             //tabSubfilter.Visible = false;
-//            listViewHistory.Items.Clear();
+            //            listViewHistory.Items.Clear();
             //buttonHistorySelect_Click(sender, e);
         }
 
@@ -2281,12 +2274,12 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
         private void buttonBeGreen_Click(object sender, EventArgs e)
         {
             timerCol.Enabled = true;
-            PaintByColor(buttonBeGreen.BackColor); 
+            PaintByColor(buttonBeGreen.BackColor);
         }
 
         private void buttonBeWhite_Click(object sender, EventArgs e)
         {
-            PaintByColor(buttonBeWhite.BackColor); 
+            PaintByColor(buttonBeWhite.BackColor);
         }
 
         private void timerCol_Tick(object sender, EventArgs e)
@@ -2332,14 +2325,14 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                     // изменять введенное вручную
                     if (spl[1] == "m")
                     {
-                        
+
 
                         editGreenEventFIO.Text = myFIO;
                         editGreenEventGUID.Text = myGUID;
                         editGreenEventComment.Text = myComment;
                         comboGreenEventOperation.SelectedValue = int.Parse(spl[2]);
                         labelGreenTabnom.Text = "";
-                        labelGreenTabnom.Text = myTabnom=="-"?"": myTabnom;
+                        labelGreenTabnom.Text = myTabnom == "-" ? "" : myTabnom;
                         labelGreenEventID.Text = spl[0];
                         editGreenEventCard.Text = myCard;
                         tabControl1.SelectTab(4);
@@ -2364,11 +2357,11 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                             //switchable = false;
                             //if (toDelete == symbol_deleteMark)
                             //{
-                                comboRedEventOperation.Enabled = false;
-                                editRedEventFIO.Text = myFIO;
-                                editRedEventGUID.Text = myGUID;
-                                editRedEventComment.Text = myComment;
-                                switchable = true;
+                            comboRedEventOperation.Enabled = false;
+                            editRedEventFIO.Text = myFIO;
+                            editRedEventGUID.Text = myGUID;
+                            editRedEventComment.Text = myComment;
+                            switchable = true;
                             //}
                         };
 
@@ -2400,7 +2393,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             {
                 labelShomItem.Text = listViewHotBuffer.SelectedItems[0].SubItems[7].Text;
                 string[] spl = labelShomItem.Text.Split('-');
-                if (spl.Length <2 )
+                if (spl.Length < 2)
                 {
                     labelShomItem.Text = "";
                 }
@@ -2409,7 +2402,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             {
                 labelShomItem.Text = "";
             }
-            
+
         }
 
         private void tabPage2_Enter(object sender, EventArgs e)
@@ -2427,7 +2420,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             PrettyWorker workerPerson = new PrettyWorker();
             workerPerson.userguid = "";
             workerPerson.fio = "";
-            workerPerson = getWorkerByGUID(userguid);  
+            workerPerson = getWorkerByGUID(userguid);
             if (workerPerson.fio != "")
             {
                 //editManualEventTabnom.Value = workerPerson.tabnom;
@@ -2465,17 +2458,18 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
         private void buttonPOST_Click(object sender, EventArgs e)
         {
             Passage1bitExt bit = new Passage1bitExt();
-
+            int deliveryFlag = 0;
             try
             {
                 var db = new SQLiteConnection(BufferDatabaseFile);
-                 
-                var arr = db.Query<ShortPassage>($"select p.card, p.opercode, p.timestampUTC, p.description, p.userguid, p.isManual, p.toDelete from passage p where p.passageID=?", labelGreenEventID.Text).ToArray();
 
-                foreach(ShortPassage sp in arr)
+                var arr = db.Query<ShortPassage>($"select p.card, p.opercode, p.timestampUTC, p.description, p.userguid, p.isManual, p.toDelete, p.isDelivered from passage p where p.passageID=?", labelGreenEventID.Text).ToArray();
+
+                foreach (ShortPassage sp in arr)
                 {
                     string prefix_comment = "";
-                    if (sp.isManual==1)
+                    //deliveryFlag = sp.isDelivered;
+                    if (sp.isManual == 1)
                     {
                         prefix_comment += "[Manual]";
                     }
@@ -2487,8 +2481,8 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                     // не
                     bit.bit1_system = "stop-covid";
                     bit.bit1_timestampUTC = sp.timestampUTC;
-                    bit.bit1_card_number = sp.card!=null? sp.card : "";
-                    bit.bit1_individual_guid = sp.userguid!=null? sp.userguid : "";
+                    bit.bit1_card_number = sp.card != null ? (sp.card == "" ? "-" : sp.card) : "-";
+                    bit.bit1_individual_guid = sp.userguid != null ? sp.userguid : "";
                     bit.bit1_reader_id = this.reader_id;
 
                     bit.bit1_comment = prefix_comment + sp.description;
@@ -2498,7 +2492,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                     bit.timezone_seconds = TimeLord.timezone_seconds();
                     break;
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -2556,7 +2550,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 var url = $"{restServerAddr}reading-event/";
                 var client = new RestClient();
                 client.Timeout = 5000;
-                var request = new RestRequest(url,Method.POST);
+                var request = new RestRequest(url, deliveryFlag == 2 ? Method.PUT : Method.POST);
 
                 //            client.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator("admin", "password");
 
@@ -2571,7 +2565,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 request.AddHeader("Accept-Encoding", "gzip, deflate, br");
                 request.AddHeader("Content-Type", "application/json");
                 var body = JsonConvert.SerializeObject(bit);
-                
+
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
                 IRestResponse response = client.Execute(request);
                 if (response.IsSuccessful)
@@ -2583,7 +2577,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                         dbdisk.CreateCommand(qry_update_mark_id_asdelivered).ExecuteNonQuery();
                         send_cnt++;
                     }
-                    
+
                     MessageBox.Show("Доставлено успешно!");
                     logger.Info($"Успешно доставлено {send_cnt} событий");
                 }
@@ -2629,7 +2623,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             //listViewHistory.Columns[5].ImageIndex = 0; //delivered
             //listViewHistory.Columns[8].ImageIndex = 0; //dates
             SQLFilters.Clear();
-            if (listViewHistory.Columns[1].ImageIndex ==1)
+            if (listViewHistory.Columns[1].ImageIndex == 1)
             {
                 SQLFilters["card"] = cardTextSelect.Text;
             }
@@ -2643,12 +2637,12 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             }
             if (listViewHistory.Columns[5].ImageIndex == 1)
             {
-                
+
                 if (comboBoxHistoryOperations.SelectedIndex != -1)
                 {
                     object xxx = comboBoxHistoryOperations.SelectedItem;
                     int ch = ((KeyValuePair<int, string>)xxx).Key;
-                    SQLFilters["operation"]  = $"{ch}";
+                    SQLFilters["operation"] = $"{ch}";
                 };
             }
             if (listViewHistory.Columns[8].ImageIndex == 1)
@@ -2732,7 +2726,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
                     lvi.SubItems.Add($"{cnt}");
 
-                    if (history_pass.isDelivered == 0)
+                    if (history_pass.isDelivered == 0 || history_pass.isDelivered == 2)
                     {
                         lvi.SubItems.Add("⌛");
                     }
@@ -2782,7 +2776,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             // проверяем необходимость использования авторизации и обновления токена для нее
 
 
-            
+
             try
             {
                 blockingBox.Clear();
@@ -2791,18 +2785,27 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                     return;
                 }
 
-                if (!operCheck.Checked){
+                if (!operCheck.Checked)
+                {
                     operCheck.Checked = RestLoadOperations(OperationsJSONFile);
                 }
                 if (!peopleCheck.Checked)
                 {
+                    var finish = TimeLord.UTCNow();
                     List<WorkerPersonX> xlist = RestLoadPeople(restServerAddr, 0, TimeLord.UTCNow());
                     peopleCheck.Checked = xlist.Count > 0;
                     peopleCheck.Checked = CreateInfoDatabase();
-                    peopleCheck.Checked = UpdateInfoFile(xlist);
+                    peopleCheck.Checked = UpdateInfoFile(xlist,false);
+                    if (peopleCheck.Checked)
+                    {
+                        File.WriteAllText(InfoTickFile, $"{finish}");
+                    }
+
+
                 }
             }
-            finally {
+            finally
+            {
                 timerWaitMode.Enabled = true;
             }
         }
@@ -2827,7 +2830,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                             {
                                 logger.Error("Bearer токен не получен");
                                 if (isBlockMode) regbb("Bearer токен НЕ получен");
-                                myResult=false;
+                                myResult = false;
                             }
                         }
                         catch (Exception ex)
@@ -2841,7 +2844,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             return myResult;
         }
 
-        private bool UpdateInfoFile(List<WorkerPersonX> xlist)
+        private bool UpdateInfoFile(List<WorkerPersonX> xlist, bool useOverwrite)
         {
             // пишем в подготовленную БД
             CipherManager cfm = new CipherManager(InfoPluginFile);
@@ -2854,6 +2857,29 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 {
                     foreach (WorkerPersonX wp in xlist)
                     {
+                        #region delete single worker to update
+                        if (useOverwrite)
+                        {
+                            List<WorkerPersonHierarhy> wphlist;
+                            wphlist = db.Query<WorkerPersonHierarhy>(@"select w.id as id_person, p.id as id_position, d.id as id_card
+                                                        from WorkerPersonPure w 
+                                                        left join Position p on p.ownerid = w.id left join card d on d.ownerid = p.id " +
+                                                        $"where w.asup_guid='{wp.asup_guid}'");
+                            foreach (WorkerPersonHierarhy wph in wphlist)
+                            {
+                                if (wph.id_card != 0)
+                                {
+                                    db.CreateCommand($"Delete from Card where id={wph.id_card}").ExecuteNonQuery();
+                                }
+                                if (wph.id_position != 0)
+                                {
+                                    db.CreateCommand($"Delete from Position where id={wph.id_position}").ExecuteNonQuery();
+                                }
+                                db.CreateCommand($"Delete from WorkerPersonPure where id={wph.id_person}").ExecuteNonQuery();
+                            }
+                        }
+                        # endregion delete single worker 
+
                         WorkerPersonPure wpx = new WorkerPersonPure() { asup_guid = wp.asup_guid, id = wp.id, first_name = wp.first_name, last_name = wp.last_name, second_name = wp.second_name };
                         db.Insert(wpx);
                         foreach (PositionX po in wp.positions)
@@ -2888,15 +2914,17 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
 
             string operurl = urlbegin + $"individuals?date_from={start}&date_to={finish}&page=";
 
-            
+
             var client = new RestClient();
             client.Timeout = 5000;
             int pageNumberValue = 1;
             List<WorkerPersonX> xlist;
-            while (pageNumberValue < 10000 )
+            while (pageNumberValue < 10000)
             {
                 var request = new RestRequest($"{operurl}{pageNumberValue}", Method.GET);
                 var response = client.Execute<AllPersons>(request);
+                setVisibleRESTStatus(response.IsSuccessful ? "Доступен" : "Недоступен");
+                
                 try
                 {
                     if (response.Data.data.Count < 1)
@@ -2907,6 +2935,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                     xlist = response.Data.data;
                     myResult.AddRange(xlist);
                     logger.Info($"{operurl}{pageNumberValue} IsSuccessful = {response.IsSuccessful}");
+                    
                     regbb($"Получено {xlist.Count} человек");
                     logger.Info($"Получено {xlist.Count} человек");
                     logger.Info($"[0] = {response.Data.data[0].last_name} {response.Data.data[0].first_name[0]} {response.Data.data[0].second_name[0]}");
@@ -2919,8 +2948,31 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 }
                 pageNumberValue += 1;
             }
-            return myResult;           
+            return myResult;
 
+        }
+
+        private void setVisibleRESTStatus(string mess)
+        {
+            if (InvokeRequired)
+            {
+                try
+                {
+                    Invoke(new Action(() =>
+                    {
+
+                        labelHostAccess.Text = mess;
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+            else
+            {
+                labelHostAccess.Text = mess;
+            }
         }
 
         private void regbb(string mess)
@@ -2979,7 +3031,7 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
                 else
                 {
                     logger.Error("Неудачная авторизация в " + $"{resourceURL} [login={loginbox.Text},password={passwordbox.Text}]");
-            //        MessageBox.Show("Неудачная авторизация!");
+                    //        MessageBox.Show("Неудачная авторизация!");
                 }
             }
             catch (Exception ex)
@@ -2995,6 +3047,58 @@ join card d on d.ownerid = p.id;").ExecuteNonQuery();
             makeCheck(sender, e);
         }
 
+        private void threadWorkersUpdater_DoWork(object sender, DoWorkEventArgs e)
+        {
+            //if needRestartlabel.Visible needRestartlabel.Visible = false;
+            // 1. извлечь из файла послений тик
+            string tickstr = "0";
+            Int64 tick = 0;
+            bool StatusOk = true;
+            try
+            {
+                tickstr = File.ReadAllText(InfoTickFile);
+                tick = int.Parse(tickstr);
+                infotickLabel.Text = TimeLord.TimestampAsDatetimeString(tick);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Дата последнего изменения справочника недоступна");
+            }
+            var finish = TimeLord.UTCNow();
 
+            List<WorkerPersonX> xlist = RestLoadPeople(restServerAddr, tick, finish);
+            if (xlist.Count > 0)
+            {
+                logger.Info($"Найдено обновление справочника на {xlist.Count} человек");
+                // каждый человек полученный следующим методом удаляется в инфобазе и добавлется с новыми полями 
+                StatusOk = UpdateInfoFile(xlist, true);
+            }else
+            { 
+                //logger.Info("Не найдено обновление справочника");
+            }
+
+            if (StatusOk && (xlist.Count > 0))
+            {
+                logger.Info($"Включено предупреждение об обновлении справочника. Новый тик={finish}"); ;
+                infotickLabel.Text = TimeLord.TimestampAsDatetimeString(finish);
+                File.WriteAllText(InfoTickFile, $"{finish}");
+                needRestartlabel.Visible = true;
+            }
+        }
+
+        private void restapi_path_label_DoubleClick(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void pictureBox1_DoubleClick(object sender, EventArgs e)
+        {
+            threadWorkersUpdater.RunWorkerAsync();
+        }
+
+        private void threadWorkersUpdater_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            timerWorkersUpdate.Enabled = true;
+        }
     }
 }
