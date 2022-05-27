@@ -925,4 +925,20 @@ namespace kppApp
 
 
     }
+    public static class Constainer
+    {
+        public static string foundation = "1234567890-=~!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:|ZXCVBNM<>?qwertyuiop[]asdfghjkl;zxcvbnm,.";
+        public static string genPWord()
+        {
+            string zzz = "";
+            int xlen = Constainer.foundation.Length;
+            Random r = new Random();
+            for (int i = 0; i < 20; i++)
+            {
+                zzz += foundation[r.Next(0, xlen)];
+            }
+            return zzz;
+        }
+    }
+
 }

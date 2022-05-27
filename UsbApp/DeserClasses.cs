@@ -113,9 +113,11 @@ namespace kppApp
 
     public class ShortPassage
     {
+        public string rowID { get; set; }
+        public int PassageId { get; set; }
         public string card { get; set; }
         public string tabnom { get; set; }
-        public int control_point_type_id { get; set; }
+        public int operCode { get; set; }
         public int timestampUTC { get; set; }
         public string description { get; set; }
         public string userguid { get; set; }

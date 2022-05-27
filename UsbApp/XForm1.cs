@@ -15,6 +15,7 @@ using HorizontalAlignment = System.Windows.Forms.HorizontalAlignment;
 using MessageBox = System.Windows.Forms.MessageBox;
 using NLog;
 using System.Linq;
+using System.Threading;
 
 namespace kppApp
 {
@@ -190,7 +191,7 @@ namespace kppApp
         {
 
             var cfm = new CipherManager(InfoPluginFile);
-            var doptions = new SQLiteConnectionString(InfoDatabaseFile, true, cfm.getFullPassword(RightPart)); ;
+            var doptions = new SQLiteConnectionString(InfoDatabaseFile, true, cfm.getFullPword(RightPart)); ;
             SQLiteConnection diskdb = new SQLiteConnection(doptions);
             try
             {
@@ -243,7 +244,7 @@ namespace kppApp
             CipherManager cfm = new CipherManager(InfoPluginFile);
             try
             {
-                var pword = cfm.getFullPassword(RightPart);
+                var pword = cfm.getFullPword(RightPart);
                 var options = new SQLiteConnectionString(InfoDatabaseFile, true, pword);
                 var connection = new SQLiteConnection(options);
 
@@ -417,7 +418,7 @@ namespace kppApp
             try
             {
 
-                var options = new SQLiteConnectionString(InfoDatabaseFile, true, cfm.getFullPassword(RightPart));
+                var options = new SQLiteConnectionString(InfoDatabaseFile, true, cfm.getFullPword(RightPart));
                 using (var db = new SQLiteConnection(options))
                 {
                     db.CreateTable<Card>();
@@ -1004,7 +1005,7 @@ namespace kppApp
             threadPassageSender.RunWorkerCompleted += sendPassage_ResultHandler;
             */
             //timerWorkersUpdate_Tick(this, e);
-            //timerPassageSender_Tick(this, e);
+            timerPassageSender_Tick(this, e);
 
         }
 
@@ -2488,7 +2489,7 @@ namespace kppApp
                     bit.bit1_comment = prefix_comment + sp.description;
 
                     bit.bit1_opercode = this.passageDirection;
-                    bit.bit1_control_point_type_id = sp.control_point_type_id;
+                    bit.bit1_control_point_type_id = sp.operCode;
                     bit.timezone_seconds = TimeLord.timezone_seconds();
                     break;
                 }
@@ -2848,7 +2849,7 @@ namespace kppApp
         {
             // пишем в подготовленную БД
             CipherManager cfm = new CipherManager(InfoPluginFile);
-            var pword = cfm.getFullPassword(RightPart);
+            var pword = cfm.getFullPword(RightPart);
             var options = new SQLiteConnectionString(InfoDatabaseFile, true, pword);
             try
             {
@@ -3099,6 +3100,230 @@ namespace kppApp
         private void threadWorkersUpdater_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             timerWorkersUpdate.Enabled = true;
+        }
+
+        private void timerEraser_Tick(object sender, EventArgs e)
+        {
+            timerEraser.Enabled = false; 
+            threadEraser30.RunWorkerAsync(e);   
+        }
+
+        private void threadEraser30_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            timerEraser.Enabled = true;
+        }
+
+        private void threadEraser30_DoWork(object sender, DoWorkEventArgs e)
+        {
+            using(var dbdisk = new SQLiteConnection(new SQLiteConnectionString(BufferDatabaseFile)))
+            {
+                string qry = "[]";
+                try
+                {
+                    var xnow = TimeLord.UTCNow();
+                    var diff = 30 * 24 * 60 * 60;
+                    qry = @"delete from passage " +
+                          $" where isdelivered=1 and ischecked=1 and {xnow}-timestamputc>{diff} ";
+                    dbdisk.CreateCommand(qry).ExecuteNonQuery();
+                    logger.Info("Успех при удалении событий старше 30 дней");
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, $"Ошибка при удалении событий старше 30 дней {qry}");
+                }
+            }
+        }
+
+        private void threadPassageSender_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            timerPassageSender.Enabled = true;
+        }
+
+
+        private bool sendOneEvent(Passage1bitExt bit1, int deliveryFlag, int PassageId)
+        {
+            // restsharp
+            // выбираем первый неотправленный passage и если массив непустой - отправляем через rest
+            // если успешно отправлось - помечаем passageID отправленным и обновляем главную таблицу
+            // получить наименьший локальный проход
+            // отправить 
+            // оценить результат
+            // обновить состояние или не обновлять
+            // удаление доставленных - другим методом
+            tryUpdateBearer(false);
+            bool myResult = false;
+            string body = "undefined";
+            try
+            {
+                var url = $"{restServerAddr}reading-event/";
+                var client = new RestClient();
+                client.Timeout = 5000;
+                //var request = new RestRequest(url, deliveryFlag == 2 ? Method.PUT : Method.POST);
+                var request = new RestRequest(url, Method.POST);
+
+                if (restapiAuthEnabled == "1")
+                {
+                    request.AddHeader("Authorization", $"Bearer {this.BearerToken}");
+                }
+
+                request.AddHeader("Accept", "*" + "/" + "*");
+                request.AddHeader("Accept-Encoding", "gzip, deflate, br");
+                request.AddHeader("Content-Type", "application/json");
+                body = JsonConvert.SerializeObject(bit1);
+                body = body.Replace(",\"individual_guid\":\"-\"","");
+                request.AddParameter("application/json", body, ParameterType.RequestBody);
+                IRestResponse response = client.Execute(request);
+                if (response.IsSuccessful)
+                {
+                    string qry_update_mark_id_asdelivered = $"update passage set isDelivered=1, rowID='{bit1.bit1_id}' where (isDelivered=0 or isDelivered=2) and passageID={PassageId}";
+                    try {
+                        var dbdisk = new SQLiteConnection(new SQLiteConnectionString(BufferDatabaseFile));
+                        dbdisk.CreateCommand(qry_update_mark_id_asdelivered).ExecuteNonQuery();
+                        myResult = true;
+                    }catch(Exception ex)
+                    {
+                        logger.Error(ex, $"Сбой при пометке отправленным {qry_update_mark_id_asdelivered}");
+                    }
+                }
+                else
+                {
+                    logger.Error($"НЕ доставлено событие {body} StatusCode={response.StatusCode} Error={response.ResponseStatus}");
+                    File.WriteAllText("error.html",response.Content);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"POST {restServerAddr}/reading-event/ body:{body}");
+            }
+            return myResult;
+        }
+
+        private void threadPassageSender_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Passage1bitExt bit = new Passage1bitExt();
+            int deliveryFlag = 0;
+            int goodCounter = 0;
+            try
+            {
+                var db = new SQLiteConnection(BufferDatabaseFile);
+
+                var arr = db.Query<ShortPassage>(@"select p.rowid, p.passageid, p.card, p.opercode, p.timestampUTC, p.description, p.userguid, p.isManual, p.toDelete, p.isDelivered 
+                    from passage p where p.isDelivered<>1").ToArray();
+                if (arr.Length > 0)
+                {
+                    foreach (ShortPassage sp in arr)
+                    {
+                        string prefix_comment = "";
+                        //deliveryFlag = sp.isDelivered;
+                        if (sp.isManual == 1)
+                        {
+                            prefix_comment += "[Manual]";
+                        }
+                        if (sp.toDelete == 1)
+                        {
+                            prefix_comment += "[Deleted]";
+                        }
+                        bit.bit1_timestampUTC = sp.timestampUTC;
+                        bit.bit1_id = runningInstanceGuid + $"-{bit.bit1_timestampUTC}";
+                        if (sp.rowID != null)
+                        {
+                            if (sp.rowID != "")
+                            {
+                                bit.bit1_id = sp.rowID;
+                            }
+                        }
+                        // не
+                        bit.bit1_system = "stop-covid";
+                        
+                        bit.bit1_card_number = sp.card != null ? (sp.card == "" ? "-" : sp.card) : "-";
+                        bit.bit1_individual_guid = sp.userguid != null ? (sp.userguid == "" ? "-" : sp.userguid) : "-";
+                        bit.bit1_reader_id = this.reader_id;
+
+                        bit.bit1_comment = prefix_comment + sp.description;
+                        if (bit.bit1_comment == ""){ bit.bit1_comment = "-"; };
+                        bit.bit1_opercode = this.passageDirection;
+                        bit.bit1_control_point_type_id = sp.operCode;
+                        bit.timezone_seconds = TimeLord.timezone_seconds();
+                        if (sendOneEvent(bit, deliveryFlag, sp.PassageId))
+                        {
+                            goodCounter++;
+                        }
+                    }
+                    logger.Info($"Отправлено успешно {goodCounter} из {arr.Length}");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Подготовка отправки");
+                //MessageBox.Show("Подготовка формата отправки:\n" + ex.Message);
+                return;
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            update_cipher_pword();
+        }
+        private void update_cipher_pword()
+        {
+            string pword = Constainer.genPWord();
+            var cfm = new CipherManager(InfoPluginFile);
+            var old = cfm.getFullPword(RightPart);
+            cfm.UpdatePStorage(pword);
+
+            logger.Warn("Локальное п-обновление");
+            SQLiteConnectionString options = null;
+
+            options = new SQLiteConnectionString(InfoDatabaseFile, true, key: old);
+
+            var connection = new SQLiteConnection(options);
+            var command = connection.CreateCommand($"PRAGMA rekey = '{cfm.getFullPword(RightPart)}'\n");
+            try
+            {
+                command.ExecuteNonQuery();
+                logger.Warn("Локальное п-обновление успешно");
+
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "not an error")
+                {
+                    logger.Warn("Локальное п-обновление успешно");
+
+                }
+                else
+                {
+                    logger.Error($"Ошибка, локальное п-обновление [{ex.Message}]");
+                }
+            };
+            logger.Warn("Локальное п-обновление завершено");
+            connection.Close();
+        }
+
+        private void timerPupdate_Tick(object sender, EventArgs e)
+        {
+            var localtime = DateTime.Now;
+            if (localtime.ToLongTimeString() == "3:03:03")
+            {
+                timerPupdate.Enabled = true;
+                threadPupdate.RunWorkerAsync();
+            }
+        }
+
+        private void threadPupdate_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            timerPupdate.Enabled = true;
+        }
+
+        private void threadPupdate_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Thread.Sleep(2000);
+            update_cipher_pword();
         }
     }
 }

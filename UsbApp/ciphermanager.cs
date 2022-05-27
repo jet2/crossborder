@@ -74,7 +74,7 @@ namespace kppApp
             return unhidden;
         }
 
-        private string getStoredPassword(string pfile)
+        private string getStoredPword(string pfile)
         {
             string result = "";
             try
@@ -92,9 +92,9 @@ namespace kppApp
         }
 
 
-        public string getFullPassword(string RightPart)
+        public string getFullPword(string RightPart)
         {
-            string result = getStoredPassword(this.xfile) + RightPart;
+            string result = getStoredPword(this.xfile) + RightPart;
 
             return result;
         }

@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFormKPP));
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("История считываний", 1);
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Контроль регистрации", 0);
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("История считываний", 1);
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "123", System.Drawing.SystemColors.WindowText, System.Drawing.Color.Gainsboro, new System.Drawing.Font("Roboto", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "111-111", System.Drawing.Color.Gray, System.Drawing.Color.Gainsboro, new System.Drawing.Font("Roboto", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "#12356"),
@@ -42,7 +42,7 @@
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "🖉   💬", System.Drawing.Color.Teal, System.Drawing.Color.Gainsboro, new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "55555"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "123", System.Drawing.Color.Gray, System.Drawing.Color.Gainsboro, new System.Drawing.Font("Roboto", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204))))}, -1);
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "      💡", System.Drawing.Color.Red, System.Drawing.SystemColors.Window, new System.Drawing.Font("Roboto", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)))),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "111-111"),
             new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "#12356"),
@@ -133,6 +133,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.labelEventFamOtc = new System.Windows.Forms.Label();
             this.panelSignal = new System.Windows.Forms.Panel();
+            this.label47 = new System.Windows.Forms.Label();
             this.label34 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.labelTPL = new System.Windows.Forms.Label();
@@ -285,6 +286,9 @@
             this.blockingBox = new System.Windows.Forms.TextBox();
             this.label46 = new System.Windows.Forms.Label();
             this.usb = new UsbLibrary.UsbHidPort(this.components);
+            this.threadEraser30 = new System.ComponentModel.BackgroundWorker();
+            this.timerPupdate = new System.Windows.Forms.Timer(this.components);
+            this.threadPupdate = new System.ComponentModel.BackgroundWorker();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
@@ -484,6 +488,11 @@
             this.threadWorkersUpdater.DoWork += new System.ComponentModel.DoWorkEventHandler(this.threadWorkersUpdater_DoWork);
             this.threadWorkersUpdater.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.threadWorkersUpdater_RunWorkerCompleted);
             // 
+            // threadPassageSender
+            // 
+            this.threadPassageSender.DoWork += new System.ComponentModel.DoWorkEventHandler(this.threadPassageSender_DoWork);
+            this.threadPassageSender.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.threadPassageSender_RunWorkerCompleted);
+            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -518,7 +527,7 @@
             // 
             // timerPassageSender
             // 
-            this.timerPassageSender.Interval = 2500;
+            this.timerPassageSender.Interval = 3000;
             this.timerPassageSender.Tick += new System.EventHandler(this.timerPassageSender_Tick);
             // 
             // timerCol
@@ -530,6 +539,7 @@
             // 
             this.timerEraser.Enabled = true;
             this.timerEraser.Interval = 1800000;
+            this.timerEraser.Tick += new System.EventHandler(this.timerEraser_Tick);
             // 
             // splitContainer2
             // 
@@ -624,11 +634,11 @@
             this.listView1.FullRowSelect = true;
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listView1.HideSelection = false;
-            listViewItem3.IndentCount = 5;
-            listViewItem4.IndentCount = 5;
+            listViewItem5.IndentCount = 5;
+            listViewItem6.IndentCount = 5;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4});
+            listViewItem5,
+            listViewItem6});
             this.listView1.LabelWrap = false;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(0, 104);
@@ -653,6 +663,7 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 13;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             this.pictureBox1.DoubleClick += new System.EventHandler(this.pictureBox1_DoubleClick);
             // 
             // tabControl1
@@ -758,9 +769,9 @@
             this.listViewHotBuffer.GridLines = true;
             this.listViewHotBuffer.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewHotBuffer.HideSelection = false;
-            listViewItem5.UseItemStyleForSubItems = false;
+            listViewItem1.UseItemStyleForSubItems = false;
             this.listViewHotBuffer.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem5});
+            listViewItem1});
             this.listViewHotBuffer.Location = new System.Drawing.Point(5, 5);
             this.listViewHotBuffer.Margin = new System.Windows.Forms.Padding(1);
             this.listViewHotBuffer.MultiSelect = false;
@@ -1284,6 +1295,7 @@
             // panelSignal
             // 
             this.panelSignal.BackColor = System.Drawing.Color.Transparent;
+            this.panelSignal.Controls.Add(this.label47);
             this.panelSignal.Controls.Add(this.label34);
             this.panelSignal.Controls.Add(this.label11);
             this.panelSignal.Controls.Add(this.labelTPL);
@@ -1294,6 +1306,18 @@
             this.panelSignal.Name = "panelSignal";
             this.panelSignal.Size = new System.Drawing.Size(1290, 28);
             this.panelSignal.TabIndex = 6;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.ForeColor = System.Drawing.Color.Red;
+            this.label47.Location = new System.Drawing.Point(546, 6);
+            this.label47.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(309, 15);
+            this.label47.TabIndex = 16;
+            this.label47.Text = "64 бита  не работают!!!!!!!!!!!!!!!!!!!!!!! предпочитать 32";
+            this.label47.Visible = false;
             // 
             // label34
             // 
@@ -1410,10 +1434,10 @@
             this.listViewHistory.Font = new System.Drawing.Font("Roboto", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.listViewHistory.GridLines = true;
             this.listViewHistory.HideSelection = false;
-            listViewItem1.StateImageIndex = 0;
-            listViewItem1.UseItemStyleForSubItems = false;
+            listViewItem2.StateImageIndex = 0;
+            listViewItem2.UseItemStyleForSubItems = false;
             this.listViewHistory.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
+            listViewItem2});
             this.listViewHistory.Location = new System.Drawing.Point(0, 0);
             this.listViewHistory.Margin = new System.Windows.Forms.Padding(1);
             this.listViewHistory.MultiSelect = false;
@@ -1861,6 +1885,7 @@
             this.label1.TabIndex = 16;
             this.label1.Text = "Список событий";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label35
             // 
@@ -2797,6 +2822,7 @@
             this.buttonPOST.TabIndex = 88;
             this.buttonPOST.Text = "Отправить принудительно";
             this.buttonPOST.UseVisualStyleBackColor = true;
+            this.buttonPOST.Visible = false;
             this.buttonPOST.Click += new System.EventHandler(this.buttonPOST_Click);
             // 
             // editGreenEventTabnom
@@ -3247,6 +3273,22 @@
             this.usb.OnDeviceRemoved += new System.EventHandler(this.usb_OnDeviceRemoved);
             this.usb.OnDataRecieved += new UsbLibrary.DataRecievedEventHandler(this.usb_OnDataRecieved);
             // 
+            // threadEraser30
+            // 
+            this.threadEraser30.DoWork += new System.ComponentModel.DoWorkEventHandler(this.threadEraser30_DoWork);
+            this.threadEraser30.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.threadEraser30_RunWorkerCompleted);
+            // 
+            // timerPupdate
+            // 
+            this.timerPupdate.Enabled = true;
+            this.timerPupdate.Interval = 900;
+            this.timerPupdate.Tick += new System.EventHandler(this.timerPupdate_Tick);
+            // 
+            // threadPupdate
+            // 
+            this.threadPupdate.DoWork += new System.ComponentModel.DoWorkEventHandler(this.threadPupdate_DoWork);
+            this.threadPupdate.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.threadPupdate_RunWorkerCompleted);
+            // 
             // MainFormKPP
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -3290,6 +3332,7 @@
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.panelSignal.ResumeLayout(false);
+            this.panelSignal.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.panel18.ResumeLayout(false);
             this.panel19.ResumeLayout(false);
@@ -3572,5 +3615,9 @@
         private System.Windows.Forms.Label label46;
         private System.Windows.Forms.ToolStripStatusLabel needRestartlabel;
         private System.Windows.Forms.Label labelManualTabnomKeeper;
+        private System.Windows.Forms.Label label47;
+        private System.ComponentModel.BackgroundWorker threadEraser30;
+        private System.Windows.Forms.Timer timerPupdate;
+        private System.ComponentModel.BackgroundWorker threadPupdate;
     }
 }
